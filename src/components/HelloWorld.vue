@@ -12,6 +12,7 @@
         <h2>Servidor de minecraft, IP: greenborn.com.ar</h2>
         <h3>Por servicio de configuración de servidores Spigot, Paper o Bukkit, puede contactarse conmigo por medio de mi correo electrónico: lucho.2012.tandil[at]gmail.com</h3>
         <h3>Discord: <a href="https://discord.gg/4DdAtr6">https://discord.gg/4DdAtr6</a></h3>
+        <h3><a href="http://greenborn.com.ar:8123/">Mapa del mundo</a></h3>
       </div>
     </div>
   </div>
