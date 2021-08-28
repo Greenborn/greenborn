@@ -1,10 +1,14 @@
 .bg-1 {
-  background-color: #fce955;
+  background-color: #0c401b;
 }
 
 .caratula .logo{
   height:      auto;
   width:       calc(33vw / 2);
   margin-left: calc(33vW * 1.25);
-  filter:      invert(69%) sepia(7%) saturate(39%) hue-rotate(201deg) brightness(92%) contrast(95%);
+}
+
+.caratula {
+  margin-top: -49px;
+  padding-top: 49px;
 }
