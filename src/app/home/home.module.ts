@@ -2,10 +2,11 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tab1Page } from './tab1.page';
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
-import { Tab1PageRoutingModule } from './tab1-routing.module';
+import { TabsPageRoutingModule } from './home-routing.module';
+
+import { HomePage } from './home.page';
+
 import { FullHeaderComponent } from 'src/app/components/full-header/full-header.component';
 
 @NgModule({
@@ -13,9 +14,8 @@ import { FullHeaderComponent } from 'src/app/components/full-header/full-header.
     IonicModule,
     CommonModule,
     FormsModule,
-    ExploreContainerComponentModule,
-    Tab1PageRoutingModule
+    TabsPageRoutingModule
   ],
-  declarations: [Tab1Page, FullHeaderComponent]
+  declarations: [HomePage, FullHeaderComponent]
 })
-export class Tab1PageModule {}
+export class HomePageModule {}
