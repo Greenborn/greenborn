@@ -2,18 +2,13 @@
     background-color: #1b3322;
   }
   
-  .caratula .logo{
+.caratula .logo{
     height:      auto;
     width:       calc(33vw / 2);
     margin-left: calc(33vW * 1.25);
-  }
+}
   
-  .caratula {
+.caratula {
     margin-top: -49px;
     padding-top: 49px;
-  }
-
-  app-full-header {
-    display: block;
-    height:  100vh;
-  }
+}
