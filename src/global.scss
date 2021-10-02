@@ -27,30 +27,6 @@
 
 @font-face { font-family: 'BitstreamVeraMono'; src: url('assets/fnt/VeraMono.ttf') format('truetype'); font-weight: normal; font-style: normal; }
 
-.h-100 {
-  height: 100vh;
-}
-
-.p-0 {
-  padding: 0px;
-}
-
-.fnt-logo {
-   font-family: 'BitstreamVeraMono';
-   color: #fff;
-   font-size: 3em;
-}
-
-.fnt-logo-2 {
-   font-family: 'BitstreamVeraMono';
-   color: #fff;
-   font-size: 1em;
-   font-weight: bolder;
-}
-
-.text-center {
-  text-align: center;
-}
 
 .disable-select {
   -webkit-user-select: none;  
@@ -58,4 +34,8 @@
   -ms-user-select: none;      
   user-select: none;
   pointer-events: none;
+}
+
+.container-fluid{
+  overflow: auto;
 }
