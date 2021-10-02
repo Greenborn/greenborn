@@ -8,6 +8,7 @@ import { TabsPageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
 
 import { FullHeaderComponent } from 'src/app/components/full-header/full-header.component';
+import { ServiciosComponent } from '../components/servicios/servicios.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { FullHeaderComponent } from 'src/app/components/full-header/full-header.
     FormsModule,
     TabsPageRoutingModule
   ],
-  declarations: [HomePage, FullHeaderComponent]
+  declarations: [HomePage, FullHeaderComponent, ServiciosComponent]
 })
 export class HomePageModule {}
