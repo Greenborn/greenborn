@@ -9,6 +9,8 @@ import { HomePage } from './home.page';
 
 import { FullHeaderComponent } from 'src/app/components/full-header/full-header.component';
 import { ServiciosComponent } from '../components/servicios/servicios.component';
+import { TecnologiasComponent } from '../components/tecnologias/tecnologias.component';
+import { ContactoComponent } from '../components/contacto/contacto.component';
 
 @NgModule({
   imports: [
@@ -17,6 +19,6 @@ import { ServiciosComponent } from '../components/servicios/servicios.component'
     FormsModule,
     TabsPageRoutingModule
   ],
-  declarations: [HomePage, FullHeaderComponent, ServiciosComponent]
+  declarations: [HomePage, FullHeaderComponent, ServiciosComponent, TecnologiasComponent, ContactoComponent]
 })
 export class HomePageModule {}
