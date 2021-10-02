@@ -1,14 +1,23 @@
-.bg-1 {
-    background-color: #1b3322;
-  }
-  
-.caratula .logo{
-    height:      auto;
-    width:       calc(33vw / 2);
-    margin-left: calc(33vW * 1.25);
-}
-  
-.caratula {
-    margin-top: -49px;
-    padding-top: 49px;
+.header-cont-1{
+    background:#000;
+    color:#fff;
+
+    .logo-cont{
+        width: 8rem;
+    }
+
+    .title-cont{
+        h1 {
+            font-family: "FreeMono", "mono", "Monospace";
+            font-size: 4rem;
+            font-weight: bold;
+            margin:0rem;
+        }
+
+        h2 {
+            font-family: "FreeMono", "mono", "Monospace";
+            margin: 0rem;
+        }
+
+    }
 }
