@@ -12,6 +12,7 @@ import { ServiciosComponent } from '../components/servicios/servicios.component'
 import { TecnologiasComponent } from '../components/tecnologias/tecnologias.component';
 import { ContactoComponent } from '../components/contacto/contacto.component';
 import { SeparadorComponent } from '../components/separador/separador.component';
+import { FooterComponent } from '../components/footer/footer.component';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { SeparadorComponent } from '../components/separador/separador.component'
     FormsModule,
     TabsPageRoutingModule
   ],
-  declarations: [HomePage, FullHeaderComponent, ServiciosComponent, SeparadorComponent, TecnologiasComponent, ContactoComponent]
+  declarations: [HomePage, FullHeaderComponent, FooterComponent, ServiciosComponent, SeparadorComponent, TecnologiasComponent, ContactoComponent]
 })
 export class HomePageModule {}
