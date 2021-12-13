@@ -15,12 +15,15 @@ import { SeparadorComponent } from '../components/separador/separador.component'
 import { FooterComponent } from '../components/footer/footer.component';
 import { PortfolioComponent } from '../components/portfolio/portfolio.component';
 
+import { NgxBootstrapIconsModule, allIcons } from 'ngx-bootstrap-icons';
+
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    TabsPageRoutingModule
+    TabsPageRoutingModule,
+    NgxBootstrapIconsModule.pick(allIcons)
   ],
   declarations: [HomePage, FullHeaderComponent, FooterComponent, PortfolioComponent, ServiciosComponent, SeparadorComponent, TecnologiasComponent, ContactoComponent]
 })
