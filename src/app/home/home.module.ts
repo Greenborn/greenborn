@@ -16,15 +16,17 @@ import { FooterComponent } from '../components/footer/footer.component';
 import { PortfolioComponent } from '../components/portfolio/portfolio.component';
 
 import { NgxBootstrapIconsModule, allIcons } from 'ngx-bootstrap-icons';
+import { LoadingComponent } from '../modules/AppUIUtils/components/loading/loading.component';
+import { MessageComponent } from '../modules/AppUIUtils/components/message/message.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    TabsPageRoutingModule,
+    TabsPageRoutingModule, 
     NgxBootstrapIconsModule.pick(allIcons)
   ],
-  declarations: [HomePage, FullHeaderComponent, FooterComponent, PortfolioComponent, ServiciosComponent, SeparadorComponent, TecnologiasComponent, ContactoComponent]
+  declarations: [HomePage, FullHeaderComponent, LoadingComponent, MessageComponent, FooterComponent, PortfolioComponent, ServiciosComponent, SeparadorComponent, TecnologiasComponent, ContactoComponent]
 })
 export class HomePageModule {}
