@@ -8,11 +8,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppUIUtilsModule } from './modules/AppUIUtils/app-uiutils.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule,AppUIUtilsModule, IonicModule.forRoot(), AppRoutingModule, NgbModule],
+  imports: [BrowserModule,HttpClientModule,AppUIUtilsModule, IonicModule.forRoot(), AppRoutingModule, NgbModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

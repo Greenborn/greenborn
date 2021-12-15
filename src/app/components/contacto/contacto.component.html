@@ -22,12 +22,14 @@
 
           <div class="mb-3 col-12 col-sm-6">
             <label for="name" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="name" placeholder="Juan">
+            <input type="text" class="form-control" id="name" placeholder="Juan"
+                    [(ngModel)]="contactModel.name" [ngModelOptions]="{standalone: true}">
           </div>
 
           <div class="mb-3 col-12 col-sm-6">
             <label for="surname" class="form-label">Apellido</label>
-            <input type="text" class="form-control" id="surname" placeholder="Perez">
+            <input type="text" class="form-control" id="surname" placeholder="Perez"
+                    [(ngModel)]="contactModel.surname" [ngModelOptions]="{standalone: true}">
           </div>
 
       </div>
@@ -36,12 +38,14 @@
 
         <div class="mb-3 col-12 col-sm-6">
           <label for="email" class="form-label">E-Mail</label>
-          <input type="email" class="form-control" id="email" placeholder="juan.perz@emailprovider.com">
+          <input type="email" class="form-control" id="email" placeholder="juan.perz@emailprovider.com"
+                  [(ngModel)]="contactModel.email" [ngModelOptions]="{standalone: true}">
         </div>
 
         <div class="mb-3 col-12 col-sm-6">
           <label for="tel" class="form-label">Teléfono</label>
-          <input type="text" class="form-control" id="tel" placeholder="+1 234 2344">
+          <input type="text" class="form-control" id="tel" placeholder="+1 234 2344"
+                  [(ngModel)]="contactModel.tel" [ngModelOptions]="{standalone: true}">
         </div>
         
       </div>
@@ -50,7 +54,8 @@
 
         <div class="mb-3 col-12">
           <label for="message" class="form-label">Mensaje</label>
-          <textarea class="form-control" id="message" rows="6"></textarea>
+          <textarea class="form-control" id="message" rows="6"
+                    [(ngModel)]="contactModel.message" [ngModelOptions]="{standalone: true}"></textarea>
         </div>
         
       </div>
