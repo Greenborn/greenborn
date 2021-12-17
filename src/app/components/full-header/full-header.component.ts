@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppUIUtilsService } from 'src/app/modules/AppUIUtils/services/app.ui.utils.service';
 
 @Component({
   selector: 'app-full-header',
@@ -7,8 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FullHeaderComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private appUIUtilsService: AppUIUtilsService
+  ) { }
 
   ngOnInit() {}
 
+  enConstruccion(){
+    this.appUIUtilsService.showMessage('¡Sitio en construcción!');
+  }
 }
