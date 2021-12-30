@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TecnologiasService } from './services/tecnologias.service';
 
 @Component({
   selector: 'app-tecnologias',
@@ -70,8 +71,17 @@ export class TecnologiasComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor(
+    private tecnologiasService: TecnologiasService
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.tecnologiasService.getAll().subscribe(
+      ok => {
+        this.listado_tecnologias_leng = ok;
+      },
+      err => {}
+    );
+  }
 
 }
