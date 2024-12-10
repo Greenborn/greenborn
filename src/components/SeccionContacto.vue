@@ -24,13 +24,13 @@
           <div class="mb-3 col-12 col-sm-6">
             <label for="name" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="name" placeholder="Juan"
-                    v-model="form_.name" [ngModelOptions]="{standalone: true}">
+                    v-model="form_.name">
           </div>
 
           <div class="mb-3 col-12 col-sm-6">
             <label for="surname" class="form-label">Apellido</label>
             <input type="text" class="form-control" id="surname" placeholder="Perez"
-                    v-model="form_.surname" [ngModelOptions]="{standalone: true}">
+                    v-model="form_.surname">
           </div>
 
       </div>

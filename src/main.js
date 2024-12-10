@@ -59,4 +59,4 @@ createApp(App)
         preset: Aura
     }
 })
-.mount('#app')
+.mount("#app")
