@@ -4,7 +4,7 @@
 <SeccionPortfolio />
 <SeccionContacto />
 <SeccionFooter />
-<CursorPersonalizado />
+<CustomCursor />
 </template>
 
 <script setup>
@@ -15,6 +15,5 @@ import SeccionTecnologias from './components/SeccionTecnologias.vue'
 import SeccionPortfolio from './components/SeccionPortfolio.vue'
 import SeccionContacto from './components/SeccionContacto.vue'
 import SeccionFooter from './components/SeccionFooter.vue'
-import CursorPersonalizado from './components/genericos/CursorPersonalizado.vue'
 </script>
 

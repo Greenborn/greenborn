@@ -30,6 +30,9 @@ import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
 import Card from 'primevue/card';
 
+import { VueCustomCursor } from '@greenborn/vue-custom-cursor'; 
+import '@greenborn/vue-custom-cursor/dist/library.css';
+
 createApp(App)
 .component("Card", Card)
 .component("Stepper", Stepper)
@@ -54,6 +57,7 @@ createApp(App)
 .component("AccordionHeader", AccordionHeader)
 .component("AccordionContent", AccordionContent)
 .use(createPinia())
+.use(VueCustomCursor)
 .use(PrimeVue, {
     theme: {
         preset: Aura
