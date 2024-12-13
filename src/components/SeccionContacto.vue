@@ -1,5 +1,5 @@
 <template>
-<div class="row h-100vh disable-select">
+<div class="row bg-green1 h-100vh disable-select">
   <div class="col">
     Seccion de Contacto
   </div>

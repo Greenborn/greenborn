@@ -1,7 +1,7 @@
 <template>
 
-<div class="row h-100vh justify-content-center align-items-center">
-  <div class="col-auto">
+<div class="row h-100vh bg-green1  justify-content-center align-items-center">
+  <div class="col-auto text-center">
     <div class="w-100">
       <div class="text-gb"><TextEffect text="GREENBORN" /></div>
       <div class="text-h-2">Desarrollo de Web APP's</div>

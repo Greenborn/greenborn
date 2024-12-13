@@ -1,7 +1,13 @@
 <template>
-<div class="row h-100vh disable-select">
-  <div class="col">
-    Seccion de Tecnologias
+<div class="row  h-100vh disable-select">
+  <div class="col p-4">
+    
+    <div class="row">
+      <div class="col">
+        <div class="text-h-2">Tecnologías</div>
+      </div>
+    </div>
+
   </div>
 </div>
 <!--<div class="row disable-select text-center">

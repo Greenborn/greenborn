@@ -2,7 +2,7 @@
 <div class="row app-footer pt-2">
   <div class="p-4 container app-footer-container">
     
-    <div class="row">
+    <div class="row justify-content-center alig-items-center">
       <div class="col-12 col-sm-6 text-center disable-select">
         <p><span class="copyleft">&copy;</span> 2024 Greenborn - Desarrollo de Software</p>
       </div>
@@ -32,30 +32,35 @@
 <script setup>
 import { ref } from 'vue'
 
+import Linkedin from '../assets/img/linkedin.svg'
+import Instagram from '../assets/img/instagram.svg'
+import Facebook from '../assets/img/facebook.svg'
+
 const listado_contactos = ref([
     {
-      id:0, 
-      t:"Facebook", 
-      i:"assets/img/facebook.svg",
-      e:"https://www.facebook.com/Greenborn-100550959124104"
+      id: 0, 
+      t:  "Facebook", 
+      i:  Facebook,
+      e:  "https://www.facebook.com/Greenborn-100550959124104"
     },
     {
-      id:10, 
-      t:"Instagram", 
-      i:"assets/img/instagram.svg",
-      e:"https://www.instagram.com/greenborn_soft/"
+      id: 10, 
+      t:  "Instagram", 
+      i:  Instagram,
+      e:  "https://www.instagram.com/greenborn_soft/"
     },
     {
-      id:30, 
-      t:"Discord", 
-      i:"assets/img/discord.svg",
-      e:"https://discord.gg/ZH36cEh2"
-    },
-    {
-      id:40, 
-      t:"Linkedin", 
-      i:"assets/img/linkedin.svg",
-      e:"https://www.linkedin.com/company/greenborn"
+      id: 40, 
+      t:  "Linkedin", 
+      i:  Linkedin,
+      e:  "https://www.linkedin.com/company/greenborn"
     },
   ])
 </script>
+
+<style>
+.img-contact{
+  width: 3rem;
+  height: auto;
+}
+</style>

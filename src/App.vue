@@ -1,11 +1,12 @@
 <template>
 <SeccionHeader />
+<SeccionNosotros />
 <SeccionServicios />
-<SeccionTecnologias />
+<MetodologiaTrabajo />
 <SeccionPortfolio />
-<SeccionContacto />
+<SeccionTecnologias />
 <SeccionFooter />
-<CustomCursor :config='{ highlighted_tags: [ "a", "button" ], transform_time: ".1s" }' />
+<CustomCursor :config='{ highlighted_tags: [ "a", "button", ".text-res-1", ".text-effect" ], transform_time: ".1s" }' />
 </template>
 
 <script setup>
@@ -17,5 +18,7 @@ import SeccionPortfolio from './components/SeccionPortfolio.vue'
 import SeccionContacto from './components/SeccionContacto.vue'
 import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'
+import MetodologiaTrabajo from './components/MetodologiaTrabajo.vue'
+import SeccionNosotros from './components/SeccionNosotros.vue'
 </script>
 

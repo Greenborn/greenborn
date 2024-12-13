@@ -5,6 +5,8 @@ html, body{
 
 @font-face { font-family: 'BitstreamVeraMono'; src: url('assets/fnt/VeraMono.ttf') format('truetype'); font-weight: normal; font-style: normal; }
 @font-face { font-family: 'BebasNeue'; src: url('assets/fnt/BebasNeue-Regular.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+@font-face { font-family: 'BelgianoSerif'; src: url('assets/fnt/BelgianoSerif2.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+
 
 .disable-select {
   -webkit-user-select: none;  
@@ -15,5 +17,10 @@ html, body{
 }
 
 .h-100vh{
-    height: 100vh;
+    min-height: 100vh;
+}
+
+.bg-green1{
+    background-color: #011d00;
+    color: #fff;
 }
