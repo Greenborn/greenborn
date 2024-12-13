@@ -1,4 +1,10 @@
 <template>
+<div class="row h-100vh disable-select">
+  <div class="col">
+    Seccion de Contacto
+  </div>
+</div>
+<!--
 <div class="row disable-select text-center ">
   <div class="col">
     <h2 class="w-100">Contacto</h2>
@@ -71,7 +77,7 @@
       
     </div>
   </div>
-</div>
+</div>-->
 </template>
 
 <script setup>

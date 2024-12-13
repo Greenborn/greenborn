@@ -1,5 +1,10 @@
 <template>
-<div class="row disable-select text-center">
+<div class="row h-100vh disable-select">
+  <div class="col">
+    Seccion de Tecnologias
+  </div>
+</div>
+<!--<div class="row disable-select text-center">
   <h2 class="mb-3 w-100">Tecnologías</h2>
 </div>
 
@@ -18,7 +23,7 @@
     </div>
   
   </div>
-</div>
+</div>-->
 </template>
 
 <script setup>
