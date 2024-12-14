@@ -41,12 +41,12 @@ import { ref, onMounted } from 'vue'
 const desplegado = ref(false)
 
 const enlaces = ref([
-    { label: 'Inicio', active: true, section_id:"seccion-inicio", pos_y:0, element: null },
-    { label: 'Lema', active: false, section_id:"seccion-lema", pos_y:0 , element: null },
-    { label: 'Servicios', active: false, section_id:"seccion-servicios", pos_y:0, element: null  },
-    { label: 'Metodología', active: false, section_id:"seccion-metodologia", pos_y:0, element: null  },
-    { label: 'Portfolio', active: false, section_id:"seccion-portfolio", pos_y:0, element: null  },
-    { label: 'Tecnologías', active: false, section_id:"seccion-tecnologias", pos_y:0, element: null  },
+    { label: 'Inicio', active: true, section_id:"seccion-inicio",  element: null },
+    { label: 'Lema', active: false, section_id:"seccion-lema",  element: null },
+    { label: 'Servicios', active: false, section_id:"seccion-servicios",  element: null  },
+    { label: 'Metodología', active: false, section_id:"seccion-metodologia", element: null  },
+    { label: 'Portfolio', active: false, section_id:"seccion-portfolio",  element: null  },
+    { label: 'Tecnologías', active: false, section_id:"seccion-tecnologias",  element: null  },
 ])
 const enlace_activo = ref(enlaces.value[0])
 
@@ -67,13 +67,12 @@ function clickEnlace( enlace ){
 onMounted(async ()=>{
     for (let i=0; i < enlaces.value.length; i++){
         const elemento = document.getElementById(enlaces.value[i].section_id)
-        enlaces.value[i].pos_y = elemento.offsetTop
         enlaces.value[i].element = elemento
     }
 
     window.addEventListener('scroll', function(e) {
         for (let i=0; i < enlaces.value.length; i++){
-            if (window.scrollY > enlaces.value[i].pos_y - 50){
+            if (window.scrollY > enlaces.value[i].element.offsetTop - 100){
                 enlaces.value[i].active = true
                 enlace_activo.value = enlaces.value[i]
             }else{
@@ -99,7 +98,8 @@ onMounted(async ()=>{
     padding-left: 2rem;
     padding-right: 2rem;
     background: rgb(1,29,0);
-    background: linear-gradient(90deg, rgba(1,29,0,0) 0%, rgba(1,29,0,0) 27%, rgba(0,0,0,1) 31%, rgba(0,0,0,1) 68%, rgba(1,29,0,0) 72%, rgba(1,29,0,0) 100%); }
+    background: linear-gradient(90deg, rgba(1,29,0,0) 0%, rgba(1,29,0,0) 27%, rgba(0,0,0,1) 31%, rgba(0,0,0,1) 68%, rgba(1,29,0,0) 72%, rgba(1,29,0,0) 100%);
+}
 
 .menu-colapsed{
     position: fixed;
@@ -150,5 +150,11 @@ onMounted(async ()=>{
     border: .15rem solid #fff;
     border-radius: .15rem;
     right: 2.825rem;
+}
+
+@media (max-width: 500px) {
+    .menu-flotante{
+        background: #000;
+    }
 }
 </style>

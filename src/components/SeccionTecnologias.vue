@@ -1,18 +1,8 @@
 <template>
-<div class="row h-100vh" id="seccion-tecnologias">
-  <div class="col  p-5 mt-5">
+<div class="row h-100vh seccion justify-content-center alig-items-center" id="seccion-tecnologias">
+  <div class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-5 mt-5 mb-5">
 
-    <div class="row mt-5  justify-content-center alig-items-center">
-      <div class="col-auto">
-        <div class="row justify-content-center alig-items-center">
-
-          
-          <SubSecTecnologia v-for="r in listado_tecnologias_leng" :key="r" :data="r" />
-        
-        </div>
-      </div>
-        
-    </div>
+    <SubSecTecnologia v-for="r in listado_tecnologias_leng" :key="r" :data="r" />
 
   </div>
 </div>
@@ -27,8 +17,5 @@ const listado_tecnologias_leng = ref([{"id":1,"name":"PHP","description":"","url
 </script>
 
 <style>
-.img-tecno{
-  width: 5rem;
-  height: auto;
-}
+
 </style>

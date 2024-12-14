@@ -1,8 +1,8 @@
 <template>
-    <div class="row h-100vh disable-select" id="seccion-metodologia">
-      <div class="col p-5 mt-5">
+    <div class="row h-100vh seccion disable-select" id="seccion-metodologia">
+      <div class="col">
 
-        <div class="row mt-5 h-100vh justify-content-center mt-3">
+        <div class="row h-100vh justify-content-center mt-3">
             <div class="col">
                 
                 <ul class="text-metod-1">

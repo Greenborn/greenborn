@@ -1,6 +1,6 @@
 <template>
-    <div class="row h-100vh justify-content-center align-items-center" id="seccion-lema">
-        <div class="col text-center">
+    <div class="row h-100vh seccion justify-content-center align-items-center" id="seccion-lema">
+        <div class="col text-center text-cont">
             
             <p class="text-h-3">
                 Una aplicación nace de una <b class="text-res-1">idea</b><br>
@@ -32,5 +32,19 @@
 
 .text-res-1:hover{
     font-size: 5rem;
+}
+
+@media (max-width: 500px) {
+    .text-h-3{
+        font-size: 7dvw;
+    }
+
+    .text-res-1:hover{
+        font-size: 9dvw;
+    }
+
+    .text-cont{
+        padding: 3rem;
+    }
 }
 </style>

@@ -24,3 +24,14 @@ html, body{
     background-color: #011d00;
     color: #fff;
 }
+
+.seccion{
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+}
+
+@media (max-width: 500px) {
+    .inverted-cursor {
+        display: none !important;
+    }
+}
