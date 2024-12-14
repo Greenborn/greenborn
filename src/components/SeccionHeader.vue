@@ -1,6 +1,6 @@
 <template>
-
 <div class="row h-100vh bg-back-0">
+  <EfectoMatrix />
   <div class="bg-green2">
     <div class="col">
       <div class="row h-100vh justify-content-center align-items-center">
@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import EfectoMatrix from './genericos/EfectoMatrix.vue';
 import TextEffect from './genericos/TextEffect.vue'
 </script>
 
