@@ -3,17 +3,10 @@
     <div class="col p-5 mt-5">
 
       <div class="row p-5 justifify-content-center">
-        <div class="col col-md-6 col-lg-4 col-xl-3"  v-for="s in trabajos" :key="s">
-          <div class="row">
+        <div class="col col-md-6 col-lg-4 col-xl-3 p-2"  v-for="s in trabajos" :key="s">
 
-            <div class="col">
-              {{ s.titulo }}
-              {{ s.descripcion_organizacion }}
-              {{ s.url }}
-              {{ s.tecnologias_usadas }}
-            </div>
+          <SubSecPortfolio :data="s" />
 
-          </div>
         </div>
       </div>
 
@@ -24,6 +17,7 @@
 <script setup>
 
 import { ref } from 'vue'
+import SubSecPortfolio from './SubSecPortfolio.vue';
 
 const trabajos = ref([
   {
@@ -67,3 +61,9 @@ const trabajos = ref([
   }
 ])
 </script>
+
+<style scoped>
+  .card{
+    color: #000;
+  }
+</style>
