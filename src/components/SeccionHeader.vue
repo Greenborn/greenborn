@@ -4,7 +4,7 @@
   <div class="col-auto text-center">
     <div class="w-100">
       <div class="text-gb"><TextEffect text="GREENBORN" /></div>
-      <div class="text-h-2">Desarrollo de Web APP's</div>
+      <div class="text-h-2">Software en Crecimiento</div>
     </div>
   </div>
 </div>

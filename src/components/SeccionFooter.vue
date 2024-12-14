@@ -63,4 +63,8 @@ const listado_contactos = ref([
   width: 3rem;
   height: auto;
 }
+
+.app-footer{
+  border-top: .1rem solid #333;
+}
 </style>
