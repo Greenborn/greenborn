@@ -1,14 +1,8 @@
 <template>
-    <div class="row h-100vh disable-select">
-      <div class="col p-4">
-        
-        <div class="row">
-            <div class="col">
-                <div class="text-h-2">Como trabajamos</div>
-            </div>
-        </div>
+    <div class="row h-100vh disable-select" id="seccion-metodologia">
+      <div class="col p-5 mt-5">
 
-        <div class="row h-100vh justify-content-center mt-3">
+        <div class="row mt-5 h-100vh justify-content-center mt-3">
             <div class="col">
                 
                 <ul class="text-metod-1">

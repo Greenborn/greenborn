@@ -1,15 +1,8 @@
 <template>
-  <div class="row h-100vh bg-green1 disable-select">
-    <div class="col p-5">
+  <div class="row h-100vh bg-green1 disable-select" id="seccion-servicios">
+    <div class="col p-5 mt-5">
 
-      <div class="row">
-        <div class="col">
-          <div class="text-h-2">Servicios</div>
-        </div>
-      </div>
-
-
-      <div class="row justifify-content-center" v-for="s in listado_servicios" :key="s">
+      <div class="row mt-5 justifify-content-center" v-for="s in listado_servicios" :key="s">
         <div class="col-12 col-md-10 col-lg-4 offset-md-1 offset-lg-4 ">
           <div class="row">
 

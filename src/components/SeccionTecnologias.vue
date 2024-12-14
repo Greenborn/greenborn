@@ -1,20 +1,18 @@
 <template>
-<div class="row  h-100vh disable-select">
-  <div class="col p-4">
-    
-    <div class="row">
-      <div class="col">
-        <div class="text-h-2">Tecnologías</div>
+<div class="row h-100vh" id="seccion-tecnologias">
+  <div class="col  p-5 mt-5">
+
+    <div class="row mt-5  justify-content-center alig-items-center">
+      <div class="col-auto">
+        <div class="row justify-content-center alig-items-center">
+
+          <div class="col-auto" v-for="r in listado_tecnologias_leng" :key="r">
+            <a href="{{r.url}}" target="_blank"><img :src="'https://clientes.api.greenborn.com.ar/'+r.img_src" class="img-tecno"/></a>
+          </div>
+        
+        </div>
       </div>
-    </div>
-
-    <div class="row mt-5 justify-content-center alig-items-center">
-      <div class="col-auto"
-        v-for="r in listado_tecnologias_leng" :key="r">
-
-        <a href="{{r.url}}" target="_blank"><img :src="'https://clientes.api.greenborn.com.ar/'+r.img_src" class="img-tecno"/></a>
-
-      </div>
+        
     </div>
 
   </div>

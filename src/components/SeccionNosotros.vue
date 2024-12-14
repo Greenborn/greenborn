@@ -1,5 +1,5 @@
 <template>
-    <div class="row h-100vh justify-content-center align-items-center">
+    <div class="row h-100vh justify-content-center align-items-center" id="seccion-lema">
         <div class="col text-center">
             
             <p class="text-h-3">

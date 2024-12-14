@@ -6,7 +6,8 @@
 <SeccionPortfolio />
 <SeccionTecnologias />
 <SeccionFooter />
-<CustomCursor :config='{ highlighted_tags: [ "a", "button", ".text-res-1", ".text-effect" ], transform_time: ".1s" }' />
+<CustomCursor :config='{ highlighted_tags: [ "a", "button", ".text-res-1", ".text-effect", ".menu-item" ], transform_time: ".2s" }' />
+<MenuLateralFlotante />
 </template>
 
 <script setup>
@@ -20,5 +21,6 @@ import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'
 import MetodologiaTrabajo from './components/MetodologiaTrabajo.vue'
 import SeccionNosotros from './components/SeccionNosotros.vue'
+import MenuLateralFlotante from './components/genericos/MenuLateralFlotante.vue'
 </script>
 

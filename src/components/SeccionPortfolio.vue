@@ -1,12 +1,6 @@
 <template>
-  <div class="row bg-green1 h-100vh disable-select">
-    <div class="col p-4">
-
-      <div class="row">
-        <div class="col">
-          <div class="text-h-2">Portfolio</div>
-        </div>
-      </div>
+  <div class="row bg-green1 h-100vh disable-select" id="seccion-portfolio">
+    <div class="col p-5 mt-5">
 
       <div class="row p-5 justifify-content-center">
         <div class="col col-md-6 col-lg-4 col-xl-3"  v-for="s in trabajos" :key="s">
