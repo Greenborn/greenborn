@@ -20,13 +20,16 @@ const config = ref({
 })
 
 const letras_style = ref([])
+const anim_frame = ref(0)
 
 function onMouseMove( index ){
+    if (anim_frame.value != 2) return
     letras_style.value[index]['color'] = 'green' 
     letras_style.value[index]['transform'] = 'scale(1,1.5)' 
 }
 
 function onMouseLeave( index ){
+    if (anim_frame.value != 2) return
     letras_style.value[index]['color'] = 'white' 
     letras_style.value[index]['transform'] = 'scale(1,1)' 
 }
@@ -40,18 +43,21 @@ onMounted(async ()=>{
             'transition-delay': seg_char * i + 's',
             'transform': 'scale(1,0)',
         })
+        anim_frame.value = 0
     }
     
     setTimeout(() => {
         for (let i = 0; i < cant_letras; i++){
             letras_style.value[i]['transform'] = 'scale(1,1)'
         }
+        anim_frame.value = 1
     },500)
 
     setTimeout(() => {
         for (let i = 0; i < cant_letras; i++){
             letras_style.value[i]['transition-delay'] = '0s'
         }
+        anim_frame.value = 2
     },3000)
 
 })

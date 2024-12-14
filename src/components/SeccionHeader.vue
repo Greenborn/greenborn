@@ -1,10 +1,18 @@
 <template>
 
-<div class="row h-100vh bg-green1  justify-content-center align-items-center">
-  <div class="col-auto text-center">
-    <div class="w-100">
-      <div class="text-gb"><TextEffect text="GREENBORN" /></div>
-      <div class="text-h-2">Software en Crecimiento</div>
+<div class="row h-100vh bg-back-0">
+  <div class="bg-green2">
+    <div class="col">
+      <div class="row h-100vh justify-content-center align-items-center">
+
+        <div class="col-auto text-center">
+          <div class="w-100">
+            <div class="text-gb"><TextEffect text="GREENBORN" /></div>
+            <div class="text-h-2">Software en Crecimiento</div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
@@ -23,5 +31,18 @@ import TextEffect from './genericos/TextEffect.vue'
 }
 .text-h-2{
   font-size: 5rem;
+}
+
+.bg-green2{
+    background-color: #011d00;
+    background: linear-gradient(180deg, rgba(1,29,0,0.5) 0%, rgba(1,29,0,1) 90%, rgba(1,29,0,1) 100%); 
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.bg-back-0{
+  background-color: #000;
 }
 </style>
