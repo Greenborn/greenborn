@@ -8,7 +8,7 @@
         </div>
       </div>
 
-      <div class="row justifify-content-center">
+      <div class="row p-5 justifify-content-center">
         <div class="col col-md-6 col-lg-4 col-xl-3"  v-for="s in trabajos" :key="s">
           <div class="row">
 
