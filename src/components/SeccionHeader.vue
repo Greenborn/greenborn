@@ -46,4 +46,8 @@ import TextEffect from './genericos/TextEffect.vue'
 .bg-back-0{
   background-color: #000;
 }
+
+#seccion-inicio{
+  padding-top: 5rem;
+}
 </style>

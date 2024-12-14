@@ -7,12 +7,12 @@
             </div>
         </div>
         
-        <div class="row mt-3">
+        <div class="row mt-3 disable-select">
             <div class="col" v-html="data.descripcion_organizacion">
             </div>
         </div>
 
-        <div class="row">
+        <div class="row disable-select">
             <div class="col">
                 <p>
                     <b>Tecnologias Usadas:&nbsp;</b>

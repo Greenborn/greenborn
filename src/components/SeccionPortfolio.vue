@@ -1,5 +1,5 @@
 <template>
-  <div class="row bg-green1 seccion h-100vh disable-select" id="seccion-portfolio">
+  <div class="row bg-green1 seccion h-100vh" id="seccion-portfolio">
     <div class="col">
 
       <div class="row p-5 justifify-content-center">
