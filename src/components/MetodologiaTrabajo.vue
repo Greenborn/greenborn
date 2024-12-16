@@ -18,22 +18,22 @@
                                 <img class="d-block w-100" :src="Reunion1"
                                     alt="Entrevista">
                                 <div class="carousel-caption d-none d-md-block">
-                                    <h5>Partimos de una entrevista para relevar la necesidad y comenzar a desarrollar la
-                                        idea.</h5>
+                                    <h3>Partimos de una entrevista para relevar la necesidad y comenzar a desarrollar la
+                                        idea.</h3>
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <img class="d-block w-100" :src="Notas3"
                                     alt="Presupuesto">
                                 <div class="carousel-caption d-none d-md-block">
-                                    <h5>A partir del relevamiento presupuestamos.</h5>
+                                    <h3>A partir del relevamiento presupuestamos.</h3>
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <img class="d-block w-100" :src="Notas4"
                                     alt="Creación de Entorno de Pruebas">
                                 <div class="carousel-caption d-none d-md-block">
-                                    <h5>Montamos un sitio de pruebas que mantendremos actualizado periodicamente.</h5>
+                                    <h3>Montamos un sitio de pruebas que mantendremos actualizado periodicamente.</h3>
                                 </div>
                             </div>
 
@@ -41,10 +41,10 @@
                                 <img class="d-block w-100" :src="Notas1"
                                     alt="Desarrollo">
                                 <div class="carousel-caption d-none d-md-block">
-                                    <h5>Definimos el Producto Mínimo Viable, el cual será la base que iremos expandiendo.
+                                    <h3>Definimos el Producto Mínimo Viable, el cual será la base que iremos expandiendo.
                                         <br>
                                         Definiremos un cronograma de reuniones donde coordinar los avances
-                                    </h5>
+                                    </h3>
                                 </div>
                             </div>
 
@@ -52,8 +52,8 @@
                                 <img class="d-block w-100" :src="Compu2"
                                     alt="Implementación">
                                 <div class="carousel-caption d-none d-md-block">
-                                    <h5>Definiremos un calendario de objetivos claros, requiriendo al pago al
-                                        cumplimentarlos.</h5>
+                                    <h3>Definiremos un calendario de objetivos claros, requiriendo al pago al
+                                        cumplimentarlos.</h3>
                                 </div>
                             </div>
                         </div>
@@ -89,5 +89,6 @@ import Compu2 from "../assets/img/compu2.jpeg"
 
 .carousel-caption{
     background-color: rgba(0, 0, 0, 0.9);
+    padding:1rem;
 }
 </style>
