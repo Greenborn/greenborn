@@ -1,0 +1,37 @@
+
+html, body{
+    background-color: #fff !important;
+}
+
+@font-face { font-family: 'BitstreamVeraMono'; src: url('assets/fnt/VeraMono.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+@font-face { font-family: 'BebasNeue'; src: url('assets/fnt/BebasNeue-Regular.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+@font-face { font-family: 'BelgianoSerif'; src: url('assets/fnt/BelgianoSerif2.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+
+
+.disable-select {
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+  pointer-events: none;
+}
+
+.h-100vh{
+    min-height: 100vh;
+}
+
+.bg-green1{
+    background-color: #011d00;
+    color: #fff;
+}
+
+.seccion{
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+}
+
+@media (max-width: 500px) {
+    .inverted-cursor {
+        display: none !important;
+    }
+}
