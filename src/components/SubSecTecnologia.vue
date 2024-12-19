@@ -1,6 +1,6 @@
 <template>
     <div class="row justify-content-center alig-items-center">
-        <div class="col-12 col-sm-10 col-md-6 col-lg-4 col-xl-3 mt-4 mb-5">
+        <div class="col-12 col-sm-10 col-md-6 col-lg-4 col-xl-3 mt-4 mb-5 text-center">
         
             <a href="{{data.url}}" target="_blank">
                 <img :src="data.img_src" class="img-tecno"/>
@@ -28,5 +28,13 @@ const props = defineProps([ "data" ])
 .img-tecno{
   width: 100%;
   height: auto;
+}
+
+@media (max-width: 500px) {
+    .img-tecno{
+        width: 100%;
+        max-width: 10rem;
+        height: auto;
+    }
 }
 </style>
