@@ -92,7 +92,7 @@ onMounted(async ()=>{
     position: fixed;
     z-index: 3000;
     top: 0px;
-    height: 100vh;
+    height: 100dvh;
     width: 100vw;
     right: .5rem;
     padding-left: 2rem;
@@ -116,8 +116,8 @@ onMounted(async ()=>{
 }
 
 .menu-check{
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     border: .2rem solid #fff;
     transform: rotate(45deg);
     margin: 1rem;
@@ -132,7 +132,7 @@ onMounted(async ()=>{
 .menu-label{
     color: #fff;
     font-weight: bold;
-    font-size: 2rem;
+    font-size: 1rem;
     padding: 1rem;
 }
 
@@ -149,7 +149,7 @@ onMounted(async ()=>{
     height: 100%;
     border: .15rem solid #fff;
     border-radius: .15rem;
-    right: 2.825rem;
+    right: 2.525rem;
 }
 
 @media (max-width: 500px) {
