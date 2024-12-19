@@ -4,11 +4,11 @@
         <div class="col-auto">
 
             <div class="row align-items-center menu-item" @click="abrirMenu()">
-                <div class="col">
-                    <div class="menu-label">{{ enlace_activo.label }}</div>
-                </div>
                 <div class="col-auto">
                     <div class="menu-check" :class="{ 'menu-check-active': enlace_activo.active }"></div>
+                </div>
+                <div class="col">
+                    <div class="menu-label">{{ enlace_activo.label }}</div>
                 </div>
             </div>
 
@@ -120,7 +120,8 @@ onMounted(async ()=>{
     height: 1.5rem;
     border: .2rem solid #fff;
     transform: rotate(45deg);
-    margin: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     background-color: #000;
     transition-duration: 1s;
 }
@@ -132,7 +133,7 @@ onMounted(async ()=>{
 .menu-label{
     color: #fff;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 2rem;
     padding: 1rem;
 }
 
@@ -149,12 +150,21 @@ onMounted(async ()=>{
     height: 100%;
     border: .15rem solid #fff;
     border-radius: .15rem;
-    right: 2.525rem;
+    right: 1.525rem;
 }
 
 @media (max-width: 500px) {
     .menu-flotante{
         background: #000;
+    }
+
+    .menu-linea-vert{
+        right: 1.525rem;
+    }
+
+    .menu-label{
+        font-size: 1rem;
+        padding: 1rem;
     }
 }
 </style>

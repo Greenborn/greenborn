@@ -35,3 +35,10 @@ onMounted(()=>{
 
 })
 </script>
+
+<style scoped>
+#canv {
+    top: -3rem;
+    position: absolute;
+}
+</style>
