@@ -2,8 +2,8 @@
   <div class="row bg-green1 seccion h-100vh" id="seccion-portfolio">
     <div class="col">
 
-      <div class="row p-5 justifify-content-center">
-        <div class="col col-md-6 col-lg-4 col-xl-3 p-2"  v-for="s in trabajos" :key="s">
+      <div class="row p-1 pt-5 pb-5 justifify-content-center">
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-2"  v-for="s in trabajos" :key="s">
 
           <SubSecPortfolio :data="s" />
 

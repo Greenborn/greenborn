@@ -17,8 +17,9 @@
 
                 <div class="cont_description">
                     <div class="row h-100 justify-content-center align-items-center">
-                        <div class="col-auto">
-                            <a :href="data.url" target="_blank">{{ data.titulo }}</a>
+                        <div class="col-auto text-center">
+                            <span class="titulo_sec_port">{{ data.titulo }}</span><br>
+                            <a :href="data.url" target="_blank">Visitar</a>
                         </div>
                     </div>
                 </div>
@@ -87,10 +88,14 @@ onMounted(() => {
     opacity: 1;
 }
 
-.cont_description a {
+.cont_description a, .titulo_sec_port {
     color: #fff;
     font-weight: bold;
     font-size: 1.5rem;
+}
+
+.cont_description a{
+    color: #00ec3b;
 }
 
 </style>

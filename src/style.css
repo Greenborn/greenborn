@@ -28,6 +28,7 @@ html, body{
 .seccion{
     padding-top: 6rem;
     padding-bottom: 6rem;
+    overflow-x: hidden;
 }
 
 @media (max-width: 500px) {
