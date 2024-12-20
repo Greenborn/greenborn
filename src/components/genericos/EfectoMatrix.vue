@@ -10,7 +10,7 @@ onMounted(()=>{
     const ctx = canvas.getContext('2d');
     
     const w = canvas.width = document.body.clientWidth;
-    const h = canvas.height = window.innerHeight;
+    const h = canvas.height = document.documentElement.clientHeight;
     const cols = Math.floor(w / 20) + 1;
     const ypos = Array(cols).fill(0);
 
@@ -35,3 +35,10 @@ onMounted(()=>{
 
 })
 </script>
+
+<style scoped>
+#canv {
+    top: -3rem;
+    position: absolute;
+}
+</style>
