@@ -19,6 +19,13 @@
                     <div class="row h-100 justify-content-center align-items-center">
                         <div class="col-auto text-center">
                             <span class="titulo_sec_port">{{ data.titulo }}</span><br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cont_description_over">
+                    <div class="row h-100 justify-content-center align-items-center">
+                        <div class="col-auto text-center">
                             <a :href="data.url" target="_blank">Visitar</a>
                         </div>
                     </div>
@@ -72,29 +79,32 @@ onMounted(() => {
     position: relative;
 }
 
-.cont_description {
+.cont_description, .cont_description_over {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 100%;
     background: rgba(0, 0, 0, 0.9);
     color: #fff;
     padding: 0.5rem 1rem;
-    opacity: 0;
     transition-duration: 1s;
 }
 
-.cont_description:hover{
+.cont_description_over{
+    height: 100%;
+    opacity: 0;
+}
+
+.cont_description_over:hover{
     opacity: 1;
 }
 
-.cont_description a, .titulo_sec_port {
+.cont_description_over a, .titulo_sec_port {
     color: #fff;
     font-weight: bold;
     font-size: 1.5rem;
 }
 
-.cont_description a{
+.cont_description_over a{
     color: #00ec3b;
 }
 
