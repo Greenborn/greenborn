@@ -20,6 +20,10 @@ html, body{
     min-height: 100dvh;
 }
 
+.ov-none{
+    overflow: hidden;
+}
+
 .bg-green1{
     background-color: #011d00;
     color: #fff;

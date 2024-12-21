@@ -68,6 +68,14 @@ const trabajos = ref([
     url: "https://mapa.greenborn.com.ar",
     imgs: ["mapa_1.webp", "mapa_2.webp", "mapa_3.webp"],
     tecnologias_usadas: ["Open Street Map", "Vue", "Express", "NodeJS", "MariaDB", "MariaDB", "Código Abierto"]
+  },
+  {
+    id: 5,
+    titulo: "Componente Vue Cursor Custom",
+    descripcion_organizacion: ``,
+    url: "https://www.npmjs.com/package/@greenborn/vue-custom-cursor",
+    imgs: ["vue_mouse_1.webp"],
+    tecnologias_usadas: []
   }
 ])
 </script>

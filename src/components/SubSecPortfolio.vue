@@ -1,5 +1,5 @@
 <template>
-<div class="card">
+<div class="card ov-none">
     <div class="card-body p-0">
 
         <div class="row">
