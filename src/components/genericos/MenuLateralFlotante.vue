@@ -1,7 +1,7 @@
 <template>
 <div class="menu-colapsed" >
     <div class="row justify-content-center">
-        <div class="col-auto">
+        <div class="col-auto bgm-colapsed pl-5 pr-5">
 
             <div class="row align-items-center menu-item" @click="abrirMenu()">
                 <div class="col-auto">
@@ -107,8 +107,11 @@ onMounted(async ()=>{
     top: 0px;
     width: 100vw;
     padding: 1rem;
-    background-color: #000;
     left: 0px;
+}
+
+.bgm-colapsed{
+    background-color: #000;
 }
 
 .menu-oculto{

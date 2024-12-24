@@ -24,19 +24,17 @@ import TextEffect from './genericos/TextEffect.vue'
 </script>
 
 <style>
-.text-gb{
-  font-family: "BebasNeue";
-  font-size: 20dvw;
-  line-height: 15dvw;
-  padding-top: 1dvw;
+#seccion-inicio{
+  height: 100svh;
 }
-.text-h-2{
-  font-size: 6dvw;
+
+.text-gb{
+  font-family: "BebasNeue";  
 }
 
 .bg-green2{
     background-color: #011d00;
-    background: linear-gradient(180deg, rgba(1,29,0,0.5) 0%, rgba(1,29,0,1) 90%, rgba(1,29,0,1) 100%); 
+    background: linear-gradient(180deg, rgba(1,29,0,0.8) 0%, rgba(1,29,0,1) 90%, rgba(1,29,0,1) 100%); 
     color: #fff;
     width: 100%;
     height: 100%;
@@ -47,7 +45,49 @@ import TextEffect from './genericos/TextEffect.vue'
   background-color: #000;
 }
 
-#seccion-inicio{
-  padding-top: 5rem;
+.text-gb{
+  font-size: 7dvw;
+  line-height: 5dvw;
+  padding-top: 1dvw;
+}
+
+.text-h-2{
+  font-size: 2.25dvw;
+}
+
+@media (max-width: 1360px) {
+  .text-gb{
+    font-size: 8dvw;
+    line-height: 6dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 2.5dvw;
+  }
+}
+
+@media (max-width: 900px) {
+  .text-gb{
+    font-size: 10dvw;
+    line-height: 7dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 3dvw;
+  }
+}
+
+@media (max-width: 500px) {
+  .text-gb{
+    font-size: 20svw;
+    line-height: 15dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 6dvw;
+  }
 }
 </style>

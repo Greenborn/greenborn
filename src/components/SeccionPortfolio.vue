@@ -55,7 +55,7 @@ const trabajos = ref([
     titulo: "Web Hosting Wordpress",
     descripcion_organizacion: `Proporciono servicios de hosting de Wordpress, actualización de plugins y temas, backups, etc. 
       por el momento para un cliente de un blog literario denominado Titanes de Cristal.`,
-    url: "https://titanesdecristal.com/",
+    url: "https://greenborn.com.ar/",
     imgs: ["wp_1.webp", "wp_2.webp"],
     tecnologias_usadas: ["WordPress", "Nginx", "PHP-FPM", "MariaDB"]
   },
@@ -68,6 +68,14 @@ const trabajos = ref([
     url: "https://mapa.greenborn.com.ar",
     imgs: ["mapa_1.webp", "mapa_2.webp", "mapa_3.webp"],
     tecnologias_usadas: ["Open Street Map", "Vue", "Express", "NodeJS", "MariaDB", "MariaDB", "Código Abierto"]
+  },
+  {
+    id: 5,
+    titulo: "Componente Vue Cursor Custom",
+    descripcion_organizacion: ``,
+    url: "https://www.npmjs.com/package/@greenborn/vue-custom-cursor",
+    imgs: ["vue_mouse_1.webp"],
+    tecnologias_usadas: []
   }
 ])
 </script>

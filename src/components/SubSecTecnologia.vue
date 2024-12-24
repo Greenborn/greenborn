@@ -3,7 +3,7 @@
         <div class="col-12 col-sm-10 col-md-6 col-lg-4 col-xl-3 mt-4 mb-5 text-center">
         
             <a href="{{data.url}}" target="_blank">
-                <img :src="data.img_src" class="img-tecno"/>
+                <img alt="Logo Tecnología" :src="data.img_src" class="img-tecno"/>
             </a>
         
         </div>
