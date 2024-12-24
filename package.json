@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@greenborn/vue-custom-cursor": "^0.1.9",
+    "@greenborn/vue-custom-cursor": "^0.1.10",
     "@primevue/themes": "^4.2.2",
     "axios": "^1.7.8",
     "jspdf": "^2.5.2",
