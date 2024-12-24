@@ -42,7 +42,6 @@ import TextEffect from './genericos/TextEffect.vue'
 }
 
 #seccion-inicio{
-  padding-top: 5rem;
 }
 
 @media (max-width: 500px) {
