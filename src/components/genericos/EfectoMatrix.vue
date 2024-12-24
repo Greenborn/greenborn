@@ -40,5 +40,6 @@ onMounted(()=>{
 #canv {
     top: -3rem;
     position: absolute;
+    transform: rotate(-180deg);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="row h-100vh seccion bg-green1 disable-select" id="seccion-servicios">
+  <div class="row h-100vh seccion bg-green1" id="seccion-servicios">
     <div class="col">
 
       <div class="row mt-5 justifify-content-center" v-for="s in listado_servicios" :key="s">
@@ -42,7 +42,7 @@ const listado_servicios = ref([
   "img_src": IconN5 }])
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .card{
   color: #000;
 }
