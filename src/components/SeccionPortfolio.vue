@@ -55,7 +55,7 @@ const trabajos = ref([
     titulo: "Web Hosting Wordpress",
     descripcion_organizacion: `Proporciono servicios de hosting de Wordpress, actualización de plugins y temas, backups, etc. 
       por el momento para un cliente de un blog literario denominado Titanes de Cristal.`,
-    url: "https://titanesdecristal.com/",
+    url: "https://greenborn.com.ar/",
     imgs: ["wp_1.webp", "wp_2.webp"],
     tecnologias_usadas: ["WordPress", "Nginx", "PHP-FPM", "MariaDB"]
   },

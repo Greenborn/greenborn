@@ -87,6 +87,7 @@ onMounted(() => {
     color: #fff;
     padding: 0.5rem 1rem;
     transition-duration: 1s;
+    margin-left: -15px;
 }
 
 .cont_description_over{
