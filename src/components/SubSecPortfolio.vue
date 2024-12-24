@@ -9,7 +9,7 @@
                     <div :id="'carrusel_'+ data.id" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
                             <div class="carousel-item" :class="{'active': index == 0}" v-for="(item, index) in data.imgs" :key="index">
-                                <img class="img-fluid" :src="'/img/portfolio/'+item" />
+                                <img class="img-fluid" alt="Imagen Portfolio" :src="'/img/portfolio/'+item" />
                             </div>
                         </div>
                     </div>
@@ -34,25 +34,6 @@
             </div>
         </div>
 
-        <!--<div class="row">
-            
-        </div>
-        
-        <div class="row mt-3 disable-select">
-            <div class="col" v-html="data.descripcion_organizacion">
-            </div>
-        </div>
-
-        <div class="row disable-select">
-            <div class="col">
-                <p>
-                    <b>Tecnologias Usadas:&nbsp;</b>
-                    <span class="badge badge-pill ml-1  badge-info" 
-                        v-for="(item_tec, index_tec) in data.tecnologias_usadas" :key="index_tec">{{ item_tec }}</span>
-                </p>
-            </div>
-        </div>
-        -->
     </div>
 </div>
 </template>

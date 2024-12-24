@@ -14,7 +14,7 @@
           <div class="col-auto d-flex flex-row justify-content-center alig-items-center">
             <div class="row">
               <div class="col" v-for="r in listado_contactos" :key="r">
-                    <a :href="r.e" target="_blank"><img :src="r.i" class="img-contact"/></a>
+                    <a :href="r.e" target="_blank"><img :src="r.i" :alt="r.t" class="img-contact"/></a>
               </div>
             </div>
           </div>
