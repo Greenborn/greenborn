@@ -41,9 +41,6 @@ import TextEffect from './genericos/TextEffect.vue'
   background-color: #000;
 }
 
-#seccion-inicio{
-}
-
 @media (max-width: 500px) {
   .text-gb{
     font-size: 20dvw;

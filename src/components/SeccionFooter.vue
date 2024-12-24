@@ -10,8 +10,6 @@
       <div class="col-12 col-sm-6">
         <div class="row">
           <div class="col"></div>
-
-          <div class="col-auto disable-select"><p>Nuestras redes:</p></div>
           
           <div class="col-auto d-flex flex-row justify-content-center alig-items-center">
             <div class="row">
@@ -66,5 +64,7 @@ const listado_contactos = ref([
 
 .app-footer{
   border-top: .1rem solid #333;
+  background: #000;
+  color: #fff;
 }
 </style>
