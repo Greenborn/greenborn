@@ -25,13 +25,7 @@ import TextEffect from './genericos/TextEffect.vue'
 
 <style>
 .text-gb{
-  font-family: "BebasNeue";
-  font-size: 20dvw;
-  line-height: 15dvw;
-  padding-top: 1dvw;
-}
-.text-h-2{
-  font-size: 6dvw;
+  font-family: "BebasNeue";  
 }
 
 .bg-green2{
@@ -49,5 +43,53 @@ import TextEffect from './genericos/TextEffect.vue'
 
 #seccion-inicio{
   padding-top: 5rem;
+}
+
+@media (max-width: 500px) {
+  .text-gb{
+    font-size: 20dvw;
+    line-height: 15dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 6dvw;
+  }
+}
+
+@media (max-width: 900px) {
+  .text-gb{
+    font-size: 10dvw;
+    line-height: 7dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 3dvw;
+  }
+}
+
+@media (max-width: 1360px) {
+  .text-gb{
+    font-size: 8dvw;
+    line-height: 6dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 2.5dvw;
+  }
+}
+
+@media (min-width: 1360px) {
+  .text-gb{
+    font-size: 7dvw;
+    line-height: 5dvw;
+    padding-top: 1dvw;
+  }
+
+  .text-h-2{
+    font-size: 2.25dvw;
+  }
 }
 </style>
