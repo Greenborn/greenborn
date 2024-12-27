@@ -76,6 +76,14 @@ const trabajos = ref([
     url: "https://www.npmjs.com/package/@greenborn/vue-custom-cursor",
     imgs: ["vue_mouse_1.webp"],
     tecnologias_usadas: []
+  },
+  {
+    id: 5,
+    titulo: "Chat Público",
+    descripcion_organizacion: ``,
+    url: "https://chat.greenborn.com.ar/",
+    imgs: ["chat_1.webp"],
+    tecnologias_usadas: []
   }
 ])
 </script>
