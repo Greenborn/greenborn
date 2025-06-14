@@ -9,6 +9,7 @@
 <CustomCursor :config='{ highlighted_tags: [ "a", "button", ".text-res-1", ".circ-met", ".text-effect", ".menu-item" ], 
                             transform_time: ".2s", click_effect_enabled: false }' />
 <MenuLateralFlotante />
+<WhatsAppWidget phone="542494243387"/>
 </template>
 
 <script setup>
