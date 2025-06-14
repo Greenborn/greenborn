@@ -33,6 +33,8 @@ import Card from 'primevue/card';
 import { VueCustomCursor } from '@greenborn/vue-custom-cursor'; 
 import '@greenborn/vue-custom-cursor/dist/library.css';
 
+import { VueWhatsAppWidget } from '@greenborn/vue3-whatsapp-widget'
+
 createApp(App)
 .component("Card", Card)
 .component("Stepper", Stepper)
@@ -58,6 +60,7 @@ createApp(App)
 .component("AccordionContent", AccordionContent)
 .use(createPinia())
 .use(VueCustomCursor)
+.use(VueWhatsAppWidget)
 .use(PrimeVue, {
     theme: {
         preset: Aura

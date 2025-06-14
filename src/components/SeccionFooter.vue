@@ -4,7 +4,7 @@
     
     <div class="row justify-content-center alig-items-center">
       <div class="col-12 col-sm-6 text-center disable-select">
-        <p><span class="copyleft">&copy;</span> 2024 Greenborn - Desarrollo de Software</p>
+        <p><span class="copyleft">&copy;</span> 2025 Greenborn - Desarrollo de Software</p>
       </div>
 
       <div class="col-12 col-sm-6">
