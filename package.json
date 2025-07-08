@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@greenborn/vue-custom-cursor": "^0.1.11",
-    "@greenborn/vue3-whatsapp-widget": "^0.1.7",
+    "@greenborn/vue3-whatsapp-widget": "^0.1.9",
     "@primevue/themes": "^4.2.2",
     "axios": "^1.7.8",
     "jspdf": "^2.5.2",
