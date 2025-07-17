@@ -15,7 +15,7 @@
         <button class="quick-reply" @click="openWhatsApp('542494279833', 'Hola, quiero información sobre desarrollo de APPs')">
           Desarrollo de APP's
         </button>
-        <button class="quick-reply" @click="openWhatsApp('542494067516', 'Hola, quiero información sobre testing')">
+        <button class="quick-reply" @click="openWhatsApp('54249467516', 'Hola, quiero información sobre testing')">
           Testing
         </button>
       </div>
@@ -26,24 +26,38 @@
         <div v-for="(msg, idx) in messages" :key="idx" :class="msg.from">
           {{ msg.text }}
         </div>
+        <div v-if="loading" class="bot loading">
+          <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
       </div>
       <form class="chatbot-input" @submit.prevent="sendMessage">
-        <input v-model="input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" />
-        <button type="submit">Enviar</button>
+        <input v-model="input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" :disabled="loading" />
+        <button type="submit" :disabled="loading">Enviar</button>
       </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 
 const open = ref(false)
 const input = ref('')
+const loading = ref(false)
+const userId = ref()
 const messages = ref([
   { from: 'bot', text: '¡Hola! ¿En qué puedo ayudarte?' }
 ])
 const messagesEnd = ref(null)
+
+onMounted(() => {
+  // Generar userId aleatorio
+  userId.value = 'user_' + Math.random().toString(36).substr(2)
+})
 
 function toggleChat() {
   open.value = !open.value
@@ -54,25 +68,50 @@ function toggleChat() {
   })
 }
 
-function sendMessage() {
-  if (!input.value.trim()) return
-  messages.value.push({ from: 'user', text: input.value })
-  const userMsg = input.value.toLowerCase()
+async function sendMessage() {
+  if (!input.value.trim() || loading.value) return
+  
+  const userMessage = input.value
+  messages.value.push({ from: 'user', text: userMessage })
   input.value = ''
-  setTimeout(() => {
-    if (userMsg.includes('hola')) {
-      messages.value.push({ from: 'bot', text: '¡Hola! ¿Cómo estás?' })
-    } else if (userMsg.includes('precio')) {
-      messages.value.push({ from: 'bot', text: 'Para información de precios, por favor visita nuestra sección de servicios.' })
-    } else {
-      messages.value.push({ from: 'bot', text: 'Lo siento, soy un bot simple. ¿Puedes reformular tu pregunta?' })
+  loading.value = true
+  
+  nextTick(() => {
+    if (messagesEnd.value) {
+      messagesEnd.value.scrollTop = messagesEnd.value.scrollHeight
     }
+  })
+
+  try {
+    const response = await fetch('http://localhost:6789/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: userId.value,
+        message: userMessage,
+        botName: 'bugon'
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Error en la petición')
+    }
+
+    const data = await response.json()
+    messages.value.push({ from: 'bot', text: data.response })
+  } catch (error) {
+    console.error('Error al enviar mensaje:', error)
+    messages.value.push({ from: 'bot', text: 'Lo siento, hubo un error al procesar tu mensaje. ¿Puedes intentar de nuevo?' })
+  } finally {
+    loading.value = false
     nextTick(() => {
       if (messagesEnd.value) {
         messagesEnd.value.scrollTop = messagesEnd.value.scrollHeight
       }
     })
-  }, 700)
+  }
 }
 
 function openWhatsApp(phone, text) {
@@ -149,6 +188,34 @@ function openWhatsApp(phone, text) {
   color: #1976d2;
   margin-bottom: 8px;
 }
+.loading-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2e7d32;
+  animation: loading 1.4s infinite ease-in-out;
+}
+.loading-dots span:nth-child(1) {
+  animation-delay: 0.32s;
+}
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+@keyframes loading {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 .chatbot-input {
   display: flex;
   border-top: 1px solid #eee;
@@ -163,6 +230,10 @@ function openWhatsApp(phone, text) {
   font-size: 1rem;
   background: #f1f1f1;
 }
+.chatbot-input input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .chatbot-input button {
   margin-left: 8px;
   background: #2e7d32;
@@ -174,8 +245,12 @@ function openWhatsApp(phone, text) {
   font-size: 1rem;
   transition: background 0.2s;
 }
-.chatbot-input button:hover {
+.chatbot-input button:hover:not(:disabled) {
   background: #388e3c;
+}
+.chatbot-input button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .chatbot-quick-replies {
   display: flex;
