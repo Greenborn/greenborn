@@ -5,7 +5,7 @@
     </button>
     <div v-if="open" class="chatbot-window">
       <div class="chatbot-header">
-        <span>ChatBot</span>
+        <span>Bugon - Chatbot</span>
         <button class="close-btn" @click="toggleChat">×</button>
       </div>
       <div class="chatbot-messages" ref="messagesEnd">
