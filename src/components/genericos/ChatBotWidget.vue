@@ -8,6 +8,20 @@
         <span>Bugon - Chatbot</span>
         <button class="close-btn" @click="toggleChat">×</button>
       </div>
+      <div class="chatbot-note">
+        💬 ¿Necesitas ayuda personalizada? Chatea con un humano por WhatsApp
+      </div>
+      <div class="chatbot-quick-replies">
+        <button class="quick-reply" @click="openWhatsApp('542494279833', 'Hola, quiero información sobre desarrollo de APPs')">
+          Desarrollo de APP's
+        </button>
+        <button class="quick-reply" @click="openWhatsApp('542494067516', 'Hola, quiero información sobre testing')">
+          Testing
+        </button>
+      </div>
+      <div class="chatbot-note-bot">
+        🤖 Para consultas rápidas puedes usar nuestro chatbot.
+      </div>
       <div class="chatbot-messages" ref="messagesEnd">
         <div v-for="(msg, idx) in messages" :key="idx" :class="msg.from">
           {{ msg.text }}
@@ -59,6 +73,11 @@ function sendMessage() {
       }
     })
   }, 700)
+}
+
+function openWhatsApp(phone, text) {
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+  window.open(url, '_blank')
 }
 </script>
 
@@ -157,5 +176,38 @@ function sendMessage() {
 }
 .chatbot-input button:hover {
   background: #388e3c;
+}
+.chatbot-quick-replies {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px 0 0 0;
+}
+.quick-reply {
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.quick-reply:hover {
+  background: #128c7e;
+}
+.chatbot-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  padding: 8px 12px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #eee;
+}
+.chatbot-note-bot {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #1976d2;
+  padding: 8px 12px 0 12px;
 }
 </style> 
