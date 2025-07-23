@@ -83,7 +83,8 @@ async function sendMessage() {
   })
 
   try {
-    const response = await fetch('http://localhost:6789/api/chat', {
+    const apiUrl = import.meta.env.VITE_CHATBOT_API_URL
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
