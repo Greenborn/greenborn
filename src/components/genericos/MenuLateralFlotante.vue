@@ -57,16 +57,9 @@
 
       <!-- Footer del menú -->
       <div class="menu-footer">
-        <div class="menu-social">
-          <a href="https://www.facebook.com/Greenborn-100550959124104" target="_blank" class="social-link">
-            <i class="fab fa-facebook"></i>
-          </a>
-          <a href="https://www.instagram.com/greenborn_soft/" target="_blank" class="social-link">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="https://www.linkedin.com/company/greenborn" target="_blank" class="social-link">
-            <i class="fab fa-linkedin"></i>
-          </a>
+        <div class="menu-brand">
+          <span class="brand-text">Greenborn</span>
+          <span class="brand-subtitle">Software en Crecimiento</span>
         </div>
       </div>
 
@@ -79,7 +72,7 @@
 import { ref, onMounted } from 'vue'
 
 const desplegado = ref(false)
-const isInHeader = ref(true)
+const isInHeader = ref(false) // Cambiar a false para que se muestre en el header
 
 const enlaces = ref([
   { label: 'Inicio', active: true, section_id: "seccion-inicio", element: null },
@@ -87,6 +80,7 @@ const enlaces = ref([
   { label: 'Metodología', active: false, section_id: "seccion-metodologia", element: null },
   { label: 'Portfolio', active: false, section_id: "seccion-portfolio", element: null },
   { label: 'Tecnologías', active: false, section_id: "seccion-tecnologias", element: null },
+  { label: 'Contacto', active: false, section_id: "seccion-contacto", element: null },
 ])
 
 const enlace_activo = ref(enlaces.value[0])
@@ -97,7 +91,8 @@ function getIconForSection(sectionId) {
     'seccion-servicios': 'fas fa-cogs',
     'seccion-metodologia': 'fas fa-tasks',
     'seccion-portfolio': 'fas fa-briefcase',
-    'seccion-tecnologias': 'fas fa-code'
+    'seccion-tecnologias': 'fas fa-code',
+    'seccion-contacto': 'fas fa-envelope'
   }
   return icons[sectionId] || 'fas fa-circle'
 }
@@ -371,32 +366,30 @@ onMounted(async () => {
 .menu-footer {
   padding: 2rem;
   border-top: 1px solid var(--border-light);
+  text-align: center;
 }
 
-.menu-social {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+.menu-footer .menu-brand {
+  text-align: center;
 }
 
-.social-link {
-  width: 40px;
-  height: 40px;
-  background: var(--bg-gradient-card);
-  border: 1px solid var(--border-light);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.menu-footer .brand-text {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.menu-footer .brand-subtitle {
+  display: block;
   color: var(--text-gray);
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.social-link:hover {
-  color: var(--primary-green);
-  border-color: var(--primary-green);
-  transform: translateY(-2px);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* Responsive */
