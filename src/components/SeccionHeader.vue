@@ -309,8 +309,8 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 
 .floating-elements {
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 500px;
 }
 
 .floating-card {
@@ -324,6 +324,12 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   box-shadow: var(--shadow-card);
   transition: var(--transition-medium);
   animation: float 6s ease-in-out infinite;
+  width: 140px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .floating-card:hover {
@@ -332,20 +338,22 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 }
 
 .card-1 {
-  top: 0;
-  left: 0;
+  top: 20px;
+  left: 20px;
   animation-delay: 0s;
 }
 
 .card-2 {
   top: 50%;
-  right: 0;
+  right: 20px;
+  transform: translateY(-50%);
   animation-delay: 2s;
 }
 
 .card-3 {
-  bottom: 0;
+  bottom: 20px;
   left: 50%;
+  transform: translateX(-50%);
   animation-delay: 4s;
 }
 
@@ -355,9 +363,10 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 }
 
 .card-text {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-light);
+  line-height: 1.2;
 }
 
 @keyframes float {
@@ -400,8 +409,13 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   }
   
   .floating-elements {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
+  }
+  
+  .floating-card {
+    width: 120px;
+    height: 100px;
   }
 }
 
@@ -411,12 +425,14 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   }
   
   .floating-elements {
-    width: 250px;
-    height: 250px;
+    width: 320px;
+    height: 320px;
   }
   
   .floating-card {
-    padding: 1rem;
+    width: 100px;
+    height: 90px;
+    padding: 0.8rem;
   }
   
   .card-icon {
@@ -424,7 +440,7 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   }
   
   .card-text {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -434,12 +450,14 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   }
   
   .floating-elements {
-    width: 200px;
-    height: 200px;
+    width: 280px;
+    height: 280px;
   }
   
   .floating-card {
-    padding: 0.8rem;
+    width: 90px;
+    height: 80px;
+    padding: 0.6rem;
   }
   
   .card-icon {
@@ -447,7 +465,7 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   }
   
   .card-text {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
   }
 }
 </style>

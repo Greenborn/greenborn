@@ -1,5 +1,5 @@
 <template>
-<div class="menu-colapsed" >
+<div class="menu-colapsed" :class="{ 'menu-hidden': isInHeader }">
     <div class="row justify-content-center">
         <div class="col-auto bgm-colapsed pl-5 pr-5">
 
@@ -39,6 +39,7 @@
 import { ref, onMounted } from 'vue'
 
 const desplegado = ref(false)
+const isInHeader = ref(true) // Comenzar oculto
 
 const enlaces = ref([
     { label: 'Inicio', active: true, section_id:"seccion-inicio",  element: null },
@@ -70,7 +71,30 @@ onMounted(async ()=>{
         enlaces.value[i].element = elemento
     }
 
+    // Verificar posición inicial
+    const checkHeaderPosition = () => {
+        const headerSection = document.getElementById('seccion-inicio')
+        if (headerSection) {
+            const headerTop = headerSection.offsetTop
+            const headerBottom = headerTop + headerSection.offsetHeight
+            const scrollY = window.scrollY + window.innerHeight
+            
+            // Si estamos en la sección del header, ocultar el menú
+            if (scrollY > headerTop && window.scrollY < headerBottom) {
+                isInHeader.value = true
+            } else {
+                isInHeader.value = false
+            }
+        }
+    }
+
+    // Verificar posición inicial al cargar
+    checkHeaderPosition()
+
     window.addEventListener('scroll', function(e) {
+        checkHeaderPosition()
+
+        // Actualizar enlaces activos
         for (let i=0; i < enlaces.value.length; i++){
             if (window.scrollY > enlaces.value[i].element.offsetTop - 100){
                 enlaces.value[i].active = true
@@ -108,6 +132,13 @@ onMounted(async ()=>{
     width: 100vw;
     padding: 1rem;
     left: 0px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.menu-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
 }
 
 .bgm-colapsed{
