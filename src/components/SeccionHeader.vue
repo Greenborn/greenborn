@@ -2,7 +2,7 @@
 <div class="header-modern" id="seccion-inicio">
   <EfectoMatrix />
   <div class="header-content">
-    <div class="container-modern">
+    <div class="header-container">
       <div class="header-grid">
         
         <!-- Contenido principal -->
@@ -73,6 +73,9 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   position: relative;
   background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 50%, var(--bg-dark) 100%);
   overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .header-content {
@@ -81,6 +84,15 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   height: 100%;
   display: flex;
   align-items: center;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.header-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .header-grid {
@@ -89,6 +101,7 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   gap: 4rem;
   align-items: center;
   height: 100%;
+  width: 100%;
 }
 
 .header-main {
