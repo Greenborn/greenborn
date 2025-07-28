@@ -72,15 +72,32 @@ const props = defineProps([ "data" ])
 .tech-image {
   width: 80px;
   height: 80px;
-  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: brightness(0.8) contrast(1.2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   opacity: 0.9;
   transition: var(--transition-medium);
 }
 
+/* Filtros específicos para iconos problemáticos */
+.tech-image[alt="Maria DB"] {
+  filter: brightness(1.5) contrast(1.8) hue-rotate(200deg) saturate(2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.tech-image[alt="Django"] {
+  filter: brightness(0.9) contrast(1.3) invert(0.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
 .tech-card-modern:hover .tech-image {
   opacity: 1;
-  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(140deg);
+  filter: brightness(1) contrast(1.3) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
   transform: scale(1.05);
+}
+
+.tech-card-modern:hover .tech-image[alt="Maria DB"] {
+  filter: brightness(1.8) contrast(2) hue-rotate(200deg) saturate(3) drop-shadow(0 4px 8px rgba(0, 150, 255, 0.4));
+}
+
+.tech-card-modern:hover .tech-image[alt="Django"] {
+  filter: brightness(1.1) contrast(1.4) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
 }
 
 .tech-info {
