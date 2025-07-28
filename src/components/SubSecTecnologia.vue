@@ -83,7 +83,7 @@ const props = defineProps([ "data" ])
 }
 
 .tech-image[alt="Django"] {
-  filter: brightness(0.9) contrast(1.3) invert(0.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: brightness(0.9) contrast(1.3) blur(0.5px) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .tech-card-modern:hover .tech-image {
@@ -97,7 +97,7 @@ const props = defineProps([ "data" ])
 }
 
 .tech-card-modern:hover .tech-image[alt="Django"] {
-  filter: brightness(1.1) contrast(1.4) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
+  filter: brightness(1.1) contrast(1.4) blur(0.3px) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
 }
 
 .tech-info {
