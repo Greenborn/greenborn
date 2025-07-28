@@ -91,13 +91,20 @@ const methodologySteps = ref([
   {
     id: 5,
     number: 5,
+    title: "Testing",
+    description: "Realizamos pruebas exhaustivas del sistema para garantizar su funcionamiento correcto, rendimiento óptimo y experiencia de usuario satisfactoria.",
+    icon: "fas fa-vial"
+  },
+  {
+    id: 6,
+    number: 6,
     title: "Implementación",
     description: "Con cada objetivo completado y validado, realizamos la instalación del sistema en su ubicación definitiva.",
     icon: "fas fa-rocket"
   },
   {
-    id: 6,
-    number: 6,
+    id: 7,
+    number: 7,
     title: "Soporte",
     description: "Brindamos soporte post-venta para dudas sobre el uso, nuevas funcionalidades o corrección de bugs.",
     icon: "fas fa-headset"
