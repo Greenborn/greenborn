@@ -1,6 +1,5 @@
 <template>
 <SeccionHeader />
-<SeccionNosotros />
 <SeccionServicios />
 <MetodologiaTrabajo />
 <SeccionPortfolio />
@@ -34,7 +33,6 @@ import SeccionContacto from './components/SeccionContacto.vue'
 import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'
 import MetodologiaTrabajo from './components/MetodologiaTrabajo.vue'
-import SeccionNosotros from './components/SeccionNosotros.vue'
 import MenuLateralFlotante from './components/genericos/MenuLateralFlotante.vue'
 </script>
 
