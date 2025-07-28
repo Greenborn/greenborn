@@ -85,7 +85,7 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 0 2rem;
+  padding: 0;
 }
 
 .header-container {

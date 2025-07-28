@@ -1,23 +1,32 @@
 <template>
-<canvas width="500" height="200" id="canv" />
+<canvas id="canv" />
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
+
+let animationInterval;
 
 onMounted(()=>{
     const canvas = document.getElementById('canv');
     const ctx = canvas.getContext('2d');
     
-    const w = canvas.width = window.innerWidth;
-    const h = canvas.height = window.innerHeight;
+    const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    
+    const w = canvas.width;
+    const h = canvas.height;
     const cols = Math.floor(w / 25) + 1;
     const ypos = Array(cols).fill(0);
 
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, w, h);
 
-    setInterval(()=>{
+    animationInterval = setInterval(()=>{
         ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         ctx.fillRect(0, 0, w, h);
         
@@ -33,6 +42,14 @@ onMounted(()=>{
         });
     }, 100);
 
+    window.addEventListener('resize', resizeCanvas);
+})
+
+onUnmounted(() => {
+    if (animationInterval) {
+        clearInterval(animationInterval);
+    }
+    window.removeEventListener('resize', resizeCanvas);
 })
 </script>
 
@@ -41,9 +58,11 @@ onMounted(()=>{
     top: 0;
     left: 0;
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     transform: rotate(-180deg);
     z-index: 1;
+    margin: 0;
+    padding: 0;
 }
 </style>
