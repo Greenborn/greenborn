@@ -1,203 +1,436 @@
 <template>
-<div class="menu-colapsed" :class="{ 'menu-hidden': isInHeader }">
-    <div class="row justify-content-center">
-        <div class="col-auto bgm-colapsed pl-5 pr-5">
+  <!-- Menú flotante moderno -->
+  <div class="modern-menu" :class="{ 'menu-hidden': isInHeader }">
+    
+    <!-- Botón hamburguesa -->
+    <button 
+      class="menu-toggle" 
+      :class="{ 'menu-toggle-active': desplegado }"
+      @click="toggleMenu"
+      aria-label="Toggle menu"
+    >
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
 
-            <div class="row align-items-center menu-item" @click="abrirMenu()">
-                <div class="col-auto">
-                    <div class="menu-check" :class="{ 'menu-check-active': enlace_activo.active }"></div>
-                </div>
-                <div class="col">
-                    <div class="menu-label">{{ enlace_activo.label }}</div>
-                </div>
-            </div>
+    <!-- Overlay del menú -->
+    <div 
+      class="menu-overlay" 
+      :class="{ 'overlay-active': desplegado }"
+      @click="closeMenu"
+    ></div>
 
+    <!-- Panel del menú -->
+    <div class="menu-panel" :class="{ 'panel-active': desplegado }">
+      
+      <!-- Header del menú -->
+      <div class="menu-header">
+        <div class="menu-brand">
+          <span class="brand-text">Greenborn</span>
+          <span class="brand-subtitle">Software en Crecimiento</span>
         </div>
-    </div>
-</div>
+      </div>
 
-<div class="menu-flotante" :class="{ 'menu-oculto':!desplegado }">
-    <div class="row h-100vh justify-content-center align-items-center">
-        <div class="col-auto">
-            <div class="menu-linea-vert"></div>
+      <!-- Navegación -->
+      <nav class="menu-navigation">
+        <ul class="nav-list">
+          <li 
+            v-for="enlace in enlaces" 
+            :key="enlace.section_id"
+            class="nav-item"
+            :class="{ 'nav-item-active': enlace.active }"
+          >
+            <button 
+              class="nav-link"
+              @click="clickEnlace(enlace)"
+            >
+              <span class="nav-icon">
+                <i :class="getIconForSection(enlace.section_id)"></i>
+              </span>
+              <span class="nav-text">{{ enlace.label }}</span>
+              <span class="nav-indicator"></span>
+            </button>
+          </li>
+        </ul>
+      </nav>
 
-            <div class="row align-items-center menu-item" v-for="enlace in enlaces" :key="enlace" @click="clickEnlace(enlace)">
-                <div class="col text-right">
-                    <div class="menu-label">{{ enlace.label }}</div>
-                </div>
-                <div class="col-auto">
-                    <div class="menu-check" :class="{ 'menu-check-active': enlace.active }"></div>
-                </div>
-            </div>
-
+      <!-- Footer del menú -->
+      <div class="menu-footer">
+        <div class="menu-social">
+          <a href="https://www.facebook.com/Greenborn-100550959124104" target="_blank" class="social-link">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a href="https://www.instagram.com/greenborn_soft/" target="_blank" class="social-link">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://www.linkedin.com/company/greenborn" target="_blank" class="social-link">
+            <i class="fab fa-linkedin"></i>
+          </a>
         </div>
+      </div>
+
     </div>
-</div>
+
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 
 const desplegado = ref(false)
-const isInHeader = ref(true) // Comenzar oculto
+const isInHeader = ref(true)
 
 const enlaces = ref([
-    { label: 'Inicio', active: true, section_id:"seccion-inicio",  element: null },
-    { label: 'Servicios', active: false, section_id:"seccion-servicios",  element: null  },
-    { label: 'Metodología', active: false, section_id:"seccion-metodologia", element: null  },
-    { label: 'Portfolio', active: false, section_id:"seccion-portfolio",  element: null  },
-    { label: 'Tecnologías', active: false, section_id:"seccion-tecnologias",  element: null  },
+  { label: 'Inicio', active: true, section_id: "seccion-inicio", element: null },
+  { label: 'Servicios', active: false, section_id: "seccion-servicios", element: null },
+  { label: 'Metodología', active: false, section_id: "seccion-metodologia", element: null },
+  { label: 'Portfolio', active: false, section_id: "seccion-portfolio", element: null },
+  { label: 'Tecnologías', active: false, section_id: "seccion-tecnologias", element: null },
 ])
+
 const enlace_activo = ref(enlaces.value[0])
 
-function abrirMenu(){
-    desplegado.value = true
+function getIconForSection(sectionId) {
+  const icons = {
+    'seccion-inicio': 'fas fa-home',
+    'seccion-servicios': 'fas fa-cogs',
+    'seccion-metodologia': 'fas fa-tasks',
+    'seccion-portfolio': 'fas fa-briefcase',
+    'seccion-tecnologias': 'fas fa-code'
+  }
+  return icons[sectionId] || 'fas fa-circle'
 }
 
-function clickEnlace( enlace ){
-    desplegado.value = false
-    for (let i=0; i < enlaces.value.length; i++){
-        enlaces.value[i].active = false
-    }
-    enlace.active = true
-    enlace_activo.value = enlace
-    enlace.element.scrollIntoView({ behavior: 'smooth' })
+function toggleMenu() {
+  desplegado.value = !desplegado.value
+  if (desplegado.value) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
 }
 
-onMounted(async ()=>{
-    for (let i=0; i < enlaces.value.length; i++){
-        const elemento = document.getElementById(enlaces.value[i].section_id)
-        enlaces.value[i].element = elemento
-    }
+function closeMenu() {
+  desplegado.value = false
+  document.body.style.overflow = ''
+}
 
-    // Verificar posición inicial
-    const checkHeaderPosition = () => {
-        const headerSection = document.getElementById('seccion-inicio')
-        if (headerSection) {
-            const headerTop = headerSection.offsetTop
-            const headerBottom = headerTop + headerSection.offsetHeight
-            const scrollY = window.scrollY + window.innerHeight
-            
-            // Si estamos en la sección del header, ocultar el menú
-            if (scrollY > headerTop && window.scrollY < headerBottom) {
-                isInHeader.value = true
-            } else {
-                isInHeader.value = false
-            }
-        }
-    }
+function clickEnlace(enlace) {
+  closeMenu()
+  for (let i = 0; i < enlaces.value.length; i++) {
+    enlaces.value[i].active = false
+  }
+  enlace.active = true
+  enlace_activo.value = enlace
+  enlace.element.scrollIntoView({ behavior: 'smooth' })
+}
 
-    // Verificar posición inicial al cargar
+onMounted(async () => {
+  for (let i = 0; i < enlaces.value.length; i++) {
+    const elemento = document.getElementById(enlaces.value[i].section_id)
+    enlaces.value[i].element = elemento
+  }
+
+  const checkHeaderPosition = () => {
+    const headerSection = document.getElementById('seccion-inicio')
+    if (headerSection) {
+      const headerTop = headerSection.offsetTop
+      const headerBottom = headerTop + headerSection.offsetHeight
+      const scrollY = window.scrollY + window.innerHeight
+      
+      if (scrollY > headerTop && window.scrollY < headerBottom) {
+        isInHeader.value = true
+      } else {
+        isInHeader.value = false
+      }
+    }
+  }
+
+  checkHeaderPosition()
+
+  window.addEventListener('scroll', function(e) {
     checkHeaderPosition()
 
-    window.addEventListener('scroll', function(e) {
-        checkHeaderPosition()
-
-        // Actualizar enlaces activos
-        for (let i=0; i < enlaces.value.length; i++){
-            if (window.scrollY > enlaces.value[i].element.offsetTop - 100){
-                enlaces.value[i].active = true
-                enlace_activo.value = enlaces.value[i]
-            }else{
-                enlaces.value[i].active = false
-            }
-        }
-    })
+    for (let i = 0; i < enlaces.value.length; i++) {
+      if (window.scrollY > enlaces.value[i].element.offsetTop - 100) {
+        enlaces.value[i].active = true
+        enlace_activo.value = enlaces.value[i]
+      } else {
+        enlaces.value[i].active = false
+      }
+    }
+  })
 })
 </script>
 
 <style scoped>
-.menu-flotante, .menu-colapsed{
-    transition-duration: .3s;
-}
-
-.menu-flotante{
-    position: fixed;
-    z-index: 3000;
-    top: 0px;
-    height: 100dvh;
-    width: 100vw;
-    right: .5rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    background: rgb(1,29,0);
-    background: linear-gradient(90deg, rgba(1,29,0,0) 0%, rgba(1,29,0,0) 27%, rgba(0,0,0,1) 31%, rgba(0,0,0,1) 68%, rgba(1,29,0,0) 72%, rgba(1,29,0,0) 100%);
-}
-
-.menu-colapsed{
-    position: fixed;
-    z-index: 3000;
-    top: 0px;
-    width: 100vw;
-    padding: 1rem;
-    left: 0px;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+.modern-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 3000;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .menu-hidden {
-    opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
 }
 
-.bgm-colapsed{
-    background-color: #000;
+/* Botón hamburguesa */
+.menu-toggle {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: var(--bg-gradient-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  z-index: 3001;
 }
 
-.menu-oculto{
-    transform: scale(1,0);
+.menu-toggle:hover {
+  transform: scale(1.05);
+  border-color: var(--primary-green);
+  box-shadow: var(--shadow-hover);
 }
 
-.menu-check{
-    width: 1.5rem;
-    height: 1.5rem;
-    border: .2rem solid #fff;
-    transform: rotate(45deg);
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    background-color: #000;
-    transition-duration: 1s;
+.menu-toggle-active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
 }
 
-.menu-check-active{
-    background-color: #fff;
+.menu-toggle-active .hamburger-line:nth-child(2) {
+  opacity: 0;
 }
 
-.menu-label{
-    color: #fff;
-    font-weight: bold;
-    font-size: 2rem;
-    padding: 1rem;
+.menu-toggle-active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
 }
 
-.menu-item:hover .menu-check{
-    background-color: rgb(0, 255, 42);
+.hamburger-line {
+  width: 20px;
+  height: 2px;
+  background: var(--primary-green);
+  transition: all 0.3s ease;
+  border-radius: 1px;
 }
 
-.menu-item:click .menu-check{
-    background-color: green;
+/* Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 2999;
 }
 
-.menu-linea-vert{
-    position: absolute;
-    height: 100%;
-    border: .15rem solid #fff;
-    border-radius: .15rem;
-    right: 1.525rem;
+.overlay-active {
+  opacity: 1;
+  visibility: visible;
 }
 
-@media (max-width: 500px) {
-    .menu-flotante{
-        background: #000;
-    }
+/* Panel del menú */
+.menu-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: var(--bg-gradient-dark);
+  border-left: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: 3000;
+  backdrop-filter: blur(20px);
+}
 
-    .menu-linea-vert{
-        right: 1.525rem;
-    }
+.panel-active {
+  right: 0;
+}
 
-    .menu-label{
-        font-size: 1rem;
-        padding: 1rem;
-    }
+/* Header del menú */
+.menu-header {
+  padding: 3rem 2rem 2rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.menu-brand {
+  text-align: center;
+}
+
+.brand-text {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.brand-subtitle {
+  display: block;
+  color: var(--text-gray);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Navegación */
+.menu-navigation {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  margin-bottom: 0.5rem;
+}
+
+.nav-link {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: rgba(0, 212, 170, 0.1);
+  color: var(--primary-green);
+}
+
+.nav-item-active .nav-link {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--primary-green);
+}
+
+.nav-icon {
+  width: 20px;
+  text-align: center;
+  color: var(--text-gray);
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover .nav-icon,
+.nav-item-active .nav-icon {
+  color: var(--primary-green);
+}
+
+.nav-text {
+  flex: 1;
+}
+
+.nav-indicator {
+  width: 4px;
+  height: 4px;
+  background: var(--primary-green);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-item-active .nav-indicator {
+  opacity: 1;
+}
+
+/* Footer del menú */
+.menu-footer {
+  padding: 2rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.menu-social {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-gradient-card);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  color: var(--primary-green);
+  border-color: var(--primary-green);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-panel {
+    width: 100vw;
+    right: -100vw;
+  }
+  
+  .menu-toggle {
+    top: 1rem;
+    right: 1rem;
+  }
+  
+  .menu-header {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+  
+  .nav-link {
+    padding: 1rem 1.5rem;
+  }
+  
+  .menu-footer {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-text {
+    font-size: 1.5rem;
+  }
+  
+  .nav-link {
+    font-size: 0.9rem;
+  }
 }
 </style>
