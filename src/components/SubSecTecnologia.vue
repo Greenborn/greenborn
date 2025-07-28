@@ -72,14 +72,15 @@ const props = defineProps([ "data" ])
 .tech-image {
   width: 80px;
   height: 80px;
-  filter: brightness(0) invert(1);
-  opacity: 0.8;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  opacity: 0.9;
   transition: var(--transition-medium);
 }
 
 .tech-card-modern:hover .tech-image {
   opacity: 1;
-  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(140deg);
+  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(140deg);
+  transform: scale(1.05);
 }
 
 .tech-info {

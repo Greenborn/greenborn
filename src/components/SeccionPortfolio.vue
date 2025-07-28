@@ -6,7 +6,7 @@
       <div class="section-header">
         <h2 class="section-title">Nuestro Portfolio</h2>
         <p class="section-subtitle">
-          Proyectos que demuestran nuestra experiencia en desarrollo de software libre
+          Algunos de los trabajos que hemos realizado.
         </p>
       </div>
 
