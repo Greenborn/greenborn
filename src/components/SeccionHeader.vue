@@ -10,7 +10,7 @@
           <div class="brand-section">
             <div class="logo-container">
               <div class="logo-text">
-                <TextEffect text="GREENBORN" />
+                <span class="brand-title">GREENBORN</span>
               </div>
               <div class="logo-subtitle">
                 Software en Crecimiento
@@ -65,7 +65,6 @@
 
 <script setup>
 import EfectoMatrix from './genericos/EfectoMatrix.vue'
-import TextEffect from './genericos/TextEffect.vue'
 </script>
 
 <style scoped>
@@ -108,6 +107,10 @@ import TextEffect from './genericos/TextEffect.vue'
 }
 
 .logo-text {
+  margin-bottom: 1rem;
+}
+
+.brand-title {
   font-family: "BebasNeue";
   font-size: clamp(4rem, 8vw, 8rem);
   line-height: 0.9;
@@ -115,7 +118,53 @@ import TextEffect from './genericos/TextEffect.vue'
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1rem;
+  display: inline-block;
+  position: relative;
+  animation: brandTitleAnimation 2s ease-out forwards;
+}
+
+.brand-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: brandTitleGlow 3s ease-in-out infinite alternate;
+  opacity: 0;
+}
+
+@keyframes brandTitleAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-5px) scale(1.05);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes brandTitleGlow {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(1.02);
+  }
 }
 
 .logo-subtitle {
@@ -124,10 +173,38 @@ import TextEffect from './genericos/TextEffect.vue'
   font-weight: 300;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  animation: subtitleAnimation 2s ease-out 0.5s forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes subtitleAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tagline {
   margin-bottom: 3rem;
+  animation: taglineAnimation 2s ease-out 1s forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes taglineAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tagline-text {
@@ -142,6 +219,20 @@ import TextEffect from './genericos/TextEffect.vue'
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
+  animation: ctaAnimation 2s ease-out 1.5s forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes ctaAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .btn-primary {
