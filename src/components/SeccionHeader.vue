@@ -121,6 +121,12 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   display: inline-block;
   position: relative;
   animation: brandTitleAnimation 2s ease-out forwards;
+  /* Mejorar contraste con sombra de texto */
+  text-shadow: 
+    0 0 20px rgba(0, 212, 170, 0.5),
+    0 0 40px rgba(0, 212, 170, 0.3),
+    0 0 60px rgba(0, 212, 170, 0.1);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
 }
 
 .brand-title::before {
@@ -169,13 +175,20 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 
 .logo-subtitle {
   font-size: clamp(1.2rem, 2.5vw, 2rem);
-  color: var(--text-gray);
-  font-weight: 300;
+  color: var(--text-light);
+  font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   animation: subtitleAnimation 2s ease-out 0.5s forwards;
   opacity: 0;
   transform: translateY(20px);
+  /* Mejorar contraste */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @keyframes subtitleAnimation {
@@ -211,8 +224,16 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   line-height: 1.6;
   color: var(--text-light);
-  font-weight: 400;
+  font-weight: 500;
   max-width: 500px;
+  /* Mejorar contraste */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .cta-section {
@@ -237,17 +258,44 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+  /* Mejorar contraste */
+  box-shadow: 
+    0 4px 16px rgba(0, 212, 170, 0.4),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 
+    0 8px 24px rgba(0, 212, 170, 0.6),
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(0, 212, 170, 0.1);
   border: 2px solid var(--primary-green);
   color: var(--primary-green);
+  /* Mejorar contraste */
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 4px 16px rgba(0, 212, 170, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary:hover {
   background: var(--primary-green);
   color: var(--bg-dark);
+  box-shadow: 
+    0 8px 24px rgba(0, 212, 170, 0.6),
+    0 12px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
 }
 
 /* Elementos flotantes */
