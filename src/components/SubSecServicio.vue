@@ -19,7 +19,7 @@
         </div>
         
         <div class="service-cta">
-          <span class="learn-more">Saber más →</span>
+          <a href="#seccion-contacto" class="learn-more">Saber más →</a>
         </div>
       </div>
       
@@ -181,6 +181,8 @@ function handleMouseLeave() {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
 }
 
 /* Hover effects */
