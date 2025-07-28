@@ -16,26 +16,10 @@
       <div class="contact-info">
         <div class="info-card">
           <div class="info-icon">
-            <i class="fas fa-envelope"></i>
-          </div>
-          <h3>Email</h3>
-          <p>info@greenborn.com.ar</p>
-        </div>
-        
-        <div class="info-card">
-          <div class="info-icon">
-            <i class="fas fa-phone"></i>
-          </div>
-          <h3>Teléfono</h3>
-          <p>+54 249 427 9833</p>
-        </div>
-        
-        <div class="info-card">
-          <div class="info-icon">
             <i class="fas fa-map-marker-alt"></i>
           </div>
           <h3>Ubicación</h3>
-          <p>Argentina</p>
+          <p>Tandil, Buenos Aires, Argentina</p>
         </div>
         
         <div class="info-card">
@@ -43,7 +27,7 @@
             <i class="fas fa-clock"></i>
           </div>
           <h3>Horarios</h3>
-          <p>Lun - Vie: 9:00 - 18:00</p>
+          <p>A convenir</p>
         </div>
       </div>
 
