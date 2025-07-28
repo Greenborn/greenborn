@@ -1,12 +1,47 @@
 <template>
-<div class="row h-100vh seccion justify-content-center alig-items-center" id="seccion-tecnologias">
-  <div class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-5 mt-5 mb-5">
+<div class="technologies-section seccion" id="seccion-tecnologias">
+  <div class="container-modern">
+    
+    <!-- Header de la sección -->
+    <div class="section-header">
+      <h2 class="section-title">Tecnologías</h2>
+      <p class="section-subtitle">
+        Utilizamos las mejores tecnologías de software libre para crear soluciones robustas y escalables
+      </p>
+    </div>
 
-    <SubSecTecnologia v-for="r in listado_tecnologias_leng" :key="r" :data="r" />
+    <!-- Grid de tecnologías -->
+    <div class="technologies-grid">
+      <div 
+        v-for="(tech, index) in listado_tecnologias_leng" 
+        :key="tech.id"
+        class="tech-card-wrapper"
+        :style="{ animationDelay: `${index * 0.1}s` }"
+      >
+        <SubSecTecnologia :data="tech" />
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">10+</div>
+          <div class="stat-label">Tecnologías</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Software Libre</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Posibilidades</div>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
-
 </template>
 
 <script setup>
@@ -47,6 +82,120 @@ const listado_tecnologias_leng = ref([
   "img_src":IconWP}])
 </script>
 
-<style>
+<style scoped>
+.technologies-section {
+  background: var(--bg-gradient-dark);
+  position: relative;
+}
 
+.technologies-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.section-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  color: var(--text-gray);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.technologies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.tech-card-wrapper {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.stats-section {
+  text-align: center;
+  padding: 3rem;
+  background: var(--bg-gradient-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  margin-top: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  color: var(--text-gray);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .technologies-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .stats-section {
+    padding: 2rem 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header {
+    margin-bottom: 3rem;
+  }
+  
+  .stats-section {
+    padding: 1.5rem 1rem;
+  }
+}
 </style>

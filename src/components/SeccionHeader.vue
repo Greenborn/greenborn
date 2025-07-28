@@ -1,19 +1,64 @@
 <template>
-<div class="row h-100vh bg-back-0" id="seccion-inicio">
+<div class="header-modern" id="seccion-inicio">
   <EfectoMatrix />
-  <div class="bg-green2">
-    <div class="col">
-      <div class="row h-100vh justify-content-center align-items-center">
-
-        <div class="col-auto text-center">
-          <div class="w-100">
-            <div class="text-gb"><TextEffect text="GREENBORN" /></div>
-            <div class="text-h-2 mt-2">Software en Crecimiento</div>
+  <div class="header-content">
+    <div class="container-modern">
+      <div class="header-grid">
+        
+        <!-- Contenido principal -->
+        <div class="header-main">
+          <div class="brand-section">
+            <div class="logo-container">
+              <div class="logo-text">
+                <TextEffect text="GREENBORN" />
+              </div>
+              <div class="logo-subtitle">
+                Software en Crecimiento
+              </div>
+            </div>
+            
+            <div class="tagline">
+              <p class="tagline-text">
+                Desarrollamos soluciones de software libre que transforman ideas en realidad digital
+              </p>
+            </div>
+            
+            <div class="cta-section">
+              <a href="#seccion-servicios" class="btn-modern btn-primary">
+                Nuestros Servicios
+              </a>
+              <a href="#seccion-portfolio" class="btn-modern btn-secondary">
+                Ver Portfolio
+              </a>
+            </div>
           </div>
         </div>
-
+        
+        <!-- Elementos visuales -->
+        <div class="header-visual">
+          <div class="floating-elements">
+            <div class="floating-card card-1">
+              <div class="card-icon">🚀</div>
+              <div class="card-text">Desarrollo Ágil</div>
+            </div>
+            <div class="floating-card card-2">
+              <div class="card-icon">💻</div>
+              <div class="card-text">Software Libre</div>
+            </div>
+            <div class="floating-card card-3">
+              <div class="card-icon">🔧</div>
+              <div class="card-text">Soluciones Personalizadas</div>
+            </div>
+          </div>
+        </div>
+        
       </div>
     </div>
+  </div>
+  
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-dot"></div>
   </div>
 </div>
 </template>
@@ -23,71 +68,247 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 import TextEffect from './genericos/TextEffect.vue'
 </script>
 
-<style>
-#seccion-inicio{
+<style scoped>
+.header-modern {
   height: 100svh;
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 50%, var(--bg-dark) 100%);
+  overflow: hidden;
 }
 
-.text-gb{
-  font-family: "BebasNeue";  
+.header-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
-.bg-green2{
-    background-color: #011d00;
-    background: linear-gradient(180deg, rgba(1,29,0,0.8) 0%, rgba(1,29,0,1) 90%, rgba(1,29,0,1) 100%); 
-    color: #fff;
-    width: 100%;
-    height: 100%;
-    position: absolute;
+.header-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  height: 100%;
 }
 
-.bg-back-0{
-  background-color: #000;
+.header-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
-.text-gb{
-  font-size: 7dvw;
-  line-height: 5dvw;
-  padding-top: 1dvw;
+.brand-section {
+  max-width: 600px;
 }
 
-.text-h-2{
-  font-size: 2.25dvw;
+.logo-container {
+  margin-bottom: 2rem;
 }
 
-@media (max-width: 1360px) {
-  .text-gb{
-    font-size: 8dvw;
-    line-height: 6dvw;
-    padding-top: 1dvw;
+.logo-text {
+  font-family: "BebasNeue";
+  font-size: clamp(4rem, 8vw, 8rem);
+  line-height: 0.9;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.logo-subtitle {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  color: var(--text-gray);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tagline {
+  margin-bottom: 3rem;
+}
+
+.tagline-text {
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  line-height: 1.6;
+  color: var(--text-light);
+  font-weight: 400;
+  max-width: 500px;
+}
+
+.cta-section {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-green);
+  color: var(--bg-dark);
+}
+
+/* Elementos flotantes */
+.header-visual {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-elements {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
+
+.floating-card {
+  position: absolute;
+  background: var(--bg-gradient-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition-medium);
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: var(--shadow-hover);
+}
+
+.card-1 {
+  top: 0;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.card-2 {
+  top: 50%;
+  right: 0;
+  animation-delay: 2s;
+}
+
+.card-3 {
+  bottom: 0;
+  left: 50%;
+  animation-delay: 4s;
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
   }
-
-  .text-h-2{
-    font-size: 2.5dvw;
+  50% {
+    transform: translateY(-20px);
   }
 }
 
-@media (max-width: 900px) {
-  .text-gb{
-    font-size: 10dvw;
-    line-height: 7dvw;
-    padding-top: 1dvw;
-  }
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+}
 
-  .text-h-2{
-    font-size: 3dvw;
+.scroll-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--primary-green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .header-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .header-visual {
+    order: -1;
+    height: 300px;
+  }
+  
+  .floating-elements {
+    width: 300px;
+    height: 300px;
   }
 }
 
-@media (max-width: 500px) {
-  .text-gb{
-    font-size: 20svw;
-    line-height: 15dvw;
-    padding-top: 1dvw;
+@media (max-width: 768px) {
+  .cta-section {
+    justify-content: center;
   }
+  
+  .floating-elements {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .floating-card {
+    padding: 1rem;
+  }
+  
+  .card-icon {
+    font-size: 1.5rem;
+  }
+  
+  .card-text {
+    font-size: 0.8rem;
+  }
+}
 
-  .text-h-2{
-    font-size: 6dvw;
+@media (max-width: 480px) {
+  .header-grid {
+    gap: 1rem;
+  }
+  
+  .floating-elements {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .floating-card {
+    padding: 0.8rem;
+  }
+  
+  .card-icon {
+    font-size: 1.2rem;
+  }
+  
+  .card-text {
+    font-size: 0.7rem;
   }
 }
 </style>

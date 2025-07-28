@@ -1,12 +1,35 @@
 <template>
-  <div class="row bg-green1 seccion h-100vh" id="seccion-portfolio">
-    <div class="col">
+  <div class="portfolio-section seccion" id="seccion-portfolio">
+    <div class="container-modern">
+      
+      <!-- Header de la sección -->
+      <div class="section-header">
+        <h2 class="section-title">Nuestro Portfolio</h2>
+        <p class="section-subtitle">
+          Proyectos que demuestran nuestra experiencia en desarrollo de software libre
+        </p>
+      </div>
 
-      <div class="row p-1 pt-5 pb-5 justifify-content-center">
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3 p-2"  v-for="s in trabajos" :key="s">
+      <!-- Grid de proyectos -->
+      <div class="portfolio-grid">
+        <div 
+          v-for="(proyecto, index) in trabajos" 
+          :key="proyecto.id"
+          class="portfolio-item-wrapper"
+          :style="{ animationDelay: `${index * 0.1}s` }"
+        >
+          <SubSecPortfolio :data="proyecto" />
+        </div>
+      </div>
 
-          <SubSecPortfolio :data="s" />
-
+      <!-- CTA de portfolio -->
+      <div class="portfolio-cta">
+        <div class="cta-content">
+          <h3>¿Te gusta nuestro trabajo?</h3>
+          <p>Hablemos sobre tu próximo proyecto y cómo podemos ayudarte a alcanzar tus objetivos</p>
+          <a href="#seccion-contacto" class="btn-modern">
+            Iniciar Proyecto
+          </a>
         </div>
       </div>
 
@@ -15,7 +38,6 @@
 </template>
 
 <script setup>
-
 import { ref } from 'vue'
 import SubSecPortfolio from './SubSecPortfolio.vue';
 
@@ -72,24 +94,117 @@ const trabajos = ref([
   {
     id: 5,
     titulo: "Componente Vue Cursor Custom",
-    descripcion_organizacion: ``,
+    descripcion_organizacion: `Componente Vue.js para personalizar el cursor del mouse con efectos visuales avanzados.`,
     url: "https://www.npmjs.com/package/@greenborn/vue-custom-cursor",
     imgs: ["vue_mouse_1.webp"],
-    tecnologias_usadas: []
+    tecnologias_usadas: ["Vue.js", "JavaScript", "NPM"]
   },
   {
-    id: 5,
+    id: 6,
     titulo: "Chat Público",
-    descripcion_organizacion: ``,
+    descripcion_organizacion: `Sistema de chat en tiempo real para comunicación pública con tecnologías modernas.`,
     url: "https://chat.greenborn.com.ar/",
     imgs: ["chat_1.webp"],
-    tecnologias_usadas: []
+    tecnologias_usadas: ["WebSocket", "Node.js", "Vue.js"]
   }
 ])
 </script>
 
 <style scoped>
-  .card{
-    color: #000;
+.portfolio-section {
+  background: var(--bg-gradient-dark);
+  position: relative;
+}
+
+.portfolio-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.section-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  color: var(--text-gray);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.portfolio-item-wrapper {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.portfolio-cta {
+  text-align: center;
+  padding: 3rem;
+  background: var(--bg-gradient-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  margin-top: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+.cta-content h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+.cta-content p {
+  font-size: 1.1rem;
+  color: var(--text-gray);
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
+  
+  .portfolio-cta {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header {
+    margin-bottom: 3rem;
+  }
+  
+  .portfolio-cta {
+    padding: 1.5rem 1rem;
+  }
+}
 </style>
