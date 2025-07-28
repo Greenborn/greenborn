@@ -43,7 +43,6 @@ const isInHeader = ref(true) // Comenzar oculto
 
 const enlaces = ref([
     { label: 'Inicio', active: true, section_id:"seccion-inicio",  element: null },
-    { label: 'Lema', active: false, section_id:"seccion-lema",  element: null },
     { label: 'Servicios', active: false, section_id:"seccion-servicios",  element: null  },
     { label: 'Metodología', active: false, section_id:"seccion-metodologia", element: null  },
     { label: 'Portfolio', active: false, section_id:"seccion-portfolio",  element: null  },
