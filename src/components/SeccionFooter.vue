@@ -16,39 +16,6 @@
         </p>
       </div>
 
-      <!-- Enlaces rápidos -->
-      <div class="footer-section">
-        <h4 class="footer-title">Enlaces Rápidos</h4>
-        <ul class="footer-links">
-          <li><a href="#seccion-servicios">Servicios</a></li>
-          <li><a href="#seccion-portfolio">Portfolio</a></li>
-          <li><a href="#seccion-tecnologias">Tecnologías</a></li>
-          <li><a href="#seccion-contacto">Contacto</a></li>
-        </ul>
-      </div>
-
-      <!-- Servicios -->
-      <div class="footer-section">
-        <h4 class="footer-title">Servicios</h4>
-        <ul class="footer-links">
-          <li>Desarrollo de APP's Móviles</li>
-          <li>Web Scraping</li>
-          <li>Migración Web</li>
-          <li>Solución de Errores</li>
-          <li>Alojamiento Web</li>
-        </ul>
-      </div>
-
-      <!-- Contacto -->
-      <div class="footer-section">
-        <h4 class="footer-title">Contacto</h4>
-        <div class="contact-info">
-          <p><i class="fas fa-envelope"></i> info@greenborn.com.ar</p>
-          <p><i class="fas fa-phone"></i> +54 249 427 9833</p>
-          <p><i class="fas fa-map-marker-alt"></i> Argentina</p>
-        </div>
-      </div>
-
     </div>
 
     <!-- Redes sociales y copyright -->
@@ -128,9 +95,12 @@ const listado_contactos = ref([
 
 .footer-content {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 3rem;
   margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .footer-section {
