@@ -108,6 +108,16 @@
 
     </div>
 
+    <div v-if="modal.visible" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-icon">
+          <i :class="modal.success ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'"></i>
+        </div>
+        <div class="modal-message">{{ modal.message }}</div>
+        <button class="btn-modern" @click="modal.visible = false">Cerrar</button>
+      </div>
+    </div>
+
   </div>
 </div>
 </template>
@@ -123,18 +133,57 @@ const form_ = ref({
   message: ''
 })
 
+const modal = ref({
+  visible: false,
+  message: '',
+  success: true
+})
+
 function sendMessage() {
-  // Aquí iría la lógica para enviar el mensaje
-  console.log('Enviando mensaje:', form_.value)
-  
-  // Resetear formulario
-  form_.value = {
-    name: '',
-    surname: '',
-    email: '',
-    tel: '',
-    message: ''
-  }
+  const url = import.meta.env.VITE_TELEGRAM_URL
+  const token = import.meta.env.VITE_TELEGRAM_TOKEN
+
+  // Formatear mensaje compatible con Telegram
+  const msg = `<b>Nuevo contacto web</b>\n` +
+    `<b>Nombre:</b> ${form_.value.name} ${form_.value.surname}\n` +
+    `<b>Email:</b> ${form_.value.email}\n` +
+    `<b>Teléfono:</b> ${form_.value.tel || '-'}\n` +
+    `<b>Mensaje:</b> ${form_.value.message}`
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      alias: 'ALERTASGREENBORN',
+      message: msg,
+      parse_mode: 'HTML',
+      token: token
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    modal.value = {
+      visible: true,
+      message: '¡Mensaje enviado correctamente!',
+      success: true
+    }
+    form_.value = {
+      name: '',
+      surname: '',
+      email: '',
+      tel: '',
+      message: ''
+    }
+  })
+  .catch(err => {
+    modal.value = {
+      visible: true,
+      message: 'Hubo un error al enviar el mensaje. Intenta nuevamente.',
+      success: false
+    }
+  })
 }
 </script>
 
@@ -365,5 +414,45 @@ function sendMessage() {
   .info-card {
     padding: 1.5rem;
   }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+.modal-content {
+  background: var(--bg-gradient-card);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  text-align: center;
+  min-width: 280px;
+  max-width: 90vw;
+}
+.modal-icon {
+  font-size: 2.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+}
+.modal-message {
+  font-size: 1.2rem;
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+}
+.modal-content .btn-modern {
+  width: auto;
+  min-width: 120px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  margin: 0 auto;
+  display: inline-block;
 }
 </style>
