@@ -53,17 +53,17 @@ function mousePY() {
 }
 
 function cardBgStyle(){
-  const tX = mousePX() * -20;
-  const tY = mousePY() * -20;
+  const tX = mousePX() * -10; // Reducido de -20 a -10
+  const tY = mousePY() * -10; // Reducido de -20 a -10
   return {
-    transform: `translateX(${tX}px) translateY(${tY}px) scale(1.1)`,
+    transform: `translateX(${tX}px) translateY(${tY}px) scale(1.05)`, // Reducido scale de 1.1 a 1.05
     backgroundImage: `url(${props.data.img_src})`
   }
 }
 
 function cardStyle() {
-  const rX = mousePX() * 10;
-  const rY = mousePY() * 10;
+  const rX = mousePX() * 5; // Reducido de 10 a 5
+  const rY = mousePY() * 5; // Reducido de 10 a 5
   return {
     transform: `rotateY(${rX}deg) rotateX(${rY}deg)`,
   };
@@ -99,7 +99,7 @@ function handleMouseLeave() {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
   border-radius: 20px;
   overflow: hidden;
 }
@@ -114,7 +114,7 @@ function handleMouseLeave() {
   background-position: center;
   background-size: cover;
   opacity: 0.1;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
   filter: blur(2px);
 }
 
@@ -133,7 +133,7 @@ function handleMouseLeave() {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
 }
 
 .service-icon {
@@ -187,34 +187,34 @@ function handleMouseLeave() {
 
 /* Hover effects */
 .service-card-modern:hover .card-content {
-  transform: translateY(-10px);
+  transform: translateY(-5px); /* Reducido de -10px a -5px */
   box-shadow: 
-    0 20px 40px rgba(0, 212, 170, 0.2),
-    0 0 0 1px rgba(0, 212, 170, 0.3);
+    0 10px 20px rgba(0, 212, 170, 0.15), /* Reducida intensidad */
+    0 0 0 1px rgba(0, 212, 170, 0.2); /* Reducida intensidad */
 }
 
 .service-card-modern:hover .card-background {
-  opacity: 0.2;
-  transform: scale(1.05);
+  opacity: 0.15; /* Reducido de 0.2 a 0.15 */
+  transform: scale(1.02); /* Reducido de 1.05 a 1.02 */
 }
 
 .service-card-modern:hover .card-overlay {
   background: linear-gradient(135deg, 
-    rgba(0, 212, 170, 0.15) 0%, 
-    rgba(0, 184, 148, 0.1) 50%, 
-    rgba(0, 0, 0, 0.7) 100%);
-  border-color: rgba(0, 212, 170, 0.4);
+    rgba(0, 212, 170, 0.12) 0%, /* Reducido de 0.15 a 0.12 */
+    rgba(0, 184, 148, 0.08) 50%, /* Reducido de 0.1 a 0.08 */
+    rgba(0, 0, 0, 0.75) 100%); /* Aumentado de 0.7 a 0.75 */
+  border-color: rgba(0, 212, 170, 0.3); /* Reducido de 0.4 a 0.3 */
 }
 
 .service-card-modern:hover .icon-image {
-  transform: scale(1.1);
-  opacity: 1;
-  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(140deg);
+  transform: scale(1.05); /* Reducido de 1.1 a 1.05 */
+  opacity: 0.9; /* Reducido de 1 a 0.9 */
+  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(140deg); /* Reducido saturate de 5 a 3 */
 }
 
 .service-card-modern:hover .learn-more {
   color: var(--accent-green);
-  transform: translateX(5px);
+  transform: translateX(3px); /* Reducido de 5px a 3px */
 }
 
 /* Animación de entrada */
