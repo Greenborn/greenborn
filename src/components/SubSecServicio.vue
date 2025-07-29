@@ -1,16 +1,28 @@
 <template>
-  <div class="card-wrap"
+  <div class="service-card-modern"
       @mousemove="handleMouseMove"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       ref="card">
-    <div class="card" :style="cardStyle()">
-        <div class="card-bg" :style="cardBgStyle()"></div>
-        <div class="card-info">
-          <h1 slot="header">{{ data.name }}</h1>
-          <p slot="content">{{ data.description }}</p>
+    
+    <div class="card-content" :style="cardStyle()">
+      <div class="card-background" :style="cardBgStyle()"></div>
+      
+      <div class="card-overlay">
+        <div class="service-icon">
+          <img :src="data.img_src" :alt="data.name" class="icon-image" />
         </div>
-
+        
+        <div class="service-info">
+          <h3 class="service-title">{{ data.name }}</h3>
+          <p class="service-description">{{ data.description }}</p>
+        </div>
+        
+        <div class="service-cta">
+          <a href="#seccion-contacto" class="learn-more">Saber más →</a>
+        </div>
+      </div>
+      
     </div>
   </div>
 </template>
@@ -21,15 +33,15 @@ import { ref, onMounted } from 'vue'
 const props = defineProps([ "data" ])
 
 const width = ref(0)
-const height =  ref(0)
+const height = ref(0)
 const mouseX = ref(0)
-const mouseY =  ref(0)
+const mouseY = ref(0)
 const mouseLeaveDelay = ref(null)
 const card = ref()
 
 onMounted(() => {
-  width.value =  640//card.value.offsetWidth;
-  height.value = 340//card.value.offsetHeight;
+  width.value = 400
+  height.value = 300
 })
 
 function mousePX() {
@@ -41,18 +53,17 @@ function mousePY() {
 }
 
 function cardBgStyle(){
-  const tX = mousePX() * -40;
-  const tY = mousePY() * -40;
-  console.log(tX, tY)
+  const tX = mousePX() * -10; // Reducido de -20 a -10
+  const tY = mousePY() * -10; // Reducido de -20 a -10
   return {
-    transform: `translateX(${tX}px) translateY(${tY}px)`,
+    transform: `translateX(${tX}px) translateY(${tY}px) scale(1.05)`, // Reducido scale de 1.1 a 1.05
     backgroundImage: `url(${props.data.img_src})`
   }
 }
 
 function cardStyle() {
-  const rX = mousePX();
-  const rY = mousePY();
+  const rX = mousePX() * 5; // Reducido de 10 a 5
+  const rY = mousePY() * 5; // Reducido de 10 a 5
   return {
     transform: `rotateY(${rX}deg) rotateX(${rY}deg)`,
   };
@@ -71,147 +82,185 @@ function handleMouseLeave() {
   mouseLeaveDelay.value = setTimeout(()=>{
     mouseX.value = 0;
     mouseY.value = 0;
-  }, 1000);
+  }, 300);
 }
 </script>
 
-<style lang="scss" scoped>
-$hoverEasing: cubic-bezier(0.23, 1, 0.32, 1);
-$returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
-
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #5D4037;
-  text-align: center;
-}
-
-p {
-  line-height: 1.5em;
-}
-
-h1+p, p+p {
-  margin-top: 10px;
-}
-
-.container {
-  padding: 40px 80px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.card-wrap {
-  margin: 10px;
-  transform: perspective(800px);
-  transform-style: preserve-3d;
-  cursor: pointer;
-  // background-color: #fff;
-  
-  &:hover {
-    .card-info {
-      transform: translateY(0);
-    }
-    .card-info p {
-      opacity: 1;
-    }
-    .card-info, .card-info p {
-      transition: 0.6s $hoverEasing;
-    }
-    .card-info:after {
-      transition: 5s $hoverEasing;
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .card-bg {
-      transition: 
-        0.6s $hoverEasing,
-        opacity 5s $hoverEasing;
-      opacity: 0.8;
-    }
-    .card {
-      transition:
-        0.6s $hoverEasing,
-        box-shadow 2s $hoverEasing;
-      box-shadow:
-        rgba(white, 0.2) 0 0 40px 5px,
-        rgba(white, 1) 0 0 0 1px,
-        rgba(black, 0.66) 0 30px 60px 0,
-        inset #333 0 0 0 5px,
-        inset white 0 0 0 6px;
-    }
-  }
-}
-
-.card {
+<style scoped>
+.service-card-modern {
   position: relative;
-  flex: 0 0 240px;
-  //width: 240px;
-  height: 320px;
-  background-color: #333;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow:
-    rgba(black, 0.66) 0 30px 60px 0,
-    inset #333 0 0 0 5px,
-    inset rgba(white, 0.5) 0 0 0 6px;
-  transition: 1s $returnEasing;
+  height: 400px;
+  perspective: 1000px;
+  cursor: pointer;
 }
 
-.card-bg {
-  opacity: 0.5;
-  position: absolute;
-  top: -20px; left: -20px;
+.card-content {
+  position: relative;
   width: 100%;
   height: 100%;
-  padding: 20px;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.card-background {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  transition:
-    1s $returnEasing,
-    opacity 5s 1s $returnEasing;
-  pointer-events: none;
+  opacity: 0.1;
+  transition: all 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
+  filter: blur(2px);
 }
 
-.card-info {
-  padding: 20px;
-  position: absolute;
-  bottom: 0;
-  color: #fff;
-  transform: translateY(40%);
-  transition: 0.6s 1.6s cubic-bezier(0.215, 0.61, 0.355, 1);
-  
-  p {
-    opacity: 0;
-    text-shadow: rgba(black, 1) 0 2px 3px;
-    transition: 0.6s 1.6s cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-  
-  * {
-    position: relative;
-    z-index: 1;
-  }
-  
-  &:after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    background-image: linear-gradient(to bottom, transparent 0%, rgba(#000, 0.6) 100%);
-    background-blend-mode: overlay;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: 5s 1s $returnEasing;
-  }
+.card-overlay {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 170, 0.1) 0%, 
+    rgba(0, 184, 148, 0.05) 50%, 
+    rgba(0, 0, 0, 0.8) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
 }
 
-.card-info h1 {
-  font-family: "Playfair Display";
-  font-size: 36px;
+.service-icon {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.icon-image {
+  width: 60px;
+  height: 60px;
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+  transition: all 0.4s ease;
+}
+
+.service-info {
+  flex: 1;
+}
+
+.service-title {
+  font-size: 1.5rem;
   font-weight: 700;
-  text-shadow: rgba(black, 0.5) 0 10px 10px;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.service-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-gray);
+  margin-bottom: 1.5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.service-cta {
+  text-align: center;
+}
+
+.learn-more {
+  color: var(--primary-green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Hover effects */
+.service-card-modern:hover .card-content {
+  transform: translateY(-5px); /* Reducido de -10px a -5px */
+  box-shadow: 
+    0 10px 20px rgba(0, 212, 170, 0.15), /* Reducida intensidad */
+    0 0 0 1px rgba(0, 212, 170, 0.2); /* Reducida intensidad */
+}
+
+.service-card-modern:hover .card-background {
+  opacity: 0.15; /* Reducido de 0.2 a 0.15 */
+  transform: scale(1.02); /* Reducido de 1.05 a 1.02 */
+}
+
+.service-card-modern:hover .card-overlay {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 170, 0.12) 0%, /* Reducido de 0.15 a 0.12 */
+    rgba(0, 184, 148, 0.08) 50%, /* Reducido de 0.1 a 0.08 */
+    rgba(0, 0, 0, 0.75) 100%); /* Aumentado de 0.7 a 0.75 */
+  border-color: rgba(0, 212, 170, 0.3); /* Reducido de 0.4 a 0.3 */
+}
+
+.service-card-modern:hover .icon-image {
+  transform: scale(1.05); /* Reducido de 1.1 a 1.05 */
+  opacity: 0.9; /* Reducido de 1 a 0.9 */
+  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(140deg); /* Reducido saturate de 5 a 3 */
+}
+
+.service-card-modern:hover .learn-more {
+  color: var(--accent-green);
+  transform: translateX(3px); /* Reducido de 5px a 3px */
+}
+
+/* Animación de entrada */
+.service-card-modern {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .service-card-modern {
+    height: 350px;
+  }
+  
+  .card-overlay {
+    padding: 1.5rem;
+  }
+  
+  .service-title {
+    font-size: 1.3rem;
+  }
+  
+  .service-description {
+    font-size: 0.9rem;
+  }
+  
+  .icon-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-card-modern {
+    height: 320px;
+  }
+  
+  .card-overlay {
+    padding: 1.2rem;
+  }
+  
+  .service-title {
+    font-size: 1.2rem;
+  }
+  
+  .service-description {
+    font-size: 0.85rem;
+  }
 }
 </style>
