@@ -2,7 +2,8 @@ const $ = {
   gId: (i) => document.getElementById(i),
   d: {
     sA: (s) => document.querySelectorAll(s),
-    cE: (t) => document.createElement(t)
+    cE: (t) => document.createElement(t),
+    qS: (s) => document.querySelector(s)
   }
 };
 // Datos de servicios
@@ -474,7 +475,7 @@ function initCarousel(projectId, images) {
   const randomInterval = Math.floor(Math.random() * 3000) + 2000;
   
   setInterval(() => {
-    const container = document.querySelector(`.portfolio-images[data-project-id="${projectId}"]`);
+    const container = $.d.qS(`.portfolio-images[data-project-id="${projectId}"]`);
     if (!container) return;
     
     const currentImages = container.querySelectorAll('.portfolio-image');
@@ -698,7 +699,7 @@ function initSideMenu() {
         $.d.sA('.nav-item').forEach(item => {
           item.classList.remove('nav-item-active');
         });
-        const activeLink = document.querySelector(`[data-section="${enlaces[i].section_id}"]`);
+        const activeLink = $.d.qS(`[data-section="${enlaces[i].section_id}"]`);
         if (activeLink) {
           activeLink.closest('.nav-item').classList.add('nav-item-active');
         }
