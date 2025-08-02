@@ -8,8 +8,8 @@
   --text-gray: #a0a0a0;
   --bg-dark: #0a0a0a;
   --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  --bg-gradient-dark: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  --bg-gradient-card: #0a0a0a;
+  --bg-gradient-dark: #0a0a0a;
   --border-light: rgba(255, 255, 255, 0.1);
   
   /* Espaciado */
@@ -192,7 +192,7 @@ html, body {
 .header-modern {
   height: 100svh;
   position: relative;
-  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 50%, var(--bg-dark) 100%);
+  background: var(--bg-gradient-dark);
   overflow: hidden;
   width: 100%;
   margin: 0;
@@ -1375,7 +1375,7 @@ html, body {
 
 /* ===== SECCIÓN FOOTER ===== */
 .footer-modern {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: var(--bg-gradient-dark);
   padding: 4rem 0 2rem;
   border-top: 1px solid var(--border-light);
   position: relative;
