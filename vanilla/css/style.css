@@ -8,6 +8,8 @@
   --text-gray: #a0a0a0;
   --bg-dark: #0a0a0a;
   --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --bg-gradient-dark: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
   --border-light: rgba(255, 255, 255, 0.1);
   
   /* Espaciado */
@@ -613,41 +615,62 @@ html, body {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: var(--transition-medium);
   transform-style: preserve-3d;
+  transition: transform 0.4s ease-out;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .card-background {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  background-repeat: no-repeat;
   background-position: center;
-  border-radius: 20px;
-  filter: blur(2px) brightness(0.3);
-  transition: var(--transition-medium);
+  background-size: cover;
+  opacity: 0.1;
+  transition: all 0.4s ease-out;
+  filter: blur(2px);
 }
 
 .card-overlay {
   position: relative;
   z-index: 2;
-  background: var(--bg-gradient-card);
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 170, 0.1) 0%, 
+    rgba(0, 184, 148, 0.05) 50%, 
+    rgba(0, 0, 0, 0.8) 100%);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(0, 212, 170, 0.2);
   border-radius: 20px;
   padding: 2rem;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  transition: var(--transition-medium);
+  justify-content: space-between;
+  transition: all 0.4s ease-out;
 }
 
 .service-card-modern:hover .card-overlay {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 170, 0.12) 0%, 
+    rgba(0, 184, 148, 0.08) 50%, 
+    rgba(0, 0, 0, 0.75) 100%);
+  border-color: rgba(0, 212, 170, 0.3);
+}
+
+.service-card-modern:hover .card-content {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  box-shadow: 
+    0 10px 20px rgba(0, 212, 170, 0.15),
+    0 0 0 1px rgba(0, 212, 170, 0.2);
+}
+
+.service-card-modern:hover .card-background {
+  opacity: 0.15;
+  transform: scale(1.02);
 }
 
 .service-icon {
@@ -660,17 +683,16 @@ html, body {
   height: 60px;
   filter: brightness(0) invert(1);
   opacity: 0.8;
-  transition: var(--transition-medium);
+  transition: all 0.4s ease;
 }
 
 .service-card-modern:hover .icon-image {
-  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(140deg);
-  opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.05);
+  opacity: 0.9;
+  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(140deg);
 }
 
 .service-info {
-  text-align: center;
   flex: 1;
 }
 
@@ -679,10 +701,8 @@ html, body {
   font-weight: 700;
   color: var(--text-light);
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  line-height: 1.3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .service-description {
@@ -690,12 +710,11 @@ html, body {
   line-height: 1.6;
   color: var(--text-gray);
   margin-bottom: 1.5rem;
-  flex: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .service-cta {
   text-align: center;
-  margin-top: auto;
 }
 
 .learn-more {
@@ -704,14 +723,14 @@ html, body {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: all 0.3s ease;
   text-decoration: none;
-  transition: var(--transition-medium);
   display: inline-block;
 }
 
-.learn-more:hover {
+.service-card-modern:hover .learn-more {
   color: var(--accent-green);
-  transform: translateX(5px);
+  transform: translateX(3px);
 }
 
 /* ===== SECCIÓN METODOLOGÍA ===== */
@@ -1779,6 +1798,27 @@ html, body {
   .services-cta {
     padding: 2rem 1.5rem;
   }
+  
+  .service-card-modern {
+    height: 350px;
+  }
+  
+  .card-overlay {
+    padding: 1.5rem;
+  }
+  
+  .service-title {
+    font-size: 1.3rem;
+  }
+  
+  .service-description {
+    font-size: 0.9rem;
+  }
+  
+  .icon-image {
+    width: 50px;
+    height: 50px;
+  }
 
   .methodology-timeline::before {
     left: 30px;
@@ -1884,6 +1924,26 @@ html, body {
 
   .section-header {
     margin-bottom: 3rem;
+  }
+  
+  .services-cta {
+    padding: 1.5rem 1rem;
+  }
+  
+  .service-card-modern {
+    height: 320px;
+  }
+  
+  .card-overlay {
+    padding: 1.2rem;
+  }
+  
+  .service-title {
+    font-size: 1.2rem;
+  }
+  
+  .service-description {
+    font-size: 0.85rem;
   }
   
   .services-cta {
