@@ -1,6 +1,8 @@
 const $ = {
-  gId: function(id) {
-    return document.getElementById(id);
+  gId: (i) => document.getElementById(i),
+  d: {
+    sA: (s) => document.querySelectorAll(s),
+    cE: (t) => document.createElement(t)
   }
 };
 // Datos de servicios
@@ -334,7 +336,7 @@ function loadServices() {
   grid.innerHTML = '';
   
   servicios.forEach((servicio, index) => {
-    const wrapper = document.createElement('div');
+    const wrapper = $.d.cE('div');
     wrapper.className = 'service-card-wrapper';
     wrapper.style.animationDelay = `${index * 0.1}s`;
     
@@ -373,7 +375,7 @@ function loadMethodology() {
   timeline.innerHTML = '';
   
   metodologia.forEach((step, index) => {
-    const stepDiv = document.createElement('div');
+    const stepDiv = $.d.cE('div');
     stepDiv.className = `timeline-step ${index % 2 === 1 ? 'step-right' : ''}`;
     stepDiv.style.animationDelay = `${index * 0.2}s`;
     
@@ -407,7 +409,7 @@ function loadPortfolio() {
   grid.innerHTML = '';
   
   portfolio.forEach((proyecto, index) => {
-    const wrapper = document.createElement('div');
+    const wrapper = $.d.cE('div');
     wrapper.className = 'portfolio-item-wrapper';
     wrapper.style.animationDelay = `${index * 0.1}s`;
     
@@ -503,7 +505,7 @@ function loadTechnologies() {
   grid.innerHTML = '';
   
   tecnologias.forEach((tech, index) => {
-    const wrapper = document.createElement('div');
+    const wrapper = $.d.cE('div');
     wrapper.className = 'tech-card-wrapper';
     wrapper.style.animationDelay = `${index * 0.1}s`;
     
@@ -544,7 +546,7 @@ function loadSocialLinks() {
   container.innerHTML = '';
   
   redesSociales.forEach(red => {
-    const link = document.createElement('a');
+    const link = $.d.cE('a');
     link.href = red.e;
     link.target = '_blank';
     link.className = 'social-link';
@@ -564,7 +566,7 @@ function loadNavigation() {
   navList.innerHTML = '';
   
   enlaces.forEach(enlace => {
-    const li = document.createElement('li');
+    const li = $.d.cE('li');
     li.className = `nav-item ${enlace.active ? 'nav-item-active' : ''}`;
     
     li.innerHTML = `
@@ -658,7 +660,7 @@ function initSideMenu() {
   window.addEventListener('scroll', checkHeaderPosition);
   
   // Manejar clics en enlaces de navegación
-  const navLinks = document.querySelectorAll('.nav-link');
+  const navLinks = $.d.sA('.nav-link');
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -670,7 +672,7 @@ function initSideMenu() {
       });
       
       // Actualizar UI
-      document.querySelectorAll('.nav-item').forEach(item => {
+      $.d.sA('.nav-item').forEach(item => {
         item.classList.remove('nav-item-active');
       });
       link.closest('.nav-item').classList.add('nav-item-active');
@@ -693,7 +695,7 @@ function initSideMenu() {
       if (section && window.scrollY > section.offsetTop - 100) {
         enlaces[i].active = true;
         // Actualizar UI
-        document.querySelectorAll('.nav-item').forEach(item => {
+        $.d.sA('.nav-item').forEach(item => {
           item.classList.remove('nav-item-active');
         });
         const activeLink = document.querySelector(`[data-section="${enlaces[i].section_id}"]`);
@@ -769,8 +771,8 @@ function closeModal() {
 
 // Función para detectar sección activa en scroll
 function initScrollSpy() {
-  const sections = document.querySelectorAll('.seccion');
-  const navItems = document.querySelectorAll('.nav-item');
+  const sections = $.d.sA('.seccion');
+  const navItems = $.d.sA('.nav-item');
   
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -803,7 +805,7 @@ function initScrollSpy() {
 
 // Función para smooth scroll en enlaces
 function initSmoothScroll() {
-  const links = document.querySelectorAll('a[href^="#"]');
+  const links = $.d.sA('a[href^="#"]');
   
   links.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -825,7 +827,7 @@ function initSmoothScroll() {
 // Función para añadir efectos de hover en tarjetas de servicio
 function initServiceCardEffects() {
   document.addEventListener('mousemove', (e) => {
-    const cards = document.querySelectorAll('.service-card-modern');
+    const cards = $.d.sA('.service-card-modern');
     
     cards.forEach(card => {
       const rect = card.getBoundingClientRect();
@@ -847,7 +849,7 @@ function initServiceCardEffects() {
   });
   
   // Reset transform cuando el mouse sale de la tarjeta
-  document.querySelectorAll('.service-card-modern').forEach(card => {
+  $.d.sA('.service-card-modern').forEach(card => {
     card.addEventListener('mouseleave', () => {
       const cardContent = card.querySelector('.card-content');
       if (cardContent) {
@@ -870,7 +872,7 @@ function initScrollAnimations() {
   });
   
   // Observar elementos con animación
-  const animatedElements = document.querySelectorAll('.service-card-wrapper, .portfolio-item-wrapper, .tech-card-wrapper, .timeline-step');
+  const animatedElements = $.d.sA('.service-card-wrapper, .portfolio-item-wrapper, .tech-card-wrapper, .timeline-step');
   animatedElements.forEach(el => observer.observe(el));
 }
 

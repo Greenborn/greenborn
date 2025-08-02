@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Optimización $.d.sA</title>
+    <style>
+        .test-element {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .highlighted {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba de $.d.sA (document.querySelectorAll)</h1>
+    
+    <div class="test-element">Elemento 1</div>
+    <div class="test-element">Elemento 2</div>
+    <div class="test-element">Elemento 3</div>
+    
+    <p class="test-element">Párrafo con misma clase</p>
+    
+    <button id="test-button">Ejecutar Pruebas</button>
+    <div id="results"></div>
+    
+    <script>
+        // Función utilitaria para optimizar llamadas DOM
+        const $ = {
+            gId: (i) => document.getElementById(i),
+            d: {
+                sA: (s) => document.querySelectorAll(s)
+            }
+        };
+        
+        function runTests() {
+            const results = $.gId('results');
+            results.innerHTML = '<h2>Resultados de las pruebas:</h2>';
+            
+            // Prueba 1: Seleccionar todos los elementos con clase test-element
+            const testElements = $.d.sA('.test-element');
+            results.innerHTML += `<p>✅ Prueba 1: Encontrados ${testElements.length} elementos con clase 'test-element'</p>`;
+            
+            // Prueba 2: Agregar clase a todos los elementos
+            testElements.forEach((element, index) => {
+                element.style.border = '2px solid red';
+                element.innerHTML += ` - Modificado por $.d.sA()`;
+            });
+            results.innerHTML += `<p>✅ Prueba 2: Todos los elementos han sido modificados</p>`;
+            
+            // Prueba 3: Seleccionar elementos div específicamente
+            const divElements = $.d.sA('div.test-element');
+            results.innerHTML += `<p>✅ Prueba 3: Encontrados ${divElements.length} elementos div con clase 'test-element'</p>`;
+            
+            // Prueba 4: Selector inexistente
+            const nonExistent = $.d.sA('.clase-inexistente');
+            results.innerHTML += `<p>✅ Prueba 4: Selector inexistente retorna NodeList vacía (length: ${nonExistent.length})</p>`;
+            
+            // Prueba 5: Seleccionar todos los elementos p
+            const paragraphs = $.d.sA('p');
+            results.innerHTML += `<p>✅ Prueba 5: Encontrados ${paragraphs.length} elementos p</p>`;
+            
+            console.log('✅ Todas las pruebas de $.d.sA() completadas correctamente');
+        }
+        
+        // Agregar evento al botón
+        $.gId('test-button').addEventListener('click', runTests);
+        
+        // Ejecutar pruebas automáticamente al cargar la página
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
