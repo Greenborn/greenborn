@@ -1,3 +1,8 @@
+const $ = {
+  gId: function(id) {
+    return document.getElementById(id);
+  }
+};
 // Datos de servicios
 const servicios = [
   { 
@@ -282,7 +287,7 @@ let currentImageIndexes = {};
 
 // Función para inicializar el efecto Matrix
 function initMatrixEffect() {
-  const canvas = document.getElementById('canv');
+  const canvas = $.gId('canv');
   if (!canvas) return;
   
   const ctx = canvas.getContext('2d');
@@ -323,7 +328,7 @@ function initMatrixEffect() {
 
 // Función para cargar servicios
 function loadServices() {
-  const grid = document.getElementById('services-grid');
+  const grid = $.gId('services-grid');
   if (!grid) return;
 
   grid.innerHTML = '';
@@ -362,7 +367,7 @@ function loadServices() {
 
 // Función para cargar metodología
 function loadMethodology() {
-  const timeline = document.getElementById('methodology-timeline');
+  const timeline = $.gId('methodology-timeline');
   if (!timeline) return;
 
   timeline.innerHTML = '';
@@ -396,7 +401,7 @@ function loadMethodology() {
 
 // Función para cargar portfolio
 function loadPortfolio() {
-  const grid = document.getElementById('portfolio-grid');
+  const grid = $.gId('portfolio-grid');
   if (!grid) return;
 
   grid.innerHTML = '';
@@ -492,7 +497,7 @@ function initCarousel(projectId, images) {
 
 // Función para cargar tecnologías
 function loadTechnologies() {
-  const grid = document.getElementById('technologies-grid');
+  const grid = $.gId('technologies-grid');
   if (!grid) return;
 
   grid.innerHTML = '';
@@ -533,7 +538,7 @@ function loadTechnologies() {
 
 // Función para cargar redes sociales
 function loadSocialLinks() {
-  const container = document.getElementById('social-links');
+  const container = $.gId('social-links');
   if (!container) return;
 
   container.innerHTML = '';
@@ -553,7 +558,7 @@ function loadSocialLinks() {
 
 // Función para cargar navegación
 function loadNavigation() {
-  const navList = document.getElementById('nav-list');
+  const navList = $.gId('nav-list');
   if (!navList) return;
 
   navList.innerHTML = '';
@@ -591,10 +596,10 @@ function getIconForSection(sectionId) {
 
 // Función para manejar el menú lateral
 function initSideMenu() {
-  const menuToggle = document.getElementById('menu-toggle');
-  const menuOverlay = document.getElementById('menu-overlay');
-  const menuPanel = document.getElementById('menu-panel');
-  const modernMenu = document.getElementById('menu-lateral');
+  const menuToggle = $.gId('menu-toggle');
+  const menuOverlay = $.gId('menu-overlay');
+  const menuPanel = $.gId('menu-panel');
+  const modernMenu = $.gId('menu-lateral');
   
   if (!menuToggle || !menuOverlay || !menuPanel || !modernMenu) return;
   
@@ -632,7 +637,7 @@ function initSideMenu() {
   
   // Función para verificar posición del header
   function checkHeaderPosition() {
-    const headerSection = document.getElementById('seccion-inicio');
+    const headerSection = $.gId('seccion-inicio');
     if (headerSection) {
       const headerTop = headerSection.offsetTop;
       const headerBottom = headerTop + headerSection.offsetHeight;
@@ -671,7 +676,7 @@ function initSideMenu() {
       link.closest('.nav-item').classList.add('nav-item-active');
       
       // Scroll suave a la sección
-      const section = document.getElementById(sectionId);
+      const section = $.gId(sectionId);
       if (section) {
         section.scrollIntoView({ behavior: 'smooth' });
       }
@@ -684,7 +689,7 @@ function initSideMenu() {
   // Actualizar enlaces activos basado en scroll
   window.addEventListener('scroll', function() {
     for (let i = 0; i < enlaces.length; i++) {
-      const section = document.getElementById(enlaces[i].section_id);
+      const section = $.gId(enlaces[i].section_id);
       if (section && window.scrollY > section.offsetTop - 100) {
         enlaces[i].active = true;
         // Actualizar UI
@@ -704,8 +709,8 @@ function initSideMenu() {
 
 // Función para manejar el widget de WhatsApp
 function initWhatsAppWidget() {
-  const button = document.getElementById('whatsapp-button');
-  const popup = document.getElementById('whatsapp-popup');
+  const button = $.gId('whatsapp-button');
+  const popup = $.gId('whatsapp-popup');
   
   if (!button || !popup) return;
   
@@ -723,7 +728,7 @@ function initWhatsAppWidget() {
 
 // Función para manejar el formulario de contacto
 function initContactForm() {
-  const form = document.getElementById('contact-form');
+  const form = $.gId('contact-form');
   if (!form) return;
   
   form.addEventListener('submit', (e) => {
@@ -745,8 +750,8 @@ function initContactForm() {
 
 // Función para mostrar modal
 function showModal(message) {
-  const modal = document.getElementById('modal-overlay');
-  const messageEl = document.getElementById('modal-message');
+  const modal = $.gId('modal-overlay');
+  const messageEl = $.gId('modal-message');
   
   if (!modal || !messageEl) return;
   
@@ -756,7 +761,7 @@ function showModal(message) {
 
 // Función para cerrar modal
 function closeModal() {
-  const modal = document.getElementById('modal-overlay');
+  const modal = $.gId('modal-overlay');
   if (modal) {
     modal.style.display = 'none';
   }
@@ -805,7 +810,7 @@ function initSmoothScroll() {
       e.preventDefault();
       
       const targetId = link.getAttribute('href').substring(1);
-      const targetSection = document.getElementById(targetId);
+      const targetSection = $.gId(targetId);
       
       if (targetSection) {
         targetSection.scrollIntoView({ 
