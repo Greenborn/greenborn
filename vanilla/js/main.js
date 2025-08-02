@@ -563,13 +563,13 @@ function loadNavigation() {
     li.className = `nav-item ${enlace.active ? 'nav-item-active' : ''}`;
     
     li.innerHTML = `
-      <a href="#${enlace.section_id}" class="nav-link" data-section="${enlace.section_id}">
+      <button class="nav-link" data-section="${enlace.section_id}">
         <span class="nav-icon">
           <i class="${getIconForSection(enlace.section_id)}"></i>
         </span>
         <span class="nav-text">${enlace.label}</span>
         <span class="nav-indicator"></span>
-      </a>
+      </button>
     `;
     
     navList.appendChild(li);
@@ -592,22 +592,65 @@ function getIconForSection(sectionId) {
 // Función para manejar el menú lateral
 function initSideMenu() {
   const menuToggle = document.getElementById('menu-toggle');
-  const menuContent = document.getElementById('menu-content');
+  const menuOverlay = document.getElementById('menu-overlay');
+  const menuPanel = document.getElementById('menu-panel');
+  const modernMenu = document.getElementById('menu-lateral');
   
-  if (!menuToggle || !menuContent) return;
+  if (!menuToggle || !menuOverlay || !menuPanel || !modernMenu) return;
   
+  let isOpen = false;
+  
+  // Función para abrir el menú
+  function openMenu() {
+    isOpen = true;
+    menuToggle.classList.add('active');
+    menuOverlay.classList.add('active');
+    menuPanel.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  // Función para cerrar el menú
+  function closeMenu() {
+    isOpen = false;
+    menuToggle.classList.remove('active');
+    menuOverlay.classList.remove('active');
+    menuPanel.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  
+  // Toggle del menú
   menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');
-    menuContent.classList.toggle('show');
-  });
-  
-  // Cerrar menú al hacer clic fuera
-  document.addEventListener('click', (e) => {
-    if (!menuToggle.contains(e.target) && !menuContent.contains(e.target)) {
-      menuToggle.classList.remove('active');
-      menuContent.classList.remove('show');
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
     }
   });
+  
+  // Cerrar menú al hacer clic en overlay
+  menuOverlay.addEventListener('click', closeMenu);
+  
+  // Función para verificar posición del header
+  function checkHeaderPosition() {
+    const headerSection = document.getElementById('seccion-inicio');
+    if (headerSection) {
+      const headerTop = headerSection.offsetTop;
+      const headerBottom = headerTop + headerSection.offsetHeight;
+      const scrollY = window.scrollY + window.innerHeight;
+      
+      if (scrollY > headerTop && window.scrollY < headerBottom) {
+        modernMenu.classList.add('menu-hidden');
+      } else {
+        modernMenu.classList.remove('menu-hidden');
+      }
+    }
+  }
+  
+  // Verificar posición inicial
+  checkHeaderPosition();
+  
+  // Escuchar scroll para ocultar/mostrar menú en header
+  window.addEventListener('scroll', checkHeaderPosition);
   
   // Manejar clics en enlaces de navegación
   const navLinks = document.querySelectorAll('.nav-link');
@@ -634,9 +677,28 @@ function initSideMenu() {
       }
       
       // Cerrar menú
-      menuToggle.classList.remove('active');
-      menuContent.classList.remove('show');
+      closeMenu();
     });
+  });
+  
+  // Actualizar enlaces activos basado en scroll
+  window.addEventListener('scroll', function() {
+    for (let i = 0; i < enlaces.length; i++) {
+      const section = document.getElementById(enlaces[i].section_id);
+      if (section && window.scrollY > section.offsetTop - 100) {
+        enlaces[i].active = true;
+        // Actualizar UI
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.remove('nav-item-active');
+        });
+        const activeLink = document.querySelector(`[data-section="${enlaces[i].section_id}"]`);
+        if (activeLink) {
+          activeLink.closest('.nav-item').classList.add('nav-item-active');
+        }
+      } else {
+        enlaces[i].active = false;
+      }
+    }
   });
 }
 
