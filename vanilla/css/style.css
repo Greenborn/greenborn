@@ -1,6 +1,7 @@
 :root {
   /* Colores modernos */
   --primary-green: #00d4aa;
+  --primary-green-light: #8BC34A;
   --primary-green-dark: #003026;
   --primary-dark: #0a0a0a;
   --secondary-green: #00b894;
@@ -127,6 +128,8 @@ html, body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
   color: var(--text-light);
+  border: 2px solid var(--primary-green-light);
+  text-decoration: none;
 }
 
 /* Efectos de hover */
@@ -421,6 +424,8 @@ html, body {
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
   color: var(--text-light);
+  border-color: var(--primary-green-light);
+  text-decoration: none;
 }
 
 .btn-secondary {
@@ -442,6 +447,8 @@ html, body {
     0 8px 24px rgba(0, 48, 38, 0.6),
     0 12px 40px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  border-color: var(--primary-green-light);
+  text-decoration: none;
 }
 
 /* Elementos flotantes */
@@ -663,7 +670,7 @@ html, body {
     rgba(0, 212, 170, 0.12) 0%, 
     rgba(0, 184, 148, 0.08) 50%, 
     rgba(0, 0, 0, 0.75) 100%);
-  border-color: rgba(0, 212, 170, 0.3);
+  border-color: var(--primary-green-light);
 }
 
 .service-card-modern:hover .card-content {
@@ -829,7 +836,7 @@ html, body {
 .step-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .step-icon {
@@ -919,7 +926,7 @@ html, body {
 .portfolio-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .portfolio-card-content {
@@ -1043,7 +1050,7 @@ html, body {
 .visit-project:hover {
   background: var(--primary-green-dark);
   color: var(--text-light);
-  border-color: var(--primary-green-dark);
+  border-color: var(--primary-green-light);
   transform: translateY(-2px);
   text-decoration: none;
 }
@@ -1130,7 +1137,7 @@ html, body {
 .tech-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .tech-card-content {
@@ -1260,7 +1267,7 @@ html, body {
 .info-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .info-icon {
@@ -1353,7 +1360,7 @@ html, body {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
   box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
 }
 
@@ -1458,7 +1465,7 @@ html, body {
 .social-link:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .social-icon {
@@ -1521,7 +1528,7 @@ html, body {
 
 .menu-toggle:hover {
   transform: scale(1.05);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
   box-shadow: var(--shadow-hover);
 }
 

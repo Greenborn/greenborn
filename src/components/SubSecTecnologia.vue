@@ -45,7 +45,7 @@ const props = defineProps([ "data" ])
 .tech-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .tech-card-content {

@@ -254,7 +254,7 @@ function sendMessage() {
 .info-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .info-icon {
@@ -353,7 +353,7 @@ function sendMessage() {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
   box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
 }
 

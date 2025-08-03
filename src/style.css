@@ -1,6 +1,7 @@
 :root {
   /* Colores modernos */
   --primary-green: #00d4aa;
+  --primary-green-light: #8BC34A;
   --primary-green-dark: #003026;
   --primary-dark: #0a0a0a;
   --secondary-green: #00b894;
@@ -109,7 +110,7 @@ html, body {
 
 /* Botones modernos */
 .btn-modern {
-  background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green-dark) 75%, var(--secondary-green) 100%);
+  background: var(--primary-green-dark);
   border: none;
   padding: 1rem 2rem;
   border-radius: 50px;
@@ -125,6 +126,8 @@ html, body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
   color: var(--text-light);
+  border: 2px solid var(--primary-green-light);
+  text-decoration: none;
 }
 
 /* Efectos de hover */

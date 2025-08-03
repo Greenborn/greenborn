@@ -213,7 +213,7 @@ const listado_contactos = ref([
 .social-link:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .social-icon {

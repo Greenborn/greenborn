@@ -91,7 +91,7 @@ onMounted(() => {
 .portfolio-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .portfolio-card-content {
@@ -227,7 +227,7 @@ onMounted(() => {
 .visit-project:hover {
   background: var(--primary-green-dark);
   color: var(--text-light);
-  border-color: var(--primary-green-dark);
+  border-color: var(--primary-green-light);
   transform: translateY(-2px);
   text-decoration: none;
 }

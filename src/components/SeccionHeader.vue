@@ -289,6 +289,8 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
   color: var(--text-light);
+  border-color: var(--primary-green-light);
+  text-decoration: none;
 }
 
 .btn-secondary {
@@ -311,6 +313,8 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
     0 8px 24px rgba(0, 48, 38, 0.6),
     0 12px 40px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  border-color: var(--primary-green-light);
+  text-decoration: none;
 }
 
 /* Elementos flotantes */
