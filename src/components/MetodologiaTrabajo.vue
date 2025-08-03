@@ -227,7 +227,7 @@ const methodologySteps = ref([
 .step-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .step-icon {

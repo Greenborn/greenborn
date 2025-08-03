@@ -197,7 +197,7 @@ onMounted(async () => {
 
 .menu-toggle:hover {
   transform: scale(1.05);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
   box-shadow: var(--shadow-hover);
 }
 

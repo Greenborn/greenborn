@@ -91,7 +91,7 @@ onMounted(() => {
 .portfolio-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .portfolio-card-content {
@@ -188,19 +188,19 @@ onMounted(() => {
 }
 
 .tech-tag {
-  background: rgba(0, 212, 170, 0.2);
+  background: rgba(0, 48, 38, 0.2);
   color: var(--primary-green);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
-  border: 1px solid rgba(0, 212, 170, 0.3);
+  border: 1px solid rgba(0, 48, 38, 0.3);
   transition: var(--transition-medium);
 }
 
 .tech-tag:hover {
-  background: var(--primary-green);
-  color: var(--bg-dark);
+  background: var(--primary-green-dark);
+  color: var(--text-light);
 }
 
 .project-cta {
@@ -225,8 +225,9 @@ onMounted(() => {
 }
 
 .visit-project:hover {
-  background: var(--primary-green);
-  color: var(--bg-dark);
+  background: var(--primary-green-dark);
+  color: var(--text-light);
+  border-color: var(--primary-green-light);
   transform: translateY(-2px);
   text-decoration: none;
 }
