@@ -78,6 +78,10 @@ const props = defineProps([ "data" ])
 }
 
 /* Filtros específicos para iconos problemáticos */
+.tech-image[alt="PHP"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(119, 123, 179, 0.4));
+}
+
 .tech-image[alt="Maria DB"] {
   filter: brightness(1.5) contrast(1.8) hue-rotate(200deg) saturate(2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
@@ -90,6 +94,10 @@ const props = defineProps([ "data" ])
   opacity: 1;
   filter: brightness(1) contrast(1.3) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
   transform: scale(1.05);
+}
+
+.tech-card-modern:hover .tech-image[alt="PHP"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(119, 123, 179, 0.7));
 }
 
 .tech-card-modern:hover .tech-image[alt="Maria DB"] {
