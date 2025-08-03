@@ -133,9 +133,9 @@ onMounted(() => {
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, 
-    rgba(0, 0, 0, 0.8) 0%, 
-    rgba(0, 0, 0, 0.6) 50%, 
-    rgba(0, 0, 0, 0.9) 100%);
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(0, 0, 0, 0.8) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +150,7 @@ onMounted(() => {
 
 .overlay-content {
   text-align: center;
-  color: var(--text-light);
+  color: #fff;
   max-width: 100%;
 }
 
@@ -158,17 +158,14 @@ onMounted(() => {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #fff;
 }
 
 .project-description {
   font-size: 0.9rem;
   line-height: 1.5;
   margin-bottom: 1.5rem;
-  color: var(--text-gray);
+  color: #fff;
   max-height: 120px;
   overflow: hidden;
   display: -webkit-box;
