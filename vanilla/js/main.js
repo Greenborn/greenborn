@@ -1,292 +1,161 @@
+const $D = document
+const $W = window
 const $ = {
-  gId: (i) => document.getElementById(i),
-  d: {
-    sA: (s) => document.querySelectorAll(s),
-    cE: (t) => document.createElement(t),
-    qS: (s) => document.querySelector(s)
-  }
+  gId: (i) => $D.getElementById(i),
+  sA: (s) => $D.querySelectorAll(s),
+  cE: (t) => $D.createElement(t),
+  qS: (s) => $D.querySelector(s)
 };
-// Datos de servicios
+
+const apC = (p, c) => p.appendChild(c);
+const ecSA = (e, c) => e.querySelectorAll(c);
+// Datos de servicios [id, name, description, order, img_src]
 const servicios = [
-  { 
-    id: 1, 
-    name: "Desarrollo de APP's Móviles", 
-    description: "Programamos la APP que necesita, para luego poder exportarla a plataformas Android e IOs, utilizamos Frameworks híbridos como Ionic y React Native.", 
-    order: 10, 
-    img_src: "img/icon1.svg" 
-  }, 
-  { 
-    id: 2, 
-    name: "Web Scraping", 
-    description: "Descargamos información de sitios públicos de su elección para que Ud. pueda disponer de dicha información ya sea en formatos .CSV, Hoja de Cálculo, Base de datos u otros a determinar.", 
-    order: 20, 
-    img_src: "img/icon2.svg" 
-  }, 
-  { 
-    id: 3, 
-    name: "Migración Web", 
-    description: "Migramos el contenido de su actual página web, sin importar en que CMS esté desarrollada o otro CMS de su elección, nueva APP Móvil o de Escritorio.", 
-    order: 30, 
-    img_src: "img/icon3.svg" 
-  }, 
-  { 
-    id: 4, 
-    name: "Solución de Errores", 
-    description: "Resolvemos aquellos errores que pudieran estar presentes en el código de su APP o que se deban a defectos de configuración de su servidor.", 
-    order: 40, 
-    img_src: "img/icon4.svg" 
-  }, 
-  { 
-    id: 5, 
-    name: "Alojamiento Web", 
-    description: "El Web Hosting más conveniente.", 
-    order: 50, 
-    img_src: "img/icon5.svg" 
-  }
+  [1, "Desarrollo de APP's Móviles", "Programamos la APP que necesita, para luego poder exportarla a plataformas Android e IOs, utilizamos Frameworks híbridos como Ionic y React Native.", 10, "img/icon1.svg"],
+  [2, "Web Scraping", "Descargamos información de sitios públicos de su elección para que Ud. pueda disponer de dicha información ya sea en formatos .CSV, Hoja de Cálculo, Base de datos u otros a determinar.", 20, "img/icon2.svg"],
+  [3, "Migración Web", "Migramos el contenido de su actual página web, sin importar en que CMS esté desarrollada o otro CMS de su elección, nueva APP Móvil o de Escritorio.", 30, "img/icon3.svg"],
+  [4, "Solución de Errores", "Resolvemos aquellos errores que pudieran estar presentes en el código de su APP o que se deban a defectos de configuración de su servidor.", 40, "img/icon4.svg"],
+  [5, "Alojamiento Web", "El Web Hosting más conveniente.", 50, "img/icon5.svg"]
 ];
 
-// Datos de metodología
+// Datos de metodología [id, number, title, description, icon]
 const metodologia = [
-  {
-    id: 1,
-    number: 1,
-    title: "Entrevista Inicial",
-    description: "Nos entrevistamos contigo para clarificar las necesidades, relevar requerimientos y dimensionar el alcance del proyecto.",
-    icon: "fas fa-comments"
-  },
-  {
-    id: 2,
-    number: 2,
-    title: "Propuesta",
-    description: "A partir del relevamiento de la entrevista, creamos una propuesta de desarrollo indicando las tecnologías a utilizar, diseño y arquitectura.",
-    icon: "fas fa-file-alt"
-  },
-  {
-    id: 3,
-    number: 3,
-    title: "Preparación",
-    description: "Montamos un sitio de pruebas actualizado periódicamente donde podrás constatar el avance y realizar correcciones. Definimos el Producto Mínimo Viable.",
-    icon: "fas fa-cogs"
-  },
-  {
-    id: 4,
-    number: 4,
-    title: "Desarrollo",
-    description: "Damos inicio al proceso de implementación manteniendo actualizado el sitio de pruebas y en contacto constante durante todo el proceso.",
-    icon: "fas fa-code"
-  },
-  {
-    id: 5,
-    number: 5,
-    title: "Testing",
-    description: "Realizamos pruebas exhaustivas del sistema para garantizar su funcionamiento correcto, rendimiento óptimo y experiencia de usuario satisfactoria.",
-    icon: "fas fa-vial"
-  },
-  {
-    id: 6,
-    number: 6,
-    title: "Implementación",
-    description: "Con cada objetivo completado y validado, realizamos la instalación del sistema en su ubicación definitiva.",
-    icon: "fas fa-rocket"
-  },
-  {
-    id: 7,
-    number: 7,
-    title: "Soporte",
-    description: "Brindamos soporte post-venta para dudas sobre el uso, nuevas funcionalidades o corrección de bugs.",
-    icon: "fas fa-headset"
-  }
+  [1, 1, "Entrevista Inicial", "Nos entrevistamos contigo para clarificar las necesidades, relevar requerimientos y dimensionar el alcance del proyecto.", "fas fa-comments"],
+  [2, 2, "Propuesta", "A partir del relevamiento de la entrevista, creamos una propuesta de desarrollo indicando las tecnologías a utilizar, diseño y arquitectura.", "fas fa-file-alt"],
+  [3, 3, "Preparación", "Montamos un sitio de pruebas actualizado periódicamente donde podrás constatar el avance y realizar correcciones. Definimos el Producto Mínimo Viable.", "fas fa-cogs"],
+  [4, 4, "Desarrollo", "Damos inicio al proceso de implementación manteniendo actualizado el sitio de pruebas y en contacto constante durante todo el proceso.", "fas fa-code"],
+  [5, 5, "Testing", "Realizamos pruebas exhaustivas del sistema para garantizar su funcionamiento correcto, rendimiento óptimo y experiencia de usuario satisfactoria.", "fas fa-vial"],
+  [6, 6, "Implementación", "Con cada objetivo completado y validado, realizamos la instalación del sistema en su ubicación definitiva.", "fas fa-rocket"],
+  [7, 7, "Soporte", "Brindamos soporte post-venta para dudas sobre el uso, nuevas funcionalidades o corrección de bugs.", "fas fa-headset"]
 ];
 
-// Datos de portfolio
+// Datos de portfolio [id, titulo, descripcion_organizacion, url, imgs, tecnologias_usadas]
 const portfolio = [
-  {
-    id: 0,
-    titulo: "Grupo Fotográfico Centro",
-    descripcion_organizacion: `Desarrollé un Sistema de Gestión de Concursos Fotográficos para El GFC (Grupo Fotográfico Centro) que agrupa desde 
+  [0, "Grupo Fotográfico Centro", `Desarrollé un Sistema de Gestión de Concursos Fotográficos para El GFC (Grupo Fotográfico Centro) que agrupa desde 
       el año 1967 a los fotoclubes del centro este de la provincia de Buenos Aires 
       pertenecientes a la F.A.F (Federación Argentina de Fotografía). <br><br>Las ciudades que se encuentran representadas actualmente son: Balcarce, 
       Benito Juarez, Necochea, Olavarria y Tandil. 
       <br><br> El sistema permite el registro de fotoclubes, salones, fotógrafos, obras, etc. 
-      Cuenta como objetivo la promoción de la actividad fotográfica en el ámbito fotoclubista y el aprendizaje continuo.`,
-    url: "https://www.grupofotograficocentro.com/",
-    imgs: ["gfc_1.webp", "gfc_2.webp", "gfc_3.webp"],
-    tecnologias_usadas: ["PHP", "Yii", "Postgres", "Angular", "Ionic"]
-  },
-  {
-    id: 1,
-    titulo: "Buscador e Histórico de Precios",
-    descripcion_organizacion: `Desarrollé un sistema de control de scrapers para la obtención de precios de diversas fuentes, registrando
+      Cuenta como objetivo la promoción de la actividad fotográfica en el ámbito fotoclubista y el aprendizaje continuo.`, "https://www.grupofotograficocentro.com/", ["gfc_1.webp", "gfc_2.webp", "gfc_3.webp"], ["PHP", "Yii", "Postgres", "Angular", "Ionic"]],
+  [1, "Buscador e Histórico de Precios", `Desarrollé un sistema de control de scrapers para la obtención de precios de diversas fuentes, registrando
       datos de más de 40 comercios realizando seguimiento de más de 30mil precios de diversos tipos de artículos, implementé una
-      la funcionalidad de busqueda de precios y la posibilidad de visualizar su evolución a lo largo del tiempo.`,
-    url: "https://precios.greenborn.com.ar/",
-    imgs: ["precios_1.webp", "precios_2.webp", "precios_3.webp"],
-    tecnologias_usadas: ["NodeJS", "Express", "MariaDB", "Vue", "Bootstrap", "Python", "Selenium", "Código Abierto"]
-  },
-  {
-    id: 2,
-    titulo: "Instancia propia de Redmine",
-    descripcion_organizacion: `Gestiono una instancia propia de Redmine para la organización de las tareas del día a día.`,
-    url: "https://redmine.greenborn.com.ar/",
-    imgs: ["redmine_1.webp", "redmine_2.webp"],
-    tecnologias_usadas: ["Redmine", "Nginx", "MariaDB"]
-  },
-  {
-    id: 3,
-    titulo: "Web Hosting Wordpress",
-    descripcion_organizacion: `Proporciono servicios de hosting de Wordpress, actualización de plugins y temas, backups, etc. 
-      por el momento para un cliente de un blog literario denominado Titanes de Cristal.`,
-    url: "https://greenborn.com.ar/",
-    imgs: ["wp_1.webp", "wp_2.webp"],
-    tecnologias_usadas: ["WordPress", "Nginx", "PHP-FPM", "MariaDB"]
-  },
-  {
-    id: 4,
-    titulo: "Mapa de Quejas y Reclamos",
-    descripcion_organizacion: `Desarrollé un tablero público de reclamos en donde cualquier usuario puede subir una queja geolocandizándola con 
+      la funcionalidad de busqueda de precios y la posibilidad de visualizar su evolución a lo largo del tiempo.`, "https://precios.greenborn.com.ar/", ["precios_1.webp", "precios_2.webp", "precios_3.webp"], ["NodeJS", "Express", "MariaDB", "Vue", "Bootstrap", "Python", "Selenium", "Código Abierto"]],
+  [2, "Instancia propia de Redmine", `Gestiono una instancia propia de Redmine para la organización de las tareas del día a día.`, "https://redmine.greenborn.com.ar/", ["redmine_1.webp", "redmine_2.webp"], ["Redmine", "Nginx", "MariaDB"]],
+  [3, "Web Hosting Wordpress", `Proporciono servicios de hosting de Wordpress, actualización de plugins y temas, backups, etc. 
+      por el momento para un cliente de un blog literario denominado Titanes de Cristal.`, "https://greenborn.com.ar/", ["wp_1.webp", "wp_2.webp"], ["WordPress", "Nginx", "PHP-FPM", "MariaDB"]],
+  [4, "Mapa de Quejas y Reclamos", `Desarrollé un tablero público de reclamos en donde cualquier usuario puede subir una queja geolocandizándola con 
       su ubicación actual o la que proporcione, una breve descripción y hasta tres imágenes.
-      <br><br> Uno de sus objetivos es ser una prueba de concepto y base para posibles aplicaciones que requieran la geolocalización.`,
-    url: "https://mapa.greenborn.com.ar",
-    imgs: ["mapa_1.webp", "mapa_2.webp", "mapa_3.webp"],
-    tecnologias_usadas: ["Open Street Map", "Vue", "Express", "NodeJS", "MariaDB", "MariaDB", "Código Abierto"]
-  },
-  {
-    id: 5,
-    titulo: "Componente Vue Cursor Custom",
-    descripcion_organizacion: `Componente Vue.js para personalizar el cursor del mouse con efectos visuales avanzados.`,
-    url: "https://www.npmjs.com/package/@greenborn/vue-custom-cursor",
-    imgs: ["vue_mouse_1.webp"],
-    tecnologias_usadas: ["Vue.js", "JavaScript", "NPM"]
-  },
-  {
-    id: 6,
-    titulo: "Chat Público",
-    descripcion_organizacion: `Sistema de chat en tiempo real para comunicación pública con tecnologías modernas.`,
-    url: "https://chat.greenborn.com.ar/",
-    imgs: ["chat_1.webp"],
-    tecnologias_usadas: ["WebSocket", "Node.js", "Vue.js"]
-  }
+      <br><br> Uno de sus objetivos es ser una prueba de concepto y base para posibles aplicaciones que requieran la geolocalización.`, "https://mapa.greenborn.com.ar", ["mapa_1.webp", "mapa_2.webp", "mapa_3.webp"], ["Open Street Map", "Vue", "Express", "NodeJS", "MariaDB", "MariaDB", "Código Abierto"]],
+  [5, "Componente Vue Cursor Custom", `Componente Vue.js para personalizar el cursor del mouse con efectos visuales avanzados.`, "https://www.npmjs.com/package/@greenborn/vue-custom-cursor", ["vue_mouse_1.webp"], ["Vue.js", "JavaScript", "NPM"]],
+  [6, "Chat Público", `Sistema de chat en tiempo real para comunicación pública con tecnologías modernas.`, "https://chat.greenborn.com.ar/", ["chat_1.webp"], ["WebSocket", "Node.js", "Vue.js"]]
 ];
 
-// Datos de tecnologías
+// Datos de tecnologías [id, name, description, url, order, img_src]
 const tecnologias = [
-  {
-    id: 1,
-    name: "PHP",
-    description: "PHP es un lenguaje de programación para desarrollar aplicaciones y crear sitios web que conquista cada día más seguidores. Fácil de usar y en constante perfeccionamiento es una opción segura para aquellos que desean trabajar en proyectos calificados y sin complicaciones.",
-    url: "https://www.php.net/",
-    order: 0,
-    img_src: "img/php.svg"
-  },
-  {
-    id: 2,
-    name: "HTML",
-    description: "El HTML5 es un estándar que sirve para definir la estructura, el diseño y el contenido de una página web. En realidad, se trata de un código, un lenguaje (HTML) que define los contenidos que forman parte de una página web, como imágenes, texto, vídeos, juegos, marcos, estilo de letra, etc.",
-    url: "https://developer.mozilla.org/en-US/docs/Web/HTML",
-    order: 10,
-    img_src: "img/html.svg"
-  },
-  {
-    id: 3,
-    name: "Bootstrap",
-    description: "Bootstrap es un framework que permite a los desarrolladores web construir páginas web responsives de una forma más rápida y sencilla. En este sentido, proporciona un conjunto de componentes y plantillas CSS, HTML y JavaScript que cualquiera puede utilizar o modificar de manera gratuita.",
-    url: "https://getbootstrap.com/",
-    order: 20,
-    img_src: "img/bootstrap.svg"
-  },
-  {
-    id: 4,
-    name: "JavaScript",
-    description: "JavaScript es un lenguaje de programación que los desarrolladores utilizan para hacer páginas web interactivas. Desde actualizar fuentes de redes sociales a mostrar animaciones y mapas interactivos, las funciones de JavaScript pueden mejorar la experiencia del usuario de un sitio web.",
-    url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/What_is_JavaScript",
-    order: 30,
-    img_src: "img/js.svg"
-  },
-  {
-    id: 5,
-    name: "TypeScript",
-    description: "TypeScript es un lenguaje orientado a objetos (como el lenguaje R, por ejemplo). Esto quiere decir que tanto el cliente como el servidor tienen acceso a la escritura de código. Además, se trata de un código abierto. Por otro lado, destaca por ser multiplataforma y, por consiguiente, ser portátil.",
-    url: "https://www.typescriptlang.org/",
-    order: 40,
-    img_src: "img/ts.svg"
-  },
-  {
-    id: 6,
-    name: "Python",
-    description: "Python es un lenguaje de programación ampliamente utilizado en las aplicaciones web, el desarrollo de software, la ciencia de datos y el machine learning (ML).",
-    url: "https://www.python.org/",
-    order: 50,
-    img_src: "img/py.svg"
-  },
-  {
-    id: 7,
-    name: "Java",
-    description: "El lenguaje de programación Java se usa en plataformas y dispositivos, debido a su código fácilmente transferible. Entre los usos más populares de Java se incluyen el software empresarial, desarrollo de aplicaciones móviles, aplicaciones web, aplicaciones basadas en la nube, juegos y aplicaciones de IoT.",
-    url: "https://www.java.com",
-    order: 50,
-    img_src: "img/java.svg"
-  },
-  {
-    id: 8,
-    name: "Django",
-    description: "Django es un proyecto de Python gratuito y de código abierto con una comunidad activa que revisa y mantiene el software. Una organización sin fines de lucro llamada Django Software Foundation promueve y respalda el uso y el mantenimiento de Django.",
-    url: "https://www.djangoproject.com/",
-    order: 60,
-    img_src: "img/dj.svg"
-  },
-  {
-    id: 9,
-    name: "Maria DB",
-    description: "MariaDB es un sistema de gestión de bases de datos relacionales (RDBMS) gratuito y de código abierto. Fue creado por los desarrolladores originales de MySQL por la preocupación de que MySQL pasara a ser comercializado después de que Oracle lo adquiriera en 2009.",
-    url: "https://mariadb.org/",
-    order: 70,
-    img_src: "img/mariadb.svg"
-  },
-  {
-    id: 10,
-    name: "WordPress",
-    description: "WordPress es un sistema de gestión de contenidos (CMS) que permite crear y administrar sitios web de manera sencilla y sin necesidad de utilizar un lenguaje de programación: Es gratuito y de código abierto, Es versátil y adaptable, Es fácil de usar, Tiene una amplia gama de temas y plugins, Está respaldado por una comunidad global.",
-    url: "https://wordpress.com/",
-    order: 80,
-    img_src: "img/wp.svg"
-  }
+  [1, "PHP", "PHP es un lenguaje de programación para desarrollar aplicaciones y crear sitios web que conquista cada día más seguidores. Fácil de usar y en constante perfeccionamiento es una opción segura para aquellos que desean trabajar en proyectos calificados y sin complicaciones.", "https://www.php.net/", 0, "img/php.svg"],
+  [2, "HTML", "El HTML5 es un estándar que sirve para definir la estructura, el diseño y el contenido de una página web. En realidad, se trata de un código, un lenguaje (HTML) que define los contenidos que forman parte de una página web, como imágenes, texto, vídeos, juegos, marcos, estilo de letra, etc.", "https://developer.mozilla.org/en-US/docs/Web/HTML", 10, "img/html.svg"],
+  [3, "Bootstrap", "Bootstrap es un framework que permite a los desarrolladores web construir páginas web responsives de una forma más rápida y sencilla. En este sentido, proporciona un conjunto de componentes y plantillas CSS, HTML y JavaScript que cualquiera puede utilizar o modificar de manera gratuita.", "https://getbootstrap.com/", 20, "img/bootstrap.svg"],
+  [4, "JavaScript", "JavaScript es un lenguaje de programación que los desarrolladores utilizan para hacer páginas web interactivas. Desde actualizar fuentes de redes sociales a mostrar animaciones y mapas interactivos, las funciones de JavaScript pueden mejorar la experiencia del usuario de un sitio web.", "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/What_is_JavaScript", 30, "img/js.svg"],
+  [5, "TypeScript", "TypeScript es un lenguaje orientado a objetos (como el lenguaje R, por ejemplo). Esto quiere decir que tanto el cliente como el servidor tienen acceso a la escritura de código. Además, se trata de un código abierto. Por otro lado, destaca por ser multiplataforma y, por consiguiente, ser portátil.", "https://www.typescriptlang.org/", 40, "img/ts.svg"],
+  [6, "Python", "Python es un lenguaje de programación ampliamente utilizado en las aplicaciones web, el desarrollo de software, la ciencia de datos y el machine learning (ML).", "https://www.python.org/", 50, "img/py.svg"],
+  [7, "Java", "El lenguaje de programación Java se usa en plataformas y dispositivos, debido a su código fácilmente transferible. Entre los usos más populares de Java se incluyen el software empresarial, desarrollo de aplicaciones móviles, aplicaciones web, aplicaciones basadas en la nube, juegos y aplicaciones de IoT.", "https://www.java.com", 50, "img/java.svg"],
+  [8, "Django", "Django es un proyecto de Python gratuito y de código abierto con una comunidad activa que revisa y mantiene el software. Una organización sin fines de lucro llamada Django Software Foundation promueve y respalda el uso y el mantenimiento de Django.", "https://www.djangoproject.com/", 60, "img/dj.svg"],
+  [9, "Maria DB", "MariaDB es un sistema de gestión de bases de datos relacionales (RDBMS) gratuito y de código abierto. Fue creado por los desarrolladores originales de MySQL por la preocupación de que MySQL pasara a ser comercializado después de que Oracle lo adquiriera en 2009.", "https://mariadb.org/", 70, "img/mariadb.svg"],
+  [10, "WordPress", "WordPress es un sistema de gestión de contenidos (CMS) que permite crear y administrar sitios web de manera sencilla y sin necesidad de utilizar un lenguaje de programación: Es gratuito y de código abierto, Es versátil y adaptable, Es fácil de usar, Tiene una amplia gama de temas y plugins, Está respaldado por una comunidad global.", "https://wordpress.com/", 80, "img/wp.svg"]
 ];
 
-// Datos de redes sociales
+// Datos de redes sociales [id, title, image, external_link]
 const redesSociales = [
-  {
-    id: 0, 
-    t: "Facebook", 
-    i: "assets/img/facebook.svg",
-    e: "https://www.facebook.com/Greenborn-100550959124104"
-  },
-  {
-    id: 10, 
-    t: "Instagram", 
-    i: "assets/img/instagram.svg",
-    e: "https://www.instagram.com/greenborn_soft/"
-  },
-  {
-    id: 40, 
-    t: "Linkedin", 
-    i: "assets/img/linkedin.svg",
-    e: "https://www.linkedin.com/company/greenborn"
-  }
+  [0, "Facebook", "assets/img/facebook.svg", "https://www.facebook.com/Greenborn-100550959124104"],
+  [10, "Instagram", "assets/img/instagram.svg", "https://www.instagram.com/greenborn_soft/"],
+  [40, "Linkedin", "assets/img/linkedin.svg", "https://www.linkedin.com/company/greenborn"]
 ];
 
-// Datos de navegación
+// Datos de navegación [section_id, label, active]
 const enlaces = [
-  { section_id: "seccion-inicio", label: "Inicio", active: true },
-  { section_id: "seccion-servicios", label: "Servicios", active: false },
-  { section_id: "seccion-metodologia", label: "Metodología", active: false },
-  { section_id: "seccion-portfolio", label: "Portfolio", active: false },
-  { section_id: "seccion-tecnologias", label: "Tecnologías", active: false },
-  { section_id: "seccion-contacto", label: "Contacto", active: false }
+  ["seccion-inicio", "Inicio", true],
+  ["seccion-servicios", "Servicios", false],
+  ["seccion-metodologia", "Metodología", false],
+  ["seccion-portfolio", "Portfolio", false],
+  ["seccion-tecnologias", "Tecnologías", false],
+  ["seccion-contacto", "Contacto", false]
 ];
 
 // Variables globales
 let animationInterval;
 let currentImageIndexes = {};
+
+// SEO Meta Tags para cada sección
+const seoMeta = [
+  ["seccion-inicio", "Greenborn - Desarrollo Web y Aplicaciones Móviles", "Desarrollo de aplicaciones web, móviles y soluciones tecnológicas personalizadas en Buenos Aires, Argentina"],
+  ["seccion-servicios", "Servicios de Desarrollo Web - Greenborn", "Desarrollo de apps móviles, web scraping, migración web, solución de errores y hosting"],
+  ["seccion-metodologia", "Metodología de Trabajo - Greenborn", "Proceso completo desde entrevista inicial hasta soporte post-venta para proyectos web"],
+  ["seccion-portfolio", "Portfolio de Proyectos - Greenborn", "Casos de éxito: sistemas fotográficos, buscadores de precios, hosting WordPress y más"],
+  ["seccion-tecnologias", "Tecnologías - Greenborn", "PHP, JavaScript, Python, Vue.js, React Native, Django, WordPress y más tecnologías"],
+  ["seccion-contacto", "Contacto - Greenborn", "Contacta con nosotros para tu próximo proyecto de desarrollo web o aplicación móvil"]
+];
+
+// Función para actualizar SEO
+function updateSEO(sectionId) {
+  const meta = seoMeta.find(m => m[0] === sectionId);
+  if (!meta) return;
+  
+  const [_, title, description] = meta;
+  $D.title = title;
+  
+  let metaDesc = $.qS('meta[name="description"]');
+  if (!metaDesc) {
+    metaDesc = $.cE('meta');
+    metaDesc.setAttribute('name', 'description');
+    $.qS('head').appendChild(metaDesc);
+  }
+  metaDesc.setAttribute('content', description);
+}
+
+// Función para agregar datos estructurados
+function addStructuredData() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Greenborn",
+    "url": "https://greenborn.com.ar",
+    "logo": "https://greenborn.com.ar/logo300x300.png",
+    "description": "Desarrollo de aplicaciones web, móviles y soluciones tecnológicas",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "AR",
+      "addressRegion": "Buenos Aires"
+    },
+    "sameAs": [
+      "https://www.facebook.com/Greenborn-100550959124104",
+      "https://www.instagram.com/greenborn_soft/",
+      "https://www.linkedin.com/company/greenborn"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": "Spanish"
+    },
+    "offers": servicios.map(s => ({
+      "@type": "Service",
+      "name": s[1],
+      "description": s[2],
+      "provider": {
+        "@type": "Organization",
+        "name": "Greenborn"
+      }
+    })),
+    "knowsAbout": tecnologias.map(t => t[1])
+  };
+  
+  let script = $.qS('script[type="application/ld+json"]');
+  if (!script) {
+    script = $.cE('script');
+    script.type = 'application/ld+json';
+    $.qS('head').appendChild(script);
+  }
+  script.textContent = JSON.stringify(structuredData);
+}
 
 // Función para inicializar el efecto Matrix
 function initMatrixEffect() {
@@ -296,8 +165,8 @@ function initMatrixEffect() {
   const ctx = canvas.getContext('2d');
   
   const resizeCanvas = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = $W.innerWidth;
+    canvas.height = $W.innerHeight;
   };
   
   resizeCanvas();
@@ -326,7 +195,7 @@ function initMatrixEffect() {
     });
   }, 100);
 
-  window.addEventListener('resize', resizeCanvas);
+  $W.addEventListener('resize', resizeCanvas);
 }
 
 // Función para cargar servicios
@@ -337,34 +206,35 @@ function loadServices() {
   grid.innerHTML = '';
   
   servicios.forEach((servicio, index) => {
-    const wrapper = $.d.cE('div');
+    const [id, name, description, order, img_src] = servicio;
+    const wrapper = $.cE('div');
     wrapper.className = 'service-card-wrapper';
     wrapper.style.animationDelay = `${index * 0.1}s`;
     
     wrapper.innerHTML = `
       <div class="service-card-modern">
         <div class="card-content">
-          <div class="card-background" style="background-image: url('${servicio.img_src}')"></div>
+          <div class="card-background" style="background-image: url('${img_src}')"></div>
           
           <div class="card-overlay">
             <div class="service-icon">
-              <img src="${servicio.img_src}" alt="${servicio.name}" class="icon-image" />
+              <img src="${img_src}" alt="Icono de ${name} - Greenborn" class="icon-image" title="${name}" loading="lazy" />
             </div>
             
             <div class="service-info">
-              <h3 class="service-title">${servicio.name}</h3>
-              <p class="service-description">${servicio.description}</p>
+              <h3 class="service-title">${name}</h3>
+              <p class="service-description">${description}</p>
             </div>
             
             <div class="service-cta">
-              <a href="#seccion-contacto" class="learn-more">Saber más →</a>
+              <a href="#seccion-contacto" class="learn-more" title="Contactar sobre ${name}">Saber más →</a>
             </div>
           </div>
         </div>
       </div>
     `;
     
-    grid.appendChild(wrapper);
+    apC(grid, wrapper);
   });
 }
 
@@ -376,29 +246,30 @@ function loadMethodology() {
   timeline.innerHTML = '';
   
   metodologia.forEach((step, index) => {
-    const stepDiv = $.d.cE('div');
+    const [id, number, title, description, icon] = step;
+    const stepDiv = $.cE('div');
     stepDiv.className = `timeline-step ${index % 2 === 1 ? 'step-right' : ''}`;
     stepDiv.style.animationDelay = `${index * 0.2}s`;
     
     stepDiv.innerHTML = `
       <div class="step-number">
         <div class="number-circle">
-          <span class="number">${step.number}</span>
+          <span class="number">${number}</span>
         </div>
       </div>
       
       <div class="step-content">
         <div class="step-card">
           <div class="step-icon">
-            <i class="${step.icon}"></i>
+            <i class="${icon}"></i>
           </div>
-          <h3 class="step-title">${step.title}</h3>
-          <p class="step-description">${step.description}</p>
+          <h3 class="step-title">${title}</h3>
+          <p class="step-description">${description}</p>
         </div>
       </div>
     `;
     
-    timeline.appendChild(stepDiv);
+    apC(timeline, stepDiv);
   });
 }
 
@@ -410,11 +281,12 @@ function loadPortfolio() {
   grid.innerHTML = '';
   
   portfolio.forEach((proyecto, index) => {
-    const wrapper = $.d.cE('div');
+    const [id, titulo, descripcion_organizacion, url, imgs, tecnologias_usadas] = proyecto;
+    const wrapper = $.cE('div');
     wrapper.className = 'portfolio-item-wrapper';
     wrapper.style.animationDelay = `${index * 0.1}s`;
     
-    const techTags = proyecto.tecnologias_usadas.map(tech => 
+    const techTags = tecnologias_usadas.map(tech => 
       `<span class="tech-tag">${tech}</span>`
     ).join('');
     
@@ -423,11 +295,13 @@ function loadPortfolio() {
         <div class="portfolio-card-content">
           
           <div class="portfolio-carousel">
-            <div class="portfolio-images" data-project-id="${proyecto.id}">
-              ${proyecto.imgs.map((img, imgIndex) => 
+            <div class="portfolio-images" data-project-id="${id}">
+              ${imgs.map((img, imgIndex) => 
                 `<img class="portfolio-image ${imgIndex === 0 ? 'active' : ''}" 
                      src="img/portfolio/${img}" 
-                     alt="Imagen Portfolio" 
+                     alt="${titulo} - Proyecto Greenborn ${imgIndex + 1}" 
+                     title="${titulo}"
+                     loading="${imgIndex === 0 ? 'eager' : 'lazy'}"
                      style="display: ${imgIndex === 0 ? 'block' : 'none'}" />`
               ).join('')}
             </div>
@@ -436,9 +310,9 @@ function loadPortfolio() {
           <div class="portfolio-overlay">
             <div class="overlay-content">
               
-              <h3 class="project-title">${proyecto.titulo}</h3>
+              <h3 class="project-title">${titulo}</h3>
               
-              <div class="project-description">${proyecto.descripcion_organizacion}</div>
+              <div class="project-description">${descripcion_organizacion}</div>
               
               <div class="project-technologies">
                 <div class="tech-tags">
@@ -447,7 +321,7 @@ function loadPortfolio() {
               </div>
               
               <div class="project-cta">
-                <a href="${proyecto.url}" target="_blank" class="visit-project">
+                <a href="${url}" target="_blank" class="visit-project">
                   <i class="fas fa-external-link-alt"></i>
                   Visitar Proyecto
                 </a>
@@ -460,10 +334,10 @@ function loadPortfolio() {
       </div>
     `;
     
-    grid.appendChild(wrapper);
+    apC(grid, wrapper);
     
     // Inicializar carrusel para este proyecto
-    initCarousel(proyecto.id, proyecto.imgs);
+    initCarousel(id, imgs);
   });
 }
 
@@ -475,10 +349,10 @@ function initCarousel(projectId, images) {
   const randomInterval = Math.floor(Math.random() * 3000) + 2000;
   
   setInterval(() => {
-    const container = $.d.qS(`.portfolio-images[data-project-id="${projectId}"]`);
+    const container = $.qS(`.portfolio-images[data-project-id="${projectId}"]`);
     if (!container) return;
     
-    const currentImages = container.querySelectorAll('.portfolio-image');
+    const currentImages = ecSA(container, '.portfolio-image');
     const currentIndex = currentImageIndexes[projectId];
     const nextIndex = (currentIndex + 1) % images.length;
     
@@ -506,7 +380,8 @@ function loadTechnologies() {
   grid.innerHTML = '';
   
   tecnologias.forEach((tech, index) => {
-    const wrapper = $.d.cE('div');
+    const [id, name, description, url, order, img_src] = tech;
+    const wrapper = $.cE('div');
     wrapper.className = 'tech-card-wrapper';
     wrapper.style.animationDelay = `${index * 0.1}s`;
     
@@ -515,17 +390,17 @@ function loadTechnologies() {
         <div class="tech-card-content">
           
           <div class="tech-logo">
-            <a href="${tech.url}" target="_blank" class="tech-link">
-              <img src="${tech.img_src}" alt="${tech.name}" class="tech-image" />
+            <a href="${url}" target="_blank" class="tech-link" title="Ver más sobre ${name}">
+              <img src="${img_src}" alt="Logo de ${name} - Tecnología Greenborn" class="tech-image" loading="lazy" />
             </a>
           </div>
           
           <div class="tech-info">
-            <h3 class="tech-name">${tech.name}</h3>
-            <p class="tech-description">${tech.description}</p>
+            <h3 class="tech-name">${name}</h3>
+            <p class="tech-description">${description}</p>
             
             <div class="tech-cta">
-              <a href="${tech.url}" target="_blank" class="tech-learn-more">
+              <a href="${url}" target="_blank" class="tech-learn-more">
                 Ver más →
               </a>
             </div>
@@ -535,7 +410,7 @@ function loadTechnologies() {
       </div>
     `;
     
-    grid.appendChild(wrapper);
+    apC(grid, wrapper);
   });
 }
 
@@ -547,15 +422,16 @@ function loadSocialLinks() {
   container.innerHTML = '';
   
   redesSociales.forEach(red => {
-    const link = $.d.cE('a');
-    link.href = red.e;
+    const [id, title, image, external_link] = red;
+    const link = $.cE('a');
+    link.href = external_link;
     link.target = '_blank';
     link.className = 'social-link';
-    link.title = red.t;
+    link.title = title;
     
-    link.innerHTML = `<img src="${red.i}" alt="${red.t}" class="social-icon" />`;
+    link.innerHTML = `<img src="${image}" alt="${title} - Red Social Greenborn" class="social-icon" loading="lazy" />`;
     
-    container.appendChild(link);
+    apC(container, link);
   });
 }
 
@@ -567,20 +443,21 @@ function loadNavigation() {
   navList.innerHTML = '';
   
   enlaces.forEach(enlace => {
-    const li = $.d.cE('li');
-    li.className = `nav-item ${enlace.active ? 'nav-item-active' : ''}`;
+    const [section_id, label, active] = enlace;
+    const li = $.cE('li');
+    li.className = `nav-item ${active ? 'nav-item-active' : ''}`;
     
     li.innerHTML = `
-      <button class="nav-link" data-section="${enlace.section_id}">
+      <button class="nav-link" data-section="${section_id}">
         <span class="nav-icon">
-          <i class="${getIconForSection(enlace.section_id)}"></i>
+          <i class="${getIconForSection(section_id)}"></i>
         </span>
-        <span class="nav-text">${enlace.label}</span>
+        <span class="nav-text">${label}</span>
         <span class="nav-indicator"></span>
       </button>
     `;
     
-    navList.appendChild(li);
+    apC(navList, li);
   });
 }
 
@@ -614,7 +491,7 @@ function initSideMenu() {
     menuToggle.classList.add('active');
     menuOverlay.classList.add('active');
     menuPanel.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    $D.body.style.overflow = 'hidden';
   }
   
   // Función para cerrar el menú
@@ -623,7 +500,7 @@ function initSideMenu() {
     menuToggle.classList.remove('active');
     menuOverlay.classList.remove('active');
     menuPanel.classList.remove('active');
-    document.body.style.overflow = '';
+    $D.body.style.overflow = '';
   }
   
   // Toggle del menú
@@ -644,9 +521,9 @@ function initSideMenu() {
     if (headerSection) {
       const headerTop = headerSection.offsetTop;
       const headerBottom = headerTop + headerSection.offsetHeight;
-      const scrollY = window.scrollY + window.innerHeight;
+      const scrollY = $W.scrollY + $W.innerHeight;
       
-      if (scrollY > headerTop && window.scrollY < headerBottom) {
+      if (scrollY > headerTop && $W.scrollY < headerBottom) {
         modernMenu.classList.add('menu-hidden');
       } else {
         modernMenu.classList.remove('menu-hidden');
@@ -658,10 +535,10 @@ function initSideMenu() {
   checkHeaderPosition();
   
   // Escuchar scroll para ocultar/mostrar menú en header
-  window.addEventListener('scroll', checkHeaderPosition);
+  $W.addEventListener('scroll', checkHeaderPosition);
   
   // Manejar clics en enlaces de navegación
-  const navLinks = $.d.sA('.nav-link');
+  const navLinks = $.sA('.nav-link');
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -669,11 +546,19 @@ function initSideMenu() {
       
       // Actualizar enlaces activos
       enlaces.forEach(enlace => {
-        enlace.active = enlace.section_id === sectionId;
+        enlace[2] = enlace[0] === sectionId; // enlace[0] es section_id, enlace[2] es active
       });
       
+      // Actualizar SEO
+      updateSEO(sectionId);
+      
+      // Actualizar URL sin recargar
+      if (history.pushState) {
+        history.pushState(null, null, `#${sectionId}`);
+      }
+      
       // Actualizar UI
-      $.d.sA('.nav-item').forEach(item => {
+      $.sA('.nav-item').forEach(item => {
         item.classList.remove('nav-item-active');
       });
       link.closest('.nav-item').classList.add('nav-item-active');
@@ -690,21 +575,21 @@ function initSideMenu() {
   });
   
   // Actualizar enlaces activos basado en scroll
-  window.addEventListener('scroll', function() {
+  $W.addEventListener('scroll', function() {
     for (let i = 0; i < enlaces.length; i++) {
-      const section = $.gId(enlaces[i].section_id);
-      if (section && window.scrollY > section.offsetTop - 100) {
-        enlaces[i].active = true;
+      const section = $.gId(enlaces[i][0]); // enlaces[i][0] es section_id
+      if (section && $W.scrollY > section.offsetTop - 100) {
+        enlaces[i][2] = true; // enlaces[i][2] es active
         // Actualizar UI
-        $.d.sA('.nav-item').forEach(item => {
+        $.sA('.nav-item').forEach(item => {
           item.classList.remove('nav-item-active');
         });
-        const activeLink = $.d.qS(`[data-section="${enlaces[i].section_id}"]`);
+        const activeLink = $.qS(`[data-section="${enlaces[i][0]}"]`);
         if (activeLink) {
           activeLink.closest('.nav-item').classList.add('nav-item-active');
         }
       } else {
-        enlaces[i].active = false;
+        enlaces[i][2] = false; // enlaces[i][2] es active
       }
     }
   });
@@ -722,7 +607,7 @@ function initWhatsAppWidget() {
   });
   
   // Cerrar popup al hacer clic fuera
-  document.addEventListener('click', (e) => {
+  $D.addEventListener('click', (e) => {
     if (!button.contains(e.target) && !popup.contains(e.target)) {
       popup.classList.remove('show');
     }
@@ -772,8 +657,8 @@ function closeModal() {
 
 // Función para detectar sección activa en scroll
 function initScrollSpy() {
-  const sections = $.d.sA('.seccion');
-  const navItems = $.d.sA('.nav-item');
+  const sections = $.sA('.seccion');
+  const navItems = $.sA('.nav-item');
   
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -791,8 +676,11 @@ function initScrollSpy() {
         
         // Actualizar datos de enlaces
         enlaces.forEach(enlace => {
-          enlace.active = enlace.section_id === sectionId;
+          enlace[2] = enlace[0] === sectionId; // enlace[0] es section_id, enlace[2] es active
         });
+        
+        // Actualizar SEO
+        updateSEO(sectionId);
       }
     });
   }, {
@@ -806,7 +694,7 @@ function initScrollSpy() {
 
 // Función para smooth scroll en enlaces
 function initSmoothScroll() {
-  const links = $.d.sA('a[href^="#"]');
+  const links = $.sA('a[href^="#"]');
   
   links.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -827,8 +715,8 @@ function initSmoothScroll() {
 
 // Función para añadir efectos de hover en tarjetas de servicio
 function initServiceCardEffects() {
-  document.addEventListener('mousemove', (e) => {
-    const cards = $.d.sA('.service-card-modern');
+  $D.addEventListener('mousemove', (e) => {
+    const cards = $.sA('.service-card-modern');
     
     cards.forEach(card => {
       const rect = card.getBoundingClientRect();
@@ -850,7 +738,7 @@ function initServiceCardEffects() {
   });
   
   // Reset transform cuando el mouse sale de la tarjeta
-  $.d.sA('.service-card-modern').forEach(card => {
+  $.sA('.service-card-modern').forEach(card => {
     card.addEventListener('mouseleave', () => {
       const cardContent = card.querySelector('.card-content');
       if (cardContent) {
@@ -873,12 +761,16 @@ function initScrollAnimations() {
   });
   
   // Observar elementos con animación
-  const animatedElements = $.d.sA('.service-card-wrapper, .portfolio-item-wrapper, .tech-card-wrapper, .timeline-step');
+  const animatedElements = $.sA('.service-card-wrapper, .portfolio-item-wrapper, .tech-card-wrapper, .timeline-step');
   animatedElements.forEach(el => observer.observe(el));
 }
 
 // Función principal de inicialización
 function init() {
+  // Inicializar SEO
+  addStructuredData();
+  updateSEO('seccion-inicio');
+  
   // Inicializar efectos visuales
   initMatrixEffect();
   
@@ -900,18 +792,18 @@ function init() {
   initScrollAnimations();
   
   // Exponer función closeModal globalmente
-  window.closeModal = closeModal;
+  $W.closeModal = closeModal;
 }
 
 // Inicializar cuando el DOM esté listo
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+if ($D.readyState === 'loading') {
+  $D.addEventListener('DOMContentLoaded', init);
 } else {
   init();
 }
 
 // Limpiar intervalos al cerrar la página
-window.addEventListener('beforeunload', () => {
+$W.addEventListener('beforeunload', () => {
   if (animationInterval) {
     clearInterval(animationInterval);
   }
