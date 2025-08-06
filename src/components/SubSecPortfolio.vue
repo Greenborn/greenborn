@@ -91,7 +91,7 @@ onMounted(() => {
 .portfolio-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .portfolio-card-content {
@@ -133,9 +133,9 @@ onMounted(() => {
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, 
-    rgba(0, 0, 0, 0.8) 0%, 
-    rgba(0, 0, 0, 0.6) 50%, 
-    rgba(0, 0, 0, 0.9) 100%);
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(0, 0, 0, 0.8) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +150,7 @@ onMounted(() => {
 
 .overlay-content {
   text-align: center;
-  color: var(--text-light);
+  color: #fff;
   max-width: 100%;
 }
 
@@ -158,21 +158,19 @@ onMounted(() => {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #fff;
 }
 
 .project-description {
   font-size: 0.9rem;
   line-height: 1.5;
   margin-bottom: 1.5rem;
-  color: var(--text-gray);
+  color: #fff;
   max-height: 120px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 
@@ -188,19 +186,19 @@ onMounted(() => {
 }
 
 .tech-tag {
-  background: rgba(0, 212, 170, 0.2);
+  background: rgba(0, 48, 38, 0.2);
   color: var(--primary-green);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
-  border: 1px solid rgba(0, 212, 170, 0.3);
+  border: 1px solid rgba(0, 48, 38, 0.3);
   transition: var(--transition-medium);
 }
 
 .tech-tag:hover {
-  background: var(--primary-green);
-  color: var(--bg-dark);
+  background: var(--primary-green-dark);
+  color: var(--text-light);
 }
 
 .project-cta {
@@ -225,8 +223,9 @@ onMounted(() => {
 }
 
 .visit-project:hover {
-  background: var(--primary-green);
-  color: var(--bg-dark);
+  background: var(--primary-green-dark);
+  color: var(--text-light);
+  border-color: var(--primary-green-light);
   transform: translateY(-2px);
   text-decoration: none;
 }

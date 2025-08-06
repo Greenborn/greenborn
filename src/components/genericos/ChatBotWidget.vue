@@ -11,7 +11,6 @@
         <div class="chatbot-header-content">
           <div class="chatbot-brand">
             <span class="chatbot-title">GREENBORN</span>
-            <span class="chatbot-subtitle">Asistente Virtual</span>
           </div>
         </div>
         <button class="close-btn" @click="toggleChat">
@@ -22,7 +21,7 @@
       </div>
       
       <div class="chatbot-content">
-        <div class="chatbot-note">
+        <div v-if="showNoteBot" class="chatbot-note">
           <div class="note-icon">💬</div>
           <div class="note-text">
             <strong>¿Necesitas ayuda personalizada?</strong>
@@ -41,7 +40,7 @@
           </button>
         </div>
         
-        <div class="chatbot-note-bot">
+        <div v-if="showNoteBot" class="chatbot-note-bot">
           <div class="bot-icon">🤖</div>
           <span>Para consultas rápidas puedes usar nuestro chatbot</span>
         </div>
@@ -49,7 +48,8 @@
         <div class="chatbot-messages" ref="messagesEnd">
           <div v-for="(msg, idx) in messages" :key="idx" :class="['message', msg.from]">
             <div class="message-content">
-              {{ msg.text }}
+              <span v-if="msg.from === 'bot'" v-html="parseMarkdown(msg.text)"></span>
+              <span v-else>{{ msg.text }}</span>
             </div>
           </div>
           <div v-if="loading" class="message bot loading">
@@ -83,7 +83,23 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, nextTick, onMounted, computed } from 'vue'
+// Función simple para parsear markdown básico a HTML
+function parseMarkdown(text) {
+  if (!text) return '';
+  let html = text;
+  // Negrita **texto**
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Títulos ###, ##, #
+  html = html.replace(/^### (.*)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*)$/gm, '<h1>$1</h1>');
+  // Listas numeradas 1. texto
+  html = html.replace(/\n(\d+)\. (.*?)(?=\n|$)/g, '<br><span class="md-list-num">$1.</span> $2');
+  // Salto de línea
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
 
 const open = ref(false)
 const input = ref('')
@@ -92,6 +108,11 @@ const userId = ref()
 const messages = ref([
   { from: 'bot', text: '¡Hola! ¿En qué puedo ayudarte?' }
 ])
+
+const showNoteBot = computed(() => {
+  // Mostrar solo si no hay mensajes del bot distintos al inicial
+  return messages.value.filter(m => m.from === 'bot').length <= 1;
+});
 const messagesEnd = ref(null)
 
 onMounted(() => {
@@ -170,7 +191,7 @@ function openWhatsApp(phone, text) {
   height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   font-size: 1.5rem;
   box-shadow: var(--shadow-hover);
@@ -195,6 +216,8 @@ function openWhatsApp(phone, text) {
   bottom: 90px;
   width: 380px;
   max-width: 90vw;
+  max-height: 90vh;
+  height: auto;
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   border-radius: 16px;
@@ -204,6 +227,7 @@ function openWhatsApp(phone, text) {
   z-index: 1001;
   border: 1px solid var(--border-light);
   overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chatbot-header {
@@ -212,7 +236,7 @@ function openWhatsApp(phone, text) {
   align-items: center;
   padding: 16px 20px;
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -229,21 +253,23 @@ function openWhatsApp(phone, text) {
 
 .chatbot-title {
   font-family: 'BebasNeue', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.7rem;
   font-weight: bold;
   letter-spacing: 1px;
+  color: var(--text-dark);
 }
 
 .chatbot-subtitle {
   font-size: 0.75rem;
   opacity: 0.9;
   font-weight: 300;
+  color: var(--text-dark);
 }
 
 .close-btn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  color: var(--text-light);
+  color: var(--text-dark);
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -263,7 +289,10 @@ function openWhatsApp(phone, text) {
 .chatbot-content {
   display: flex;
   flex-direction: column;
-  height: 400px;
+  flex: 1 1 auto;
+  min-height: 300px;
+  max-height: 70vh;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chatbot-note {
@@ -306,7 +335,7 @@ function openWhatsApp(phone, text) {
 
 .quick-reply {
   background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
@@ -387,7 +416,7 @@ function openWhatsApp(phone, text) {
 
 .message.user .message-content {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .loading-dots {
@@ -465,7 +494,7 @@ function openWhatsApp(phone, text) {
 
 .send-btn {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -509,16 +538,47 @@ function openWhatsApp(phone, text) {
 /* Responsive */
 @media (max-width: 768px) {
   .chatbot-window {
-    right: 16px;
-    left: 16px;
-    width: auto;
-    max-width: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
   }
-  
+  .chatbot-content {
+    flex: 1 1 auto;
+    max-height: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .chatbot-input {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    border-radius: 0;
+    z-index: 10000;
+  }
+  .chatbot-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100vh - 56px - 56px - 70px); /* header + quick-replies + input aprox */
+    overflow-y: auto;
+    padding-bottom: 90px; /* Altura del input fijo para evitar superposición */
+    padding-bottom: 90px; /* Altura del input fijo para evitar superposición */
+  }
   .chatbot-quick-replies {
     flex-direction: column;
   }
-  
   .quick-reply {
     justify-content: center;
   }

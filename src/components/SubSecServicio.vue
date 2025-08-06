@@ -203,7 +203,7 @@ function handleMouseLeave() {
     rgba(0, 212, 170, 0.12) 0%, /* Reducido de 0.15 a 0.12 */
     rgba(0, 184, 148, 0.08) 50%, /* Reducido de 0.1 a 0.08 */
     rgba(0, 0, 0, 0.75) 100%); /* Aumentado de 0.7 a 0.75 */
-  border-color: rgba(0, 212, 170, 0.3); /* Reducido de 0.4 a 0.3 */
+  border-color: var(--primary-green-light); /* Cambiado a verde claro */
 }
 
 .service-card-modern:hover .icon-image {

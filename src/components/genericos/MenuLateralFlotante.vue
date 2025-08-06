@@ -197,7 +197,7 @@ onMounted(async () => {
 
 .menu-toggle:hover {
   transform: scale(1.05);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
   box-shadow: var(--shadow-hover);
 }
 
@@ -394,24 +394,43 @@ onMounted(async () => {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .modern-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 3000;
+  }
   .menu-panel {
     width: 100vw;
+    left: 0;
     right: -100vw;
+    min-width: 0;
+    max-width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
   }
-  
+  .panel-active {
+    right: 0;
+    left: 0;
+  }
+  .menu-overlay {
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+  }
   .menu-toggle {
     top: 1rem;
     right: 1rem;
   }
-  
   .menu-header {
     padding: 2rem 1.5rem 1.5rem;
   }
-  
   .nav-link {
     padding: 1rem 1.5rem;
   }
-  
   .menu-footer {
     padding: 1.5rem;
   }

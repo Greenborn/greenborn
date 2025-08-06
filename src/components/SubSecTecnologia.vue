@@ -2,7 +2,37 @@
   <div class="tech-card-modern">
     <div class="tech-card-content">
       
-      <!-- Logo de la tecnología -->
+      <!-.tech-image[alt="Django"] {
+  filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.4));
+}
+
+.tech-image[alt="Maria DB"] {
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
+}
+
+.tech-image[alt="PHP"] {
+  filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.4));
+}
+
+.tech-image[alt="HTML5"] {
+  filter: drop-shadow(0 0 10px rgba(255, 69, 0, 0.4));
+}
+
+.tech-image[alt="Bootstrap"] {
+  filter: drop-shadow(0 0 10px rgba(255, 0, 255, 0.4));
+}
+
+.tech-image[alt="JavaScript"] {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.4));
+}
+
+.tech-image[alt="Python"] {
+  filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.4));
+}
+
+.tech-image[alt="WordPress"] {
+  filter: drop-shadow(0 0 10px rgba(32, 178, 170, 0.4));
+}de la tecnología -->
       <div class="tech-logo">
         <a :href="data.url" target="_blank" class="tech-link">
           <img :src="data.img_src" :alt="data.name" class="tech-image" />
@@ -45,7 +75,7 @@ const props = defineProps([ "data" ])
 .tech-card-modern:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green);
+  border-color: var(--primary-green-light);
 }
 
 .tech-card-content {
@@ -78,26 +108,74 @@ const props = defineProps([ "data" ])
 }
 
 /* Filtros específicos para iconos problemáticos */
+.tech-image[alt="JavaScript"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(247, 223, 30, 0.4));
+}
+
+.tech-image[alt="Bootstrap"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(121, 82, 179, 0.4));
+}
+
+.tech-image[alt="HTML5"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(227, 79, 38, 0.4));
+}
+
+.tech-image[alt="PHP"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(119, 123, 179, 0.4));
+}
+
+.tech-image[alt="Python"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(75, 139, 190, 0.4));
+}
+
 .tech-image[alt="Maria DB"] {
-  filter: brightness(1.5) contrast(1.8) hue-rotate(200deg) saturate(2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(0, 255, 255, 0.4));
 }
 
 .tech-image[alt="Django"] {
-  filter: brightness(0.9) contrast(1.3) blur(0.5px) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(0, 255, 65, 0.4));
+}
+
+.tech-image[alt="WordPress"] {
+  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(74, 157, 211, 0.4));
 }
 
 .tech-card-modern:hover .tech-image {
   opacity: 1;
-  filter: brightness(1) contrast(1.3) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
+  filter: brightness(1.1) contrast(1.2) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   transform: scale(1.05);
 }
 
+.tech-card-modern:hover .tech-image[alt="JavaScript"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(247, 223, 30, 0.7));
+}
+
+.tech-card-modern:hover .tech-image[alt="Bootstrap"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(121, 82, 179, 0.7));
+}
+
+.tech-card-modern:hover .tech-image[alt="HTML5"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(227, 79, 38, 0.7));
+}
+
+.tech-card-modern:hover .tech-image[alt="PHP"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(119, 123, 179, 0.7));
+}
+
+.tech-card-modern:hover .tech-image[alt="Python"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(75, 139, 190, 0.7));
+}
+
 .tech-card-modern:hover .tech-image[alt="Maria DB"] {
-  filter: brightness(1.8) contrast(2) hue-rotate(200deg) saturate(3) drop-shadow(0 4px 8px rgba(0, 150, 255, 0.4));
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(0, 255, 255, 0.7));
 }
 
 .tech-card-modern:hover .tech-image[alt="Django"] {
-  filter: brightness(1.1) contrast(1.4) blur(0.3px) sepia(0.3) saturate(2) hue-rotate(140deg) drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(0, 255, 65, 0.7));
+}
+
+.tech-card-modern:hover .tech-image[alt="WordPress"] {
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(74, 157, 211, 0.7));
 }
 
 .tech-info {

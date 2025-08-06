@@ -270,45 +270,51 @@ import EfectoMatrix from './genericos/EfectoMatrix.vue'
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+  background: var(--primary-green-dark);
   /* Mejorar contraste */
   box-shadow: 
-    0 4px 16px rgba(0, 212, 170, 0.4),
+    0 4px 16px rgba(0, 48, 38, 0.4),
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(0, 212, 170, 0.3);
+  border: 1px solid rgba(0, 48, 38, 0.3);
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
 }
 
 .btn-primary:hover {
   box-shadow: 
-    0 8px 24px rgba(0, 212, 170, 0.6),
+    0 8px 24px rgba(0, 48, 38, 0.6),
     0 12px 40px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+  color: var(--text-light);
+  border-color: var(--primary-green-light);
+  text-decoration: none;
 }
 
 .btn-secondary {
-  background: rgba(0, 212, 170, 0.1);
-  border: 2px solid var(--primary-green);
+  background: rgba(0, 48, 38, 0.1);
+  border: 2px solid var(--primary-green-dark);
   color: var(--primary-green);
   /* Mejorar contraste */
   backdrop-filter: blur(10px);
   box-shadow: 
-    0 4px 16px rgba(0, 212, 170, 0.2),
+    0 4px 16px rgba(0, 48, 38, 0.2),
     0 8px 32px rgba(0, 0, 0, 0.3);
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary:hover {
-  background: var(--primary-green);
-  color: var(--bg-dark);
+  background: var(--primary-green-dark);
+  color: var(--text-light);
   box-shadow: 
-    0 8px 24px rgba(0, 212, 170, 0.6),
+    0 8px 24px rgba(0, 48, 38, 0.6),
     0 12px 40px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  border-color: var(--primary-green-light);
+  text-decoration: none;
 }
 
 /* Elementos flotantes */
