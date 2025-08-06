@@ -549,6 +549,30 @@ function openWhatsApp(phone, text) {
     max-height: 100vh;
     border-radius: 0;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+  }
+  .chatbot-content {
+    flex: 1 1 auto;
+    max-height: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .chatbot-input {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    border-radius: 0;
+    z-index: 10000;
+  }
+  .chatbot-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100vh - 56px - 56px - 70px); /* header + quick-replies + input aprox */
+    overflow-y: auto;
   }
   .chatbot-quick-replies {
     flex-direction: column;
