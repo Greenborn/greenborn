@@ -538,16 +538,21 @@ function openWhatsApp(phone, text) {
 /* Responsive */
 @media (max-width: 768px) {
   .chatbot-window {
-    right: 16px;
-    left: 16px;
-    width: auto;
-    max-width: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    z-index: 9999;
   }
-  
   .chatbot-quick-replies {
     flex-direction: column;
   }
-  
   .quick-reply {
     justify-content: center;
   }
