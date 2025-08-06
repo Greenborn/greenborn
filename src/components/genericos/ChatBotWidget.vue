@@ -48,7 +48,8 @@
         <div class="chatbot-messages" ref="messagesEnd">
           <div v-for="(msg, idx) in messages" :key="idx" :class="['message', msg.from]">
             <div class="message-content">
-              {{ msg.text }}
+              <span v-if="msg.from === 'bot'" v-html="parseMarkdown(msg.text)"></span>
+              <span v-else>{{ msg.text }}</span>
             </div>
           </div>
           <div v-if="loading" class="message bot loading">
@@ -83,6 +84,22 @@
 
 <script setup>
 import { ref, nextTick, onMounted, computed } from 'vue'
+// Función simple para parsear markdown básico a HTML
+function parseMarkdown(text) {
+  if (!text) return '';
+  let html = text;
+  // Negrita **texto**
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Títulos ###, ##, #
+  html = html.replace(/^### (.*)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*)$/gm, '<h1>$1</h1>');
+  // Listas numeradas 1. texto
+  html = html.replace(/\n(\d+)\. (.*?)(?=\n|$)/g, '<br><span class="md-list-num">$1.</span> $2');
+  // Salto de línea
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
 
 const open = ref(false)
 const input = ref('')
