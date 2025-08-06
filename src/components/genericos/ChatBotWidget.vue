@@ -40,7 +40,7 @@
           </button>
         </div>
         
-        <div class="chatbot-note-bot">
+        <div v-if="showNoteBot" class="chatbot-note-bot">
           <div class="bot-icon">🤖</div>
           <span>Para consultas rápidas puedes usar nuestro chatbot</span>
         </div>
@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, nextTick, onMounted, computed } from 'vue'
 
 const open = ref(false)
 const input = ref('')
@@ -91,6 +91,11 @@ const userId = ref()
 const messages = ref([
   { from: 'bot', text: '¡Hola! ¿En qué puedo ayudarte?' }
 ])
+
+const showNoteBot = computed(() => {
+  // Mostrar solo si no hay mensajes del bot distintos al inicial
+  return messages.value.filter(m => m.from === 'bot').length <= 1;
+});
 const messagesEnd = ref(null)
 
 onMounted(() => {
