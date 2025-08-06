@@ -410,10 +410,15 @@ onMounted(async () => {
     max-width: 100vw;
     height: 100vh;
     box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.2s;
   }
-  .panel-active {
+  .menu-panel.panel-active {
     right: 0;
     left: 0;
+    opacity: 1;
+    pointer-events: auto;
   }
   .menu-overlay {
     width: 100vw;
