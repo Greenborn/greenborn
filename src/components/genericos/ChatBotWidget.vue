@@ -21,7 +21,7 @@
       </div>
       
       <div class="chatbot-content">
-        <div class="chatbot-note">
+        <div v-if="showNoteBot" class="chatbot-note">
           <div class="note-icon">💬</div>
           <div class="note-text">
             <strong>¿Necesitas ayuda personalizada?</strong>
@@ -174,7 +174,7 @@ function openWhatsApp(phone, text) {
   height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   font-size: 1.5rem;
   box-shadow: var(--shadow-hover);
@@ -236,7 +236,7 @@ function openWhatsApp(phone, text) {
 
 .chatbot-title {
   font-family: 'BebasNeue', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.7rem;
   font-weight: bold;
   letter-spacing: 1px;
   color: var(--text-dark);
@@ -252,7 +252,7 @@ function openWhatsApp(phone, text) {
 .close-btn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  color: var(--text-light);
+  color: var(--text-dark);
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -318,7 +318,7 @@ function openWhatsApp(phone, text) {
 
 .quick-reply {
   background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
@@ -399,7 +399,7 @@ function openWhatsApp(phone, text) {
 
 .message.user .message-content {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .loading-dots {
@@ -477,7 +477,7 @@ function openWhatsApp(phone, text) {
 
 .send-btn {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   border-radius: 50%;
   width: 40px;
