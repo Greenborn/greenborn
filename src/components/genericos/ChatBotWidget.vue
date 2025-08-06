@@ -11,7 +11,6 @@
         <div class="chatbot-header-content">
           <div class="chatbot-brand">
             <span class="chatbot-title">GREENBORN</span>
-            <span class="chatbot-subtitle">Asistente Virtual</span>
           </div>
         </div>
         <button class="close-btn" @click="toggleChat">
@@ -212,7 +211,7 @@ function openWhatsApp(phone, text) {
   align-items: center;
   padding: 16px 20px;
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  color: var(--text-light);
+  color: var(--text-dark);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -232,12 +231,14 @@ function openWhatsApp(phone, text) {
   font-size: 1.2rem;
   font-weight: bold;
   letter-spacing: 1px;
+  color: var(--text-dark);
 }
 
 .chatbot-subtitle {
   font-size: 0.75rem;
   opacity: 0.9;
   font-weight: 300;
+  color: var(--text-dark);
 }
 
 .close-btn {
