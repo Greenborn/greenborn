@@ -9,7 +9,10 @@
 <CustomCursor :config='{ highlighted_tags: [ "a", "button", ".text-res-1", ".circ-met", ".text-effect", ".menu-item" ], 
                             transform_time: ".2s", click_effect_enabled: false }' />
 <MenuLateralFlotante />
+<!--
 <WhatsAppWidget phone="542494279833" :quick_replies="quick_replies" />
+-->
+<ChatBotWidget />
 </template>
 
 <script setup>
@@ -34,5 +37,6 @@ import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'
 import MetodologiaTrabajo from './components/MetodologiaTrabajo.vue'
 import MenuLateralFlotante from './components/genericos/MenuLateralFlotante.vue'
+import ChatBotWidget from './components/genericos/ChatBotWidget.vue'
 </script>
 
