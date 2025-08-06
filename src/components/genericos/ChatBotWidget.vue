@@ -194,6 +194,8 @@ function openWhatsApp(phone, text) {
   bottom: 90px;
   width: 380px;
   max-width: 90vw;
+  max-height: 90vh;
+  height: auto;
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   border-radius: 16px;
@@ -203,6 +205,7 @@ function openWhatsApp(phone, text) {
   z-index: 1001;
   border: 1px solid var(--border-light);
   overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chatbot-header {
@@ -264,7 +267,10 @@ function openWhatsApp(phone, text) {
 .chatbot-content {
   display: flex;
   flex-direction: column;
-  height: 400px;
+  flex: 1 1 auto;
+  min-height: 300px;
+  max-height: 70vh;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chatbot-note {
