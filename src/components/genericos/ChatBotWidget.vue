@@ -573,6 +573,8 @@ function openWhatsApp(phone, text) {
     min-height: 0;
     max-height: calc(100vh - 56px - 56px - 70px); /* header + quick-replies + input aprox */
     overflow-y: auto;
+    padding-bottom: 90px; /* Altura del input fijo para evitar superposición */
+    padding-bottom: 90px; /* Altura del input fijo para evitar superposición */
   }
   .chatbot-quick-replies {
     flex-direction: column;
