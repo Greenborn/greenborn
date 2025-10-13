@@ -1,0 +1,224 @@
+:root {
+  /* Colores modernos */
+  --primary-green: #00d4aa;
+  --primary-green-light: #8BC34A;
+  --primary-green-dark: #003026;
+  --primary-dark: #0a0a0a;
+  --secondary-green: #00b894;
+  --accent-green: #00f5d4;
+  --text-light: #ffffff;
+  --text-dark: #0a0a0a;
+  --text-contrast: #1a1a1a;
+  --text-gray: #a0a0a0;
+  --bg-dark: #0a0a0a;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.1);
+  
+  /* Espaciado */
+  --section-padding: 6rem 0;
+  --container-padding: 0 2rem;
+  
+  /* Sombras */
+  --shadow-card: 0 8px 32px rgba(0, 48, 38, 0.1);
+  --shadow-hover: 0 16px 48px rgba(0, 48, 38, 0.2);
+  
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.4s ease;
+  --transition-slow: 0.8s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: var(--bg-dark) !important;
+  color: var(--text-light);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+@font-face { 
+  font-family: 'BitstreamVeraMono'; 
+  src: url('assets/fnt/VeraMono.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal; 
+}
+
+@font-face { 
+  font-family: 'BebasNeue'; 
+  src: url('assets/fnt/BebasNeue-Regular.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal; 
+}
+
+@font-face { 
+  font-family: 'BelgianoSerif'; 
+  src: url('assets/fnt/BelgianoSerif2.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal; 
+}
+
+/* Utilidades modernas */
+.disable-select {
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+  pointer-events: none;
+}
+
+.h-100vh {
+  min-height: 100svh;
+}
+
+.ov-none {
+  overflow: hidden;
+}
+
+/* Gradientes modernos */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 100%);
+}
+
+.bg-gradient-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-light);
+}
+
+/* Secciones */
+.seccion {
+  padding: var(--section-padding);
+  overflow-x: hidden;
+}
+
+/* Contenedores */
+.container-modern {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--container-padding);
+}
+
+/* Botones modernos */
+.btn-modern {
+  background: var(--primary-green-dark);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  color: var(--text-light);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-medium);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  color: var(--text-light);
+  border: 2px solid var(--primary-green-light);
+  text-decoration: none;
+}
+
+/* Efectos de hover */
+.hover-lift {
+  transition: var(--transition-medium);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  :root {
+    --section-padding: 4rem 0;
+    --container-padding: 0 1rem;
+  }
+  
+  .container-modern {
+    padding: var(--container-padding);
+  }
+}
+
+@media (max-width: 500px) {
+  .inverted-cursor {
+    display: none !important;
+  }
+  
+  :root {
+    --section-padding: 3rem 0;
+  }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-green);
+}
