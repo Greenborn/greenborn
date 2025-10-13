@@ -38,6 +38,14 @@
         <p>
           <span class="copyleft">&copy;</span> 2025 Greenborn - Desarrollo de Software Libre
         </p>
+          <ul class="footer-links">
+            <li>
+              <a href="https://greenborn.com.ar/politica-privacidad.html" target="_blank">Política de Privacidad</a>
+            </li>
+            <li>
+              <a href="https://greenborn.com.ar/condiciones-servicio.html" target="_blank">Condiciones de Servicio</a>
+            </li>
+          </ul>
       </div>
 
     </div>
