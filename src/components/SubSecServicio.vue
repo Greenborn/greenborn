@@ -19,7 +19,8 @@
         </div>
         
         <div class="service-cta">
-          <a href="#seccion-contacto" class="learn-more">Saber más →</a>
+          <a v-if="data.link" :href="data.link" class="learn-more" target="_blank" rel="noopener">Ir a Cuenta Greenborn →</a>
+          <a v-else href="#seccion-contacto" class="learn-more">Saber más →</a>
         </div>
       </div>
       

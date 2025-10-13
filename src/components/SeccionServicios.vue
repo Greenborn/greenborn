@@ -82,6 +82,14 @@ const listado_servicios = ref([
     "description": "El Web Hosting más conveniente.", 
     "order": 50, 
     "img_src": IconN5 
+  },
+  {
+    "id": 6,
+    "name": "Cuenta Greenborn",
+    "description": "Accede a todas las mini aplicaciones y servicios exclusivos con tu cuenta Greenborn. Gestiona tu identidad digital y mejora tu experiencia de usuario.",
+    "order": 60,
+    "img_src": IconN1,
+    "link": "https://greenborn.com.ar/cuenta-usuario.html"
   }
 ])
 </script>
