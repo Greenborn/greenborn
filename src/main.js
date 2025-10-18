@@ -30,8 +30,8 @@ import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
 import Card from 'primevue/card';
 
-import { VueCustomCursor } from '@greenborn/vue-custom-cursor'; 
-import '@greenborn/vue-custom-cursor/dist/library.css';
+//import { VueCustomCursor } from '@greenborn/vue-custom-cursor'; 
+//import '@greenborn/vue-custom-cursor/dist/library.css';
 
 import { VueWhatsAppWidget } from '@greenborn/vue3-whatsapp-widget'
 
@@ -59,7 +59,7 @@ createApp(App)
 .component("AccordionHeader", AccordionHeader)
 .component("AccordionContent", AccordionContent)
 .use(createPinia())
-.use(VueCustomCursor)
+//.use(VueCustomCursor)
 .use(VueWhatsAppWidget)
 .use(PrimeVue, {
     theme: {
