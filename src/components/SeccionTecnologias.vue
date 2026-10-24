@@ -1,12 +1,13 @@
 <template>
-<div class="technologies-section seccion" id="seccion-tecnologias">
+<section class="technologies-section seccion seccion--alt" id="seccion-tecnologias">
   <div class="container-modern">
-    
+
     <!-- Header de la sección -->
     <div class="section-header">
-      <h2 class="section-title">Tecnologías</h2>
+      <p class="section-eyebrow">Tecnologías</p>
+      <h2 class="section-title">Nuestro <em>stack</em></h2>
       <p class="section-subtitle">
-        Utilizamos las mejores tecnologías de software libre para crear soluciones robustas y escalables
+        Usamos software libre para construir soluciones robustas, escalables y sin dependencias innecesarias.
       </p>
     </div>
 
@@ -23,7 +24,7 @@
     </div>
 
     <!-- Estadísticas -->
-    <div class="stats-section">
+    <div class="stats-section card-surface">
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-number">10+</div>
@@ -41,7 +42,7 @@
     </div>
 
   </div>
-</div>
+</section>
 </template>
 
 <script setup>
@@ -83,119 +84,92 @@ const listado_tecnologias_leng = ref([
 </script>
 
 <style scoped>
-.technologies-section {
-  background: var(--bg-gradient-dark);
-  position: relative;
-}
-
-.technologies-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  color: var(--text-gray);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 .technologies-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-7);
 }
 
 .tech-card-wrapper {
   animation: fadeInUp 0.8s ease-out both;
 }
 
+/* Si sobra una tarjeta en la última fila, la centramos */
+.tech-card-wrapper:last-child:nth-child(3n + 1) {
+  grid-column: 2;
+}
+
+@media (max-width: 768px) {
+  .tech-card-wrapper:last-child:nth-child(3n + 1) {
+    grid-column: auto;
+  }
+}
+
 .stats-section {
-  text-align: center;
-  padding: 3rem;
-  background: var(--bg-gradient-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  margin-top: 2rem;
-  animation: fadeInUp 0.8s ease-out 0.5s both;
+  margin-top: var(--sp-3);
+  padding: var(--sp-5);
+  animation: fadeInUp 0.8s ease-out 0.3s both;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
 }
 
 .stat-item {
+  position: relative;
   text-align: center;
 }
 
+.stat-item + .stat-item::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--sp-4) / -2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 60%;
+  background: var(--border-light);
+}
+
 .stat-number {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-  animation: pulse 2s infinite;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--primary-green);
 }
 
 .stat-label {
-  font-size: 1.1rem;
   color: var(--text-gray);
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .technologies-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .stats-section {
-    padding: 2rem 1.5rem;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--sp-3);
   }
 }
 
-@media (max-width: 480px) {
-  .section-header {
-    margin-bottom: 3rem;
+@media (max-width: 600px) {
+  .technologies-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .stats-section {
-    padding: 1.5rem 1rem;
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+
+  .stat-item + .stat-item::before {
+    display: none;
   }
 }
 </style>

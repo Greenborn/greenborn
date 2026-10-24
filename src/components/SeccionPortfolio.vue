@@ -112,7 +112,7 @@ const trabajos = ref([
 
 <style scoped>
 .portfolio-section {
-  background: var(--bg-gradient-dark);
+  background: var(--surface-0);
   position: relative;
 }
 
@@ -124,30 +124,6 @@ const trabajos = ref([
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  color: var(--text-gray);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
 }
 
 .portfolio-grid {

@@ -1,10 +1,11 @@
 <template>
-  <div class="services-section seccion" id="seccion-servicios">
+  <section class="services-section seccion seccion--alt" id="seccion-servicios">
     <div class="container-modern">
-      
+
       <!-- Header de la sección -->
       <div class="section-header">
-        <h2 class="section-title">Nuestros Servicios</h2>
+        <p class="section-eyebrow">Servicios</p>
+        <h2 class="section-title">Lo que <em>hacemos</em></h2>
         <p class="section-subtitle">
           Soluciones integrales de desarrollo de software libre para tu negocio
         </p>
@@ -12,8 +13,8 @@
 
       <!-- Grid de servicios -->
       <div class="services-grid">
-        <div 
-          v-for="(service, index) in listado_servicios" 
+        <div
+          v-for="(service, index) in listado_servicios.filter(s => !s.oculto)"
           :key="service.id"
           class="service-card-wrapper"
           :style="{ animationDelay: `${index * 0.1}s` }"
@@ -23,18 +24,16 @@
       </div>
 
       <!-- CTA adicional -->
-      <div class="services-cta">
-        <div class="cta-content">
-          <h3>¿Necesitas algo específico?</h3>
-          <p>Contáctanos para discutir tu proyecto personalizado</p>
-          <a href="#seccion-contacto" class="btn-modern">
-            Consulta Gratuita
-          </a>
-        </div>
+      <div class="cta-panel">
+        <h3>¿Necesitás algo específico?</h3>
+        <p>Contanos tu idea y armamos una propuesta a medida, sin compromiso.</p>
+        <a href="#seccion-contacto" class="btn-modern">
+          Consulta gratuita
+        </a>
       </div>
-
     </div>
-  </div>
+
+  </section>
 </template>
 
 <script setup>
@@ -83,112 +82,44 @@ const listado_servicios = ref([
     "order": 50, 
     "img_src": IconN5 
   },
+  // Tarjeta "Cuenta Greenborn" oculta en la navegación principal (grilla de servicios).
+  // NO se eliminó: sigue accesible directamente en cuenta-usuario.html.
+  // Para volver a mostrarla, quitar "oculto: true".
   {
     "id": 6,
     "name": "Cuenta Greenborn",
     "description": "Accede a todas las mini aplicaciones y servicios exclusivos con tu cuenta Greenborn. Gestiona tu identidad digital y mejora tu experiencia de usuario.",
     "order": 60,
     "img_src": IconN1,
-    "link": "https://greenborn.com.ar/cuenta-usuario.html"
+    "link": "https://greenborn.com.ar/cuenta-usuario.html",
+    "oculto": true
   }
 ])
 </script>
 
 <style scoped>
-.services-section {
-  background: var(--bg-gradient-dark);
-  position: relative;
-}
-
-.services-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  color: var(--text-gray);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 .services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-7);
 }
 
 .service-card-wrapper {
+  flex: 1 1 320px;
+  max-width: 380px;
   animation: fadeInUp 0.8s ease-out both;
 }
 
-.services-cta {
-  text-align: center;
-  padding: 3rem;
-  background: var(--bg-gradient-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  margin-top: 2rem;
-  animation: fadeInUp 0.8s ease-out 0.5s both;
-}
-
-.cta-content h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: 1rem;
-  color: var(--text-light);
-}
-
-.cta-content p {
-  font-size: 1.1rem;
-  color: var(--text-gray);
-  margin-bottom: 2rem;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .services-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: var(--sp-3);
   }
-  
-  .services-cta {
-    padding: 2rem 1.5rem;
-  }
-}
 
-@media (max-width: 480px) {
-  .section-header {
-    margin-bottom: 3rem;
-  }
-  
-  .services-cta {
-    padding: 1.5rem 1rem;
+  .service-card-wrapper {
+    flex: 0 1 520px;
+    max-width: 520px;
   }
 }
 </style>

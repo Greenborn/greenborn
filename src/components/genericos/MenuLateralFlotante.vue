@@ -1,6 +1,6 @@
 <template>
   <!-- Menú flotante moderno -->
-  <div class="modern-menu" :class="{ 'menu-hidden': isInHeader }">
+  <div class="modern-menu">
     
     <!-- Botón hamburguesa -->
     <button 
@@ -69,16 +69,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const desplegado = ref(false)
-const isInHeader = ref(false) // Cambiar a false para que se muestre en el header
 
 const enlaces = ref([
   { label: 'Inicio', active: true, section_id: "seccion-inicio", element: null },
   { label: 'Servicios', active: false, section_id: "seccion-servicios", element: null },
   { label: 'Metodología', active: false, section_id: "seccion-metodologia", element: null },
-  { label: 'Portfolio', active: false, section_id: "seccion-portfolio", element: null },
+  // Portfolio oculto temporalmente (la sección está comentada en App.vue).
+  // Si no se quita, al hacer scroll se accede a element.offsetTop con element null.
+  // { label: 'Portfolio', active: false, section_id: "seccion-portfolio", element: null },
   { label: 'Tecnologías', active: false, section_id: "seccion-tecnologias", element: null },
   { label: 'Contacto', active: false, section_id: "seccion-contacto", element: null },
 ])
@@ -118,7 +119,7 @@ function clickEnlace(enlace) {
   }
   enlace.active = true
   enlace_activo.value = enlace
-  enlace.element.scrollIntoView({ behavior: 'smooth' })
+  enlace.element?.scrollIntoView({ behavior: 'smooth' })
 }
 
 onMounted(async () => {
@@ -127,35 +128,26 @@ onMounted(async () => {
     enlaces.value[i].element = elemento
   }
 
-  const checkHeaderPosition = () => {
-    const headerSection = document.getElementById('seccion-inicio')
-    if (headerSection) {
-      const headerTop = headerSection.offsetTop
-      const headerBottom = headerTop + headerSection.offsetHeight
-      const scrollY = window.scrollY + window.innerHeight
-      
-      if (scrollY > headerTop && window.scrollY < headerBottom) {
-        isInHeader.value = true
-      } else {
-        isInHeader.value = false
-      }
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+function handleScroll() {
+  let actual = enlaces.value[0]
+  for (const enlace of enlaces.value) {
+    if (enlace.element && window.scrollY >= enlace.element.offsetTop - 150) {
+      actual = enlace
     }
   }
 
-  checkHeaderPosition()
+  for (const enlace of enlaces.value) {
+    enlace.active = enlace === actual
+  }
+  enlace_activo.value = actual
+}
 
-  window.addEventListener('scroll', function(e) {
-    checkHeaderPosition()
-
-    for (let i = 0; i < enlaces.value.length; i++) {
-      if (window.scrollY > enlaces.value[i].element.offsetTop - 100) {
-        enlaces.value[i].active = true
-        enlace_activo.value = enlaces.value[i]
-      } else {
-        enlaces.value[i].active = false
-      }
-    }
-  })
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  document.body.style.overflow = ''
 })
 </script>
 
@@ -165,13 +157,9 @@ onMounted(async () => {
   top: 0;
   right: 0;
   z-index: 3000;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.menu-hidden {
-  opacity: 0;
-  transform: translateY(-20px);
+  /* El contenedor no debe bloquear la página cuando el panel está cerrado */
   pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* Botón hamburguesa */
@@ -193,6 +181,7 @@ onMounted(async () => {
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   z-index: 3001;
+  pointer-events: auto;
 }
 
 .menu-toggle:hover {
@@ -234,6 +223,7 @@ onMounted(async () => {
   visibility: hidden;
   transition: all 0.3s ease;
   z-index: 2999;
+  pointer-events: auto;
 }
 
 .overlay-active {
@@ -248,13 +238,14 @@ onMounted(async () => {
   right: -400px;
   width: 400px;
   height: 100vh;
-  background: var(--bg-gradient-dark);
+  background: var(--surface-1);
   border-left: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   z-index: 3000;
   backdrop-filter: blur(20px);
+  pointer-events: auto;
 }
 
 .panel-active {
@@ -273,9 +264,11 @@ onMounted(async () => {
 
 .brand-text {
   display: block;
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, var(--primary-green) 0%, var(--accent-green) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

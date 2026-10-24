@@ -1,267 +1,128 @@
 <template>
-  <div class="tech-card-modern">
-    <div class="tech-card-content">
-      
-      <!-.tech-image[alt="Django"] {
-  filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.4));
-}
+  <article class="tech-card">
+    <div class="tech-head">
+      <a :href="data.url" target="_blank" rel="noopener" class="tech-logo" :aria-label="`Sitio oficial de ${data.name}`">
+        <img :src="data.img_src" :alt="data.name" class="tech-image" />
+      </a>
 
-.tech-image[alt="Maria DB"] {
-  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.4));
-}
-
-.tech-image[alt="PHP"] {
-  filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.4));
-}
-
-.tech-image[alt="HTML5"] {
-  filter: drop-shadow(0 0 10px rgba(255, 69, 0, 0.4));
-}
-
-.tech-image[alt="Bootstrap"] {
-  filter: drop-shadow(0 0 10px rgba(255, 0, 255, 0.4));
-}
-
-.tech-image[alt="JavaScript"] {
-  filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.4));
-}
-
-.tech-image[alt="Python"] {
-  filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.4));
-}
-
-.tech-image[alt="WordPress"] {
-  filter: drop-shadow(0 0 10px rgba(32, 178, 170, 0.4));
-}de la tecnología -->
-      <div class="tech-logo">
-        <a :href="data.url" target="_blank" class="tech-link">
-          <img :src="data.img_src" :alt="data.name" class="tech-image" />
+      <div class="tech-heading">
+        <h3 class="tech-name">{{ data.name }}</h3>
+        <a :href="data.url" target="_blank" rel="noopener" class="tech-link">
+          Sitio oficial <span aria-hidden="true">→</span>
         </a>
       </div>
-      
-      <!-- Información de la tecnología -->
-      <div class="tech-info">
-        <h3 class="tech-name">{{ data.name }}</h3>
-        <p class="tech-description" v-html="data.description"></p>
-        
-        <div class="tech-cta">
-          <a :href="data.url" target="_blank" class="tech-learn-more">
-            Ver más →
-          </a>
-        </div>
-      </div>
-      
     </div>
-  </div>
+
+    <p class="tech-description">{{ data.description }}</p>
+  </article>
 </template>
 
 <script setup>
-const props = defineProps([ "data" ])
+defineProps({ data: { type: Object, required: true } })
 </script>
 
 <style scoped>
-.tech-card-modern {
-  background: var(--bg-gradient-card);
+.tech-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
   border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 2rem;
-  transition: var(--transition-medium);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  animation: fadeInUp 0.8s ease-out both;
+  border-radius: var(--r-md);
+  background: linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--transition-medium),
+    border-color var(--transition-medium),
+    box-shadow var(--transition-medium);
 }
 
-.tech-card-modern:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green-light);
+.tech-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-green);
+  box-shadow: var(--shadow-hover), var(--ring-green);
 }
 
-.tech-card-content {
+.tech-head {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-  gap: 1.5rem;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
 }
 
 .tech-logo {
-  text-align: center;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color var(--transition-medium), background var(--transition-medium);
 }
 
-.tech-link {
-  display: inline-block;
-  transition: var(--transition-medium);
-}
-
-.tech-link:hover {
-  transform: scale(1.1);
+.tech-logo:hover {
+  border-color: var(--border-green);
+  background: rgba(0, 212, 170, 0.08);
 }
 
 .tech-image {
-  width: 80px;
-  height: 80px;
-  filter: brightness(0.8) contrast(1.2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  opacity: 0.9;
-  transition: var(--transition-medium);
+  width: 32px;
+  height: 32px;
+  transition: transform var(--transition-medium);
 }
 
-/* Filtros específicos para iconos problemáticos */
-.tech-image[alt="JavaScript"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(247, 223, 30, 0.4));
+.tech-card:hover .tech-image {
+  transform: scale(1.08);
 }
 
-.tech-image[alt="Bootstrap"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(121, 82, 179, 0.4));
-}
-
-.tech-image[alt="HTML5"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(227, 79, 38, 0.4));
-}
-
-.tech-image[alt="PHP"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(119, 123, 179, 0.4));
-}
-
-.tech-image[alt="Python"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(75, 139, 190, 0.4));
-}
-
-.tech-image[alt="Maria DB"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(0, 255, 255, 0.4));
-}
-
-.tech-image[alt="Django"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(0, 255, 65, 0.4));
-}
-
-.tech-image[alt="WordPress"] {
-  filter: brightness(1) contrast(1) drop-shadow(0 2px 6px rgba(74, 157, 211, 0.4));
-}
-
-.tech-card-modern:hover .tech-image {
-  opacity: 1;
-  filter: brightness(1.1) contrast(1.2) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-  transform: scale(1.05);
-}
-
-.tech-card-modern:hover .tech-image[alt="JavaScript"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(247, 223, 30, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="Bootstrap"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(121, 82, 179, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="HTML5"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(227, 79, 38, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="PHP"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(119, 123, 179, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="Python"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(75, 139, 190, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="Maria DB"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(0, 255, 255, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="Django"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(0, 255, 65, 0.7));
-}
-
-.tech-card-modern:hover .tech-image[alt="WordPress"] {
-  filter: brightness(1.1) contrast(1.1) drop-shadow(0 4px 10px rgba(74, 157, 211, 0.7));
-}
-
-.tech-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.tech-heading {
+  min-width: 0;
 }
 
 .tech-name {
-  font-size: 1.5rem;
-  font-weight: 700;
   color: var(--text-light);
-  margin-bottom: 1rem;
-  text-align: center;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tech-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+  color: var(--primary-green);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: gap var(--transition-fast), color var(--transition-fast);
+}
+
+.tech-link:hover {
+  gap: 0.6rem;
+  color: var(--accent-green);
 }
 
 .tech-description {
-  font-size: 1rem;
-  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
   color: var(--text-gray);
-  margin-bottom: 1.5rem;
-  flex: 1;
-  text-align: center;
+  font-size: var(--fs-sm);
+  line-height: 1.65;
 }
 
-.tech-cta {
-  text-align: center;
-  margin-top: auto;
-}
-
-.tech-learn-more {
-  color: var(--primary-green);
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  transition: var(--transition-medium);
-  display: inline-block;
-}
-
-.tech-learn-more:hover {
-  color: var(--accent-green);
-  transform: translateX(5px);
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-  .tech-card-modern {
-    padding: 1.5rem;
+  .tech-card {
+    padding: 1.25rem;
   }
-  
-  .tech-image {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .tech-name {
-    font-size: 1.3rem;
-  }
-  
-  .tech-description {
-    font-size: 0.9rem;
-  }
-}
 
-@media (max-width: 480px) {
-  .tech-card-modern {
-    padding: 1.2rem;
-  }
-  
-  .tech-image {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .tech-name {
-    font-size: 1.2rem;
-  }
-  
   .tech-description {
-    font-size: 0.85rem;
+    -webkit-line-clamp: 4;
   }
 }
 </style>

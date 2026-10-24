@@ -1,68 +1,100 @@
 <template>
-<canvas id="canv" />
+<canvas ref="canvas" class="efecto-matrix" aria-hidden="true" />
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
-let animationInterval;
+const canvas = ref(null)
 
-onMounted(()=>{
-    const canvas = document.getElementById('canv');
-    const ctx = canvas.getContext('2d');
-    
-    const resizeCanvas = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    };
-    
-    resizeCanvas();
-    
-    const w = canvas.width;
-    const h = canvas.height;
-    const cols = Math.floor(w / 25) + 1;
-    const ypos = Array(cols).fill(0);
+const COL_W = 24        // ancho de columna en px
+const STEP = 24         // avance vertical por tick
+const TICK_MS = 95
 
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, w, h);
+let ctx = null
+let timer = null
+let cols = 0
+let ypos = []
 
-    animationInterval = setInterval(()=>{
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, w, h);
-        
-        ctx.fillStyle = 'rgba(0, 212, 170, 0.1)';
-        ctx.font = '12pt monospace';
-        
-        ypos.forEach((y, ind) => {
-            const text = String.fromCharCode(Math.random() * 128);
-            const x = ind * 25;
-            ctx.fillText(text, x, y);
-            if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
-            else ypos[ind] = y + 25;
-        });
-    }, 100);
+/* Dibuja a la resolución real del dispositivo: en pantallas HiDPI el canvas
+   se veía borroso porque el backing store usaba tamaño CSS. */
+function resizeCanvas() {
+  const el = canvas.value
+  if (!el) return
 
-    window.addEventListener('resize', resizeCanvas);
+  const dpr = window.devicePixelRatio || 1
+  const { width, height } = el.getBoundingClientRect()
+  if (!width || !height) return
+
+  el.width = Math.round(width * dpr)
+  el.height = Math.round(height * dpr)
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.font = '13px "BitstreamVeraMono", monospace'
+  ctx.textBaseline = 'top'
+
+  cols = Math.ceil(width / COL_W) + 1
+  // Arranque desfasado: evita que todas las columnas caigan en bloque
+  ypos = Array.from({ length: cols }, () => Math.random() * -height)
+
+  ctx.fillStyle = '#07090a'
+  ctx.fillRect(0, 0, width, height)
+}
+
+function draw() {
+  const el = canvas.value
+  if (!el) return
+
+  const dpr = window.devicePixelRatio || 1
+  const w = el.width / dpr
+  const h = el.height / dpr
+
+  // Rastro: cada tick oscurece lo anterior en vez de borrarlo
+  ctx.fillStyle = 'rgba(7, 9, 10, 0.05)'
+  ctx.fillRect(0, 0, w, h)
+
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.72)'
+
+  for (let i = 0; i < cols; i++) {
+    // Rango imprimible de ASCII: antes salían caracteres de control invisibles
+    const char = String.fromCharCode(33 + Math.floor(Math.random() * 93))
+    ctx.fillText(char, i * COL_W, ypos[i])
+
+    ypos[i] = ypos[i] > h + Math.random() * h ? 0 : ypos[i] + STEP
+  }
+}
+
+onMounted(() => {
+  const el = canvas.value
+  if (!el) return
+
+  ctx = el.getContext('2d')
+  resizeCanvas()
+
+  // Respeta la preferencia de menos movimiento: deja el fondo estático
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!prefersReducedMotion) {
+    timer = setInterval(draw, TICK_MS)
+  }
+
+  window.addEventListener('resize', resizeCanvas)
 })
 
 onUnmounted(() => {
-    if (animationInterval) {
-        clearInterval(animationInterval);
-    }
-    window.removeEventListener('resize', resizeCanvas);
+  if (timer) clearInterval(timer)
+  window.removeEventListener('resize', resizeCanvas)
 })
 </script>
 
 <style scoped>
-#canv {
-    top: 0;
-    left: 0;
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    transform: rotate(-180deg);
-    z-index: 1;
-    margin: 0;
-    padding: 0;
+.efecto-matrix {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  /* El rastro cae hacia arriba, como en el original */
+  transform: rotate(180deg);
+  opacity: 0.9;
 }
 </style>

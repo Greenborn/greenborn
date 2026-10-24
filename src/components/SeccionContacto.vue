@@ -1,33 +1,62 @@
 <template>
-<div class="contact-section seccion" id="seccion-contacto">
+<section class="contact-section seccion" id="seccion-contacto">
   <div class="container-modern">
-    
+
     <!-- Header de la sección -->
     <div class="section-header">
-      <h2 class="section-title">Contáctanos</h2>
+      <p class="section-eyebrow">Contacto</p>
+      <h2 class="section-title">Hablemos de tu <em>proyecto</em></h2>
       <p class="section-subtitle">
-        ¿Tienes un proyecto en mente? Hablemos sobre cómo podemos ayudarte a hacerlo realidad
+        Contanos qué tenés en mente y te respondemos con una propuesta clara.
       </p>
     </div>
 
     <div class="contact-content">
-      
+
       <!-- Información de contacto -->
       <div class="contact-info">
         <div class="info-card">
           <div class="info-icon">
             <i class="fas fa-map-marker-alt"></i>
           </div>
-          <h3>Ubicación</h3>
-          <p>Tandil, Buenos Aires, Argentina</p>
+          <div>
+            <h3>Ubicación</h3>
+            <p>Tandil, Buenos Aires, Argentina</p>
+          </div>
         </div>
-        
+
+        <div class="info-card">
+          <div class="info-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div>
+            <h3>Email</h3>
+            <p><a href="mailto:info@greenborn.com">info@greenborn.com</a></p>
+          </div>
+        </div>
+
         <div class="info-card">
           <div class="info-icon">
             <i class="fas fa-clock"></i>
           </div>
-          <h3>Horarios</h3>
-          <p>A convenir</p>
+          <div>
+            <h3>Horarios</h3>
+            <p>Lunes a viernes, a convenir</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <div>
+            <h3>WhatsApp</h3>
+            <p>
+              <a href="https://wa.me/542494279833" target="_blank" rel="noopener">
+                +54 9 249 427 9833
+              </a>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -35,7 +64,7 @@
       <div class="contact-form-container">
         <div class="form-card">
           <h3>Envíanos un mensaje</h3>
-          <p class="form-subtitle">Completa el formulario y te responderemos en menos de 24 horas</p>
+          <p class="form-subtitle">Completá el formulario y te respondemos en menos de 24 horas.</p>
           
           <form @submit.prevent="sendMessage" class="contact-form">
             <div class="form-row">
@@ -98,8 +127,8 @@
             
             <div class="form-actions">
               <button type="submit" class="btn-modern">
-                <i class="fas fa-paper-plane"></i>
-                Enviar Mensaje
+                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                Enviar mensaje
               </button>
             </div>
           </form>
@@ -119,7 +148,7 @@
     </div>
 
   </div>
-</div>
+</section>
 </template>
 
 <script setup>
@@ -188,141 +217,110 @@ function sendMessage() {
 </script>
 
 <style scoped>
-.contact-section {
-  background: var(--bg-gradient-dark);
-  position: relative;
-}
-
-.contact-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  color: var(--text-gray);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 .contact-content {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 3rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  gap: var(--sp-5);
+  align-items: start;
 }
 
 .contact-info {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: var(--sp-3);
 }
 
 .info-card {
-  background: var(--bg-gradient-card);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 1.25rem 1.4rem;
   border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 2rem;
-  text-align: center;
-  transition: var(--transition-medium);
+  border-radius: var(--r-md);
+  background: linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
+  transition:
+    transform var(--transition-medium),
+    border-color var(--transition-medium),
+    box-shadow var(--transition-medium);
   animation: fadeInUp 0.8s ease-out both;
 }
 
 .info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green-light);
+  transform: translateY(-3px);
+  border-color: var(--border-green);
+  box-shadow: var(--shadow-card), var(--ring-green);
 }
 
 .info-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  transition: var(--transition-medium);
-}
-
-.info-card:hover .info-icon {
-  transform: scale(1.1);
-}
-
-.info-icon i {
-  font-size: 1.5rem;
-  color: var(--text-light);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-green);
+  border-radius: var(--r-sm);
+  background: rgba(0, 212, 170, 0.1);
+  color: var(--primary-green);
+  font-size: 1rem;
 }
 
 .info-card h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin-bottom: 0.15rem;
   color: var(--text-light);
-  margin-bottom: 0.5rem;
+  font-size: var(--fs-sm);
+  font-weight: 650;
 }
 
 .info-card p {
   color: var(--text-gray);
-  font-size: 1rem;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.info-card p a {
+  color: var(--text-body);
+}
+
+.info-card p a:hover {
+  color: var(--primary-green);
 }
 
 .contact-form-container {
-  animation: fadeInUp 0.8s ease-out 0.2s both;
+  animation: fadeInUp 0.8s ease-out 0.15s both;
 }
 
 .form-card {
-  background: var(--bg-gradient-card);
+  padding: var(--sp-6);
   border: 1px solid var(--border-light);
-  border-radius: 20px;
-  padding: 3rem;
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(ellipse at top right, rgba(0, 212, 170, 0.08) 0%, transparent 55%),
+    linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
+  box-shadow: var(--shadow-card);
 }
 
 .form-card h3 {
-  font-size: 2rem;
-  font-weight: 700;
+  margin-bottom: 0.35rem;
   color: var(--text-light);
-  margin-bottom: 0.5rem;
+  font-size: var(--fs-h3);
+  font-weight: 700;
 }
 
 .form-subtitle {
+  margin-bottom: var(--sp-5);
   color: var(--text-gray);
-  margin-bottom: 2rem;
+  font-size: var(--fs-sm);
 }
 
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--sp-3);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: var(--sp-3);
 }
 
 .form-group {
@@ -331,76 +329,76 @@ function sendMessage() {
 }
 
 .form-group label {
-  color: var(--text-light);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  color: var(--text-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .form-group input,
 .form-group textarea {
-  background: rgba(255, 255, 255, 0.05);
+  width: 100%;
+  padding: 0.85rem 1rem;
   border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 1rem;
+  border-radius: var(--r-sm);
+  background: rgba(0, 0, 0, 0.25);
   color: var(--text-light);
-  font-size: 1rem;
-  transition: var(--transition-medium);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 9rem;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-faint);
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--primary-green-light);
-  box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-  color: var(--text-gray);
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.14);
 }
 
 .form-actions {
-  text-align: center;
-  margin-top: 1rem;
+  margin-top: var(--sp-2);
 }
 
 .form-actions .btn-modern {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  font-size: 1rem;
+  width: 100%;
 }
 
 .form-actions .btn-modern i {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .contact-content {
     grid-template-columns: 1fr;
-    gap: 2rem;
   }
-  
+
   .contact-info {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
-  
+
   .form-card {
-    padding: 2rem 1.5rem;
+    padding: var(--sp-4);
   }
-  
+
   .contact-info {
     grid-template-columns: 1fr;
   }
@@ -408,51 +406,52 @@ function sendMessage() {
 
 @media (max-width: 480px) {
   .form-card {
-    padding: 1.5rem 1rem;
+    padding: var(--sp-3);
   }
-  
+
   .info-card {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 }
 
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7);
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--sp-3);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
   z-index: 5000;
 }
+
 .modal-content {
-  background: var(--bg-gradient-card);
-  border-radius: 16px;
-  padding: 2.5rem 2rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  width: min(24rem, 100%);
+  padding: 2.25rem 2rem;
   text-align: center;
-  min-width: 280px;
-  max-width: 90vw;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-hover);
 }
+
 .modal-icon {
-  font-size: 2.5rem;
+  margin-bottom: var(--sp-2);
   color: var(--primary-green);
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
 }
+
 .modal-message {
-  font-size: 1.2rem;
+  margin-bottom: var(--sp-4);
   color: var(--text-light);
-  margin-bottom: 1.5rem;
+  font-size: var(--fs-body);
 }
+
 .modal-content .btn-modern {
   width: auto;
-  min-width: 120px;
+  min-width: 8rem;
   padding: 0.7rem 1.5rem;
-  font-size: 1rem;
-  margin: 0 auto;
-  display: inline-block;
+  font-size: var(--fs-sm);
 }
 </style>

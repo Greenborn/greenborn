@@ -1,11 +1,11 @@
 <template>
-<div class="footer-modern">
+<footer class="footer-modern">
   <div class="container-modern">
-    
+
     <div class="footer-content">
-      
+
       <!-- Información de la empresa -->
-      <div class="footer-section">
+      <div class="footer-brand-col">
         <div class="footer-brand">
           <h3 class="brand-name">Greenborn</h3>
           <p class="brand-tagline">Software en Crecimiento</p>
@@ -16,42 +16,70 @@
         </p>
       </div>
 
+      <!-- Navegación -->
+      <nav class="footer-col" aria-label="Navegación del sitio">
+        <h4 class="footer-title">Navegación</h4>
+        <ul class="footer-links">
+          <li><a href="#seccion-inicio">Inicio</a></li>
+          <li><a href="#seccion-servicios">Servicios</a></li>
+          <li><a href="#seccion-metodologia">Metodología</a></li>
+          <li><a href="#seccion-tecnologias">Tecnologías</a></li>
+          <li><a href="#seccion-contacto">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <!-- Contacto -->
+      <div class="footer-col">
+        <h4 class="footer-title">Contacto</h4>
+        <ul class="footer-contact">
+          <li>
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            Tandil, Buenos Aires, Argentina
+          </li>
+          <li>
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <a href="mailto:info@greenborn.com">info@greenborn.com</a>
+          </li>
+        </ul>
+      </div>
+
     </div>
 
     <!-- Redes sociales y copyright -->
     <div class="footer-bottom">
-      
+
+      <div class="copyright">
+        <span class="copyleft">&copy;</span> {{ year }} Greenborn · Desarrollo de Software Libre
+      </div>
+
+      <ul class="legal-links">
+        <li>
+          <a href="https://greenborn.com.ar/politica-privacidad.html" target="_blank" rel="noopener">Política de Privacidad</a>
+        </li>
+        <li>
+          <a href="https://greenborn.com.ar/condiciones-servicio.html" target="_blank" rel="noopener">Condiciones de Servicio</a>
+        </li>
+      </ul>
+
       <div class="social-links">
-        <a 
-          v-for="red in listado_contactos" 
+        <a
+          v-for="red in listado_contactos"
           :key="red.id"
-          :href="red.e" 
+          :href="red.e"
           target="_blank"
+          rel="noopener"
           class="social-link"
           :title="red.t"
+          :aria-label="red.t"
         >
           <img :src="red.i" :alt="red.t" class="social-icon" />
         </a>
       </div>
 
-      <div class="copyright">
-        <p>
-          <span class="copyleft">&copy;</span> 2025 Greenborn - Desarrollo de Software Libre
-        </p>
-          <ul class="footer-links">
-            <li>
-              <a href="https://greenborn.com.ar/politica-privacidad.html" target="_blank">Política de Privacidad</a>
-            </li>
-            <li>
-              <a href="https://greenborn.com.ar/condiciones-servicio.html" target="_blank">Condiciones de Servicio</a>
-            </li>
-          </ul>
-      </div>
-
     </div>
 
   </div>
-</div>
+</footer>
 </template>
 
 <script setup>
@@ -61,22 +89,24 @@ import Linkedin from '../assets/img/linkedin.svg'
 import Instagram from '../assets/img/instagram.svg'
 import Facebook from '../assets/img/facebook.svg'
 
+const year = new Date().getFullYear()
+
 const listado_contactos = ref([
   {
-    id: 0, 
-    t: "Facebook", 
+    id: 0,
+    t: "Facebook",
     i: Facebook,
     e: "https://www.facebook.com/Greenborn-100550959124104"
   },
   {
-    id: 10, 
-    t: "Instagram", 
+    id: 10,
+    t: "Instagram",
     i: Instagram,
     e: "https://www.instagram.com/greenborn_soft/"
   },
   {
-    id: 40, 
-    t: "Linkedin", 
+    id: 40,
+    t: "Linkedin",
     i: Linkedin,
     e: "https://www.linkedin.com/company/greenborn"
   },
@@ -85,10 +115,10 @@ const listado_contactos = ref([
 
 <style scoped>
 .footer-modern {
-  background: var(--bg-dark);
-  border-top: 1px solid var(--border-light);
-  padding: 4rem 0 2rem;
   position: relative;
+  padding: var(--sp-7) 0 var(--sp-5);
+  background: var(--surface-1);
+  border-top: 1px solid var(--border-light);
 }
 
 .footer-modern::before {
@@ -98,190 +128,205 @@ const listado_contactos = ref([
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--border-green) 50%,
+    transparent 100%);
 }
 
 .footer-content {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: var(--sp-6);
+  padding-bottom: var(--sp-6);
 }
 
-.footer-section {
-  animation: fadeInUp 0.8s ease-out both;
+.footer-brand-col {
+  max-width: 26rem;
 }
 
 .footer-brand {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-3);
 }
 
 .brand-name {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  margin-bottom: 0.2rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, var(--primary-green) 0%, var(--accent-green) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 0.5rem;
 }
 
 .brand-tagline {
   color: var(--text-gray);
-  font-size: 1rem;
-  font-weight: 300;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 .footer-description {
   color: var(--text-gray);
-  line-height: 1.6;
-  max-width: 400px;
+  font-size: var(--fs-sm);
+  line-height: 1.65;
 }
 
 .footer-title {
+  margin-bottom: var(--sp-3);
   color: var(--text-light);
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-.footer-links {
+.footer-links,
+.footer-contact,
+.legal-links {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .footer-links li {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .footer-links a {
   color: var(--text-gray);
-  text-decoration: none;
-  transition: var(--transition-medium);
-  font-size: 0.95rem;
+  font-size: var(--fs-sm);
+  transition: color var(--transition-fast);
 }
 
 .footer-links a:hover {
   color: var(--primary-green);
 }
 
-.footer-links li {
-  color: var(--text-gray);
-  font-size: 0.95rem;
-}
-
-.contact-info p {
-  color: var(--text-gray);
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
+.footer-contact li {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+  color: var(--text-gray);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
 }
 
-.contact-info i {
+.footer-contact i {
+  width: 1rem;
+  margin-top: 0.2rem;
   color: var(--primary-green);
-  width: 16px;
+  font-size: 0.85rem;
+}
+
+.footer-contact a {
+  color: var(--text-gray);
+}
+
+.footer-contact a:hover {
+  color: var(--primary-green);
 }
 
 .footer-bottom {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding-top: 2rem;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  padding-top: var(--sp-4);
   border-top: 1px solid var(--border-light);
-  animation: fadeInUp 0.8s ease-out 0.2s both;
-}
-
-.social-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--bg-gradient-card);
-  border: 1px solid var(--border-light);
-  border-radius: 50%;
-  transition: var(--transition-medium);
-}
-
-.social-link:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green-light);
-}
-
-.social-icon {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
-  transition: var(--transition-medium);
-}
-
-.social-link:hover .social-icon {
-  opacity: 1;
-  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(140deg);
 }
 
 .copyright {
-  color: var(--text-gray);
-  font-size: 0.9rem;
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
 }
 
 .copyleft {
   color: var(--primary-green);
 }
 
-/* Responsive */
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.legal-links a {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  transition: color var(--transition-fast);
+}
+
+.legal-links a:hover {
+  color: var(--primary-green);
+}
+
+.social-links {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.social-link {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-sm);
+  background: var(--surface-raised);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-green);
+  background: rgba(0, 212, 170, 0.1);
+}
+
+.social-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.social-link:hover .social-icon {
+  opacity: 1;
+}
+
 @media (max-width: 1024px) {
   .footer-content {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+  }
+
+  .footer-brand-col {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: var(--sp-5);
   }
-  
+
   .footer-bottom {
     flex-direction: column;
-    gap: 1.5rem;
-    text-align: center;
+    align-items: flex-start;
   }
-  
-  .social-links {
-    justify-content: center;
-  }
-}
 
-@media (max-width: 480px) {
-  .footer-modern {
-    padding: 3rem 0 1.5rem;
-  }
-  
-  .brand-name {
-    font-size: 1.5rem;
-  }
-  
-  .footer-title {
-    font-size: 1.1rem;
+  .legal-links {
+    gap: var(--sp-3);
   }
 }
 </style>

@@ -1,73 +1,220 @@
+/* ==========================================================================
+   Greenborn · Sistema de diseño
+   Tokens, base tipográfica y primitivas compartidas (secciones, botones,
+   tarjetas, formularios). Los componentes sólo definen lo que es propio.
+   ========================================================================== */
+
 :root {
-  /* Colores modernos */
+  /* --- Marca --- */
   --primary-green: #00d4aa;
-  --primary-green-light: #8BC34A;
-  --primary-green-dark: #003026;
-  --primary-dark: #0a0a0a;
+  --primary-green-light: #4ade9f;   /* verde menta: puente entre el teal y el verde de marca */
+  --primary-green-dark: #00402f;
   --secondary-green: #00b894;
   --accent-green: #00f5d4;
+  --brand-leaf: #6fbf3f;            /* verde hoja del logo, uso puntual */
+
+  /* --- Superficies ---
+     Escala de grises con una leve componente fría: da profundidad sin
+     que las secciones se vean todas iguales. */
+  --surface-0: #07090a;             /* fondo base */
+  --surface-1: #0c1012;             /* secciones alternas */
+  --surface-2: #11171a;             /* tarjetas sólidas */
+  --surface-raised: rgba(255, 255, 255, 0.04);
+  --surface-raised-strong: rgba(255, 255, 255, 0.07);
+
+  /* --- Texto --- */
   --text-light: #ffffff;
-  --text-dark: #0a0a0a;
-  --text-contrast: #1a1a1a;
-  --text-gray: #a0a0a0;
-  --bg-dark: #0a0a0a;
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --border-light: rgba(255, 255, 255, 0.1);
-  
-  /* Espaciado */
-  --section-padding: 6rem 0;
+  --text-body: #d6dedd;             /* cuerpo de texto: más legible que el gris puro */
+  --text-gray: #9aa5a3;             /* texto secundario */
+  --text-faint: #6c7775;            /* metadatos, placeholders */
+  --text-dark: #04120e;             /* texto sobre fondos verdes claros */
+
+  /* --- Bordes --- */
+  --border-light: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-green: rgba(0, 212, 170, 0.35);
+
+  /* --- Tipografía --- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'BebasNeue', 'Inter', sans-serif;
+  --font-mono: 'BitstreamVeraMono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-display: clamp(3.5rem, 9vw, 7.5rem);
+  --fs-h2: clamp(2rem, 4.5vw, 3.25rem);
+  --fs-h3: clamp(1.2rem, 2.2vw, 1.5rem);
+  --fs-lead: clamp(1.05rem, 1.6vw, 1.25rem);
+  --fs-body: 1rem;
+  --fs-sm: 0.9rem;
+  --fs-xs: 0.78rem;
+
+  /* --- Espaciado --- */
+  --sp-1: 0.5rem;
+  --sp-2: 0.75rem;
+  --sp-3: 1rem;
+  --sp-4: 1.5rem;
+  --sp-5: 2rem;
+  --sp-6: 3rem;
+  --sp-7: 4rem;
+  --sp-8: 6rem;
+
+  --section-padding: var(--sp-8) 0;
   --container-padding: 0 2rem;
-  
-  /* Sombras */
-  --shadow-card: 0 8px 32px rgba(0, 48, 38, 0.1);
-  --shadow-hover: 0 16px 48px rgba(0, 48, 38, 0.2);
-  
-  /* Transiciones */
-  --transition-fast: 0.2s ease;
-  --transition-medium: 0.4s ease;
-  --transition-slow: 0.8s ease;
+  --container-max: 1200px;
+
+  /* --- Radios --- */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* --- Sombras ---
+     Neutras (no verdes): sobre fondo oscuro una sombra teñida se ve sucia.
+     El color se reserva para el halo de foco/hover. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-hover: 0 22px 50px -18px rgba(0, 0, 0, 0.75);
+  --ring-green: 0 0 0 1px rgba(0, 212, 170, 0.3);
+  --glow-green: 0 10px 34px -12px rgba(0, 212, 170, 0.45);
+
+  /* --- Transiciones --- */
+  --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-medium: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Compatibilidad con hojas/páginas previas */
+  --primary-dark: var(--surface-0);
+  --bg-dark: var(--surface-0);
+  --bg-card: var(--surface-raised);
+  --text-contrast: #1a1a1a;
 }
 
-* {
+/* --------------------------------------------------------------------------
+   Reset y base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
-  background-color: var(--bg-dark) !important;
-  color: var(--text-light);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
+html {
   scroll-behavior: smooth;
+  /* Las secciones son ancla de navegación: deja aire al hacer scroll */
+  scroll-padding-top: 2rem;
+  -webkit-text-size-adjust: 100%;
 }
 
-@font-face { 
-  font-family: 'BitstreamVeraMono'; 
-  src: url('assets/fnt/VeraMono.ttf') format('truetype'); 
-  font-weight: normal; 
-  font-style: normal; 
+html,
+body {
+  background-color: var(--surface-0) !important;
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@font-face { 
-  font-family: 'BebasNeue'; 
-  src: url('assets/fnt/BebasNeue-Regular.ttf') format('truetype'); 
-  font-weight: normal; 
-  font-style: normal; 
+body {
+  overflow-x: hidden;
 }
 
-@font-face { 
-  font-family: 'BelgianoSerif'; 
-  src: url('assets/fnt/BelgianoSerif2.ttf') format('truetype'); 
-  font-weight: normal; 
-  font-style: normal; 
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-light);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
-/* Utilidades modernas */
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--primary-green);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent-green);
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: rgba(0, 212, 170, 0.3);
+  color: var(--text-light);
+}
+
+/* Foco visible y consistente en todo el sitio (sólo por teclado) */
+:focus-visible {
+  outline: 2px solid var(--primary-green);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Enlace de salto: visible sólo al navegar con teclado */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 4000;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--r-pill);
+  background: var(--primary-green);
+  color: var(--text-dark);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  transform: translateY(-150%);
+  transition: transform var(--transition-fast);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  color: var(--text-dark);
+}
+
+@font-face {
+  font-family: 'BitstreamVeraMono';
+  src: url('assets/fnt/VeraMono.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BebasNeue';
+  src: url('assets/fnt/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BelgianoSerif';
+  src: url('assets/fnt/BelgianoSerif2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------------------
+   Utilidades
+   -------------------------------------------------------------------------- */
+
 .disable-select {
-  -webkit-user-select: none;  
-  -moz-user-select: none;    
-  -ms-user-select: none;      
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   pointer-events: none;
 }
@@ -80,70 +227,289 @@ html, body {
   overflow: hidden;
 }
 
-/* Gradientes modernos */
+.text-gradient {
+  background: linear-gradient(120deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .bg-gradient-primary {
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
 }
 
 .bg-gradient-dark {
-  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 100%);
+  background: var(--surface-1);
 }
 
 .bg-gradient-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  background: linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-light);
 }
 
-/* Secciones */
+/* --------------------------------------------------------------------------
+   Secciones
+   Fondos alternados para que el scroll tenga ritmo, con un filo superior
+   que marca el corte entre una sección y la siguiente.
+   -------------------------------------------------------------------------- */
+
 .seccion {
   padding: var(--section-padding);
-  overflow-x: hidden;
+  overflow-x: clip;
+  position: relative;
+  background: var(--surface-0);
 }
 
-/* Contenedores */
+/* Se alterna de forma explícita desde cada componente (ver App.vue) */
+.seccion--alt {
+  background: var(--surface-1);
+}
+
+.seccion::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--border-green) 50%,
+    transparent 100%);
+}
+
+/* Halo tenue que despega la sección del fondo plano */
+.seccion::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(900px, 90%);
+  height: 420px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at top,
+    rgba(0, 212, 170, 0.07) 0%,
+    transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.seccion > * {
+  position: relative;
+  z-index: 1;
+}
+
 .container-modern {
-  max-width: 1200px;
+  max-width: var(--container-max);
   margin: 0 auto;
   padding: var(--container-padding);
 }
 
-/* Botones modernos */
-.btn-modern {
-  background: var(--primary-green-dark);
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  color: var(--text-light);
+/* --------------------------------------------------------------------------
+   Encabezado de sección (compartido por todas las secciones)
+   -------------------------------------------------------------------------- */
+
+.section-header {
+  text-align: center;
+  max-width: 48rem;
+  margin: 0 auto var(--sp-7);
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+/* Etiqueta corta sobre el título: orienta sin competir con él */
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: var(--sp-3);
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--border-green);
+  border-radius: var(--r-pill);
+  background: rgba(0, 212, 170, 0.06);
+  color: var(--primary-green);
+  font-size: var(--fs-xs);
   font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-medium);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.section-eyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-green);
+  box-shadow: 0 0 10px var(--primary-green);
+}
+
+.section-title {
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: var(--sp-3);
+  color: var(--text-light);
+}
+
+/* Palabra destacada del título: el degradado se usa acá, no en todo el texto */
+.section-title em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: var(--fs-lead);
+  color: var(--text-gray);
+  max-width: 38rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   Botones
+   -------------------------------------------------------------------------- */
+
+.btn-modern {
+  --btn-bg: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.9rem;
+  border: 1px solid transparent;  /* reservado: evita salto al hacer hover */
+  border-radius: var(--r-pill);
+  background: var(--btn-bg);
+  color: var(--text-dark);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
   text-decoration: none;
-  display: inline-block;
+  cursor: pointer;
+  transition: transform var(--transition-medium),
+              box-shadow var(--transition-medium),
+              filter var(--transition-medium);
+  box-shadow: var(--shadow-sm), var(--glow-green);
 }
 
 .btn-modern:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
-  color: var(--text-light);
-  border: 2px solid var(--primary-green-light);
+  box-shadow: var(--shadow-card), 0 14px 40px -10px rgba(0, 212, 170, 0.6);
+  filter: brightness(1.06);
+  color: var(--text-dark);
   text-decoration: none;
 }
 
-/* Efectos de hover */
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+/* Variante secundaria: contorno sobre fondo oscuro */
+.btn-ghost {
+  --btn-bg: transparent;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-strong);
+  color: var(--text-light);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+}
+
+.btn-ghost:hover {
+  background: rgba(0, 212, 170, 0.1);
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+  box-shadow: var(--ring-green);
+  filter: none;
+}
+
+.btn-lg {
+  padding: 1.05rem 2.4rem;
+  font-size: var(--fs-body);
+}
+
+/* --------------------------------------------------------------------------
+   Tarjetas y paneles
+   -------------------------------------------------------------------------- */
+
+.card-surface {
+  background: linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-medium),
+              border-color var(--transition-medium),
+              box-shadow var(--transition-medium);
+}
+
+.card-surface:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-green);
+  box-shadow: var(--shadow-hover), var(--ring-green);
+}
+
+/* Panel de cierre de sección (CTA, estadísticas) */
+.cta-panel {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: var(--sp-6);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(ellipse at top, rgba(0, 212, 170, 0.1) 0%, transparent 60%),
+    linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.cta-panel h3 {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+
+.cta-panel p {
+  font-size: var(--fs-body);
+  color: var(--text-gray);
+  margin: 0 auto var(--sp-5);
+  max-width: 34rem;
+}
+
+/* Etiqueta pequeña tipo "chip" */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-pill);
+  background: var(--surface-raised);
+  color: var(--text-body);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+
 .hover-lift {
-  transition: var(--transition-medium);
+  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
 }
 
 .hover-lift:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
 }
 
-/* Animaciones */
+/* --------------------------------------------------------------------------
+   Animaciones
+   -------------------------------------------------------------------------- */
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -165,58 +531,101 @@ html, body {
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
+    opacity: 1;
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.06);
+    opacity: 0.85;
   }
 }
 
 .animate-fade-in {
-  animation: fadeInUp 0.8s ease-out;
+  animation: fadeInUp 0.8s ease-out both;
 }
 
 .animate-slide-in {
-  animation: slideInLeft 0.8s ease-out;
+  animation: slideInLeft 0.8s ease-out both;
 }
 
 .animate-pulse {
-  animation: pulse 2s infinite;
+  animation: pulse 2.4s ease-in-out infinite;
 }
 
-/* Responsive */
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
 @media (max-width: 768px) {
   :root {
-    --section-padding: 4rem 0;
-    --container-padding: 0 1rem;
+    --section-padding: var(--sp-7) 0;
+    --container-padding: 0 1.25rem;
   }
-  
-  .container-modern {
-    padding: var(--container-padding);
+
+  .section-header {
+    margin-bottom: var(--sp-6);
+  }
+
+  .cta-panel {
+    padding: var(--sp-5) var(--sp-4);
   }
 }
 
 @media (max-width: 500px) {
+  :root {
+    --section-padding: 3rem 0;
+    --container-padding: 0 1rem;
+  }
+
   .inverted-cursor {
     display: none !important;
   }
-  
-  :root {
-    --section-padding: 3rem 0;
+
+  .cta-panel {
+    padding: var(--sp-4) var(--sp-3);
   }
 }
 
-/* Scrollbar personalizada */
+/* --------------------------------------------------------------------------
+   Accesibilidad: respetar la preferencia de menos movimiento
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scrollbar
+   -------------------------------------------------------------------------- */
+
+* {
+  scrollbar-color: var(--secondary-green) var(--surface-0);
+  scrollbar-width: thin;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background: var(--surface-0);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-green);
-  border-radius: 4px;
+  background: #1f3b35;
+  border: 2px solid var(--surface-0);
+  border-radius: var(--r-pill);
 }
 
 ::-webkit-scrollbar-thumb:hover {

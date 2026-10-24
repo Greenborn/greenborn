@@ -1,8 +1,17 @@
 <template>
+<a class="skip-link" href="#seccion-servicios">Saltar al contenido</a>
 <SeccionHeader />
 <SeccionServicios />
 <MetodologiaTrabajo />
-<SeccionPortfolio />
+<!--
+  SECCIÓN PORTFOLIO OCULTA (temporalmente)
+  Se comentó el componente para que no se muestre en la página. El archivo
+  components/SeccionPortfolio.vue NO fue eliminado.
+  Para volver a mostrarla: descomentar esta línea, el import de abajo,
+  y la entrada "Portfolio" en components/genericos/MenuLateralFlotante.vue
+  y el botón "Ver Portfolio" en components/SeccionHeader.vue.
+  <SeccionPortfolio />
+-->
 <SeccionTecnologias />
 <SeccionContacto />
 <SeccionFooter />
@@ -28,7 +37,8 @@ const quick_replies = ref([
 
 import SeccionHeader from './components/SeccionHeader.vue'
 import SeccionTecnologias from './components/SeccionTecnologias.vue'
-import SeccionPortfolio from './components/SeccionPortfolio.vue'
+// Oculto temporalmente (ver comentario en el template):
+// import SeccionPortfolio from './components/SeccionPortfolio.vue'
 import SeccionContacto from './components/SeccionContacto.vue'
 import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'

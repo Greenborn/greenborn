@@ -1,490 +1,427 @@
 <template>
-<div class="header-modern" id="seccion-inicio">
+<header class="header-modern" id="seccion-inicio">
   <EfectoMatrix />
+
+  <!-- Velo sobre el canvas: garantiza contraste del texto sin tener que
+       ponerle una caja oscura a cada elemento -->
+  <div class="header-scrim" aria-hidden="true"></div>
+  <div class="header-glow" aria-hidden="true"></div>
+
   <div class="header-content">
-    <div class="header-container">
+    <div class="container-modern">
       <div class="header-grid">
-        
+
         <!-- Contenido principal -->
         <div class="header-main">
           <div class="brand-section">
+            <p class="header-eyebrow">
+              <span class="eyebrow-dot"></span>
+              Software libre · Tandil, Argentina
+            </p>
+
             <div class="logo-container">
-              <div class="logo-text">
+              <h1 class="logo-text">
                 <span class="brand-title">GREENBORN</span>
-              </div>
-              <div class="logo-subtitle">
-                Software en Crecimiento
-              </div>
+              </h1>
+              <p class="logo-subtitle">Software en Crecimiento</p>
             </div>
-            
-            <div class="tagline">
-              <p class="tagline-text">
-                Desarrollamos soluciones de software libre que transforman ideas en realidad digital
-              </p>
-            </div>
-            
+
+            <p class="tagline-text">
+              Desarrollamos soluciones de software libre que transforman
+              ideas en realidad digital.
+            </p>
+
             <div class="cta-section">
-              <a href="#seccion-servicios" class="btn-modern btn-primary">
+              <a href="#seccion-servicios" class="btn-modern btn-lg">
                 Nuestros Servicios
               </a>
-              <a href="#seccion-portfolio" class="btn-modern btn-secondary">
+              <a href="#seccion-contacto" class="btn-modern btn-ghost btn-lg">
+                Conversemos
+              </a>
+<!-- Botón "Ver Portfolio" oculto temporalmente (sección Portfolio comentada en App.vue)
+              <a href="#seccion-portfolio" class="btn-modern btn-ghost btn-lg">
                 Ver Portfolio
               </a>
+-->
             </div>
           </div>
         </div>
-        
+
         <!-- Elementos visuales -->
-        <div class="header-visual">
+        <div class="header-visual" aria-hidden="true">
           <div class="floating-elements">
-            <div class="floating-card card-1">
-              <div class="card-icon">🚀</div>
-              <div class="card-text">Desarrollo Ágil</div>
-            </div>
-            <div class="floating-card card-2">
-              <div class="card-icon">💻</div>
-              <div class="card-text">Software Libre</div>
-            </div>
-            <div class="floating-card card-3">
-              <div class="card-icon">🔧</div>
-              <div class="card-text">Soluciones Personalizadas</div>
+            <div
+              v-for="(item, index) in highlights"
+              :key="item.label"
+              class="floating-card"
+              :style="{ animationDelay: `${index * 0.9}s` }"
+            >
+              <span class="card-icon"><i :class="item.icon"></i></span>
+              <span class="card-text">{{ item.label }}</span>
             </div>
           </div>
         </div>
-        
+
       </div>
     </div>
   </div>
-  
-  <!-- Scroll indicator -->
-  <div class="scroll-indicator">
-    <div class="scroll-dot"></div>
-  </div>
-</div>
+
+  <!-- Indicador de scroll -->
+  <a href="#seccion-servicios" class="scroll-indicator" aria-label="Ir a servicios">
+    <span class="scroll-mouse"><span class="scroll-wheel"></span></span>
+    <span class="scroll-label">Scroll</span>
+  </a>
+</header>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import EfectoMatrix from './genericos/EfectoMatrix.vue'
+
+const highlights = ref([
+  { icon: 'fas fa-rocket', label: 'Desarrollo Ágil' },
+  { icon: 'fas fa-code-branch', label: 'Software Libre' },
+  { icon: 'fas fa-sliders-h', label: 'Soluciones a Medida' },
+])
 </script>
 
 <style scoped>
 .header-modern {
-  height: 100svh;
+  min-height: 100svh;
   position: relative;
-  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a1a 50%, var(--bg-dark) 100%);
+  display: flex;
+  align-items: center;
+  background: var(--surface-0);
   overflow: hidden;
   width: 100%;
-  margin: 0;
-  padding: 0;
+}
+
+/* Capas de fondo sobre el canvas del efecto matrix */
+.header-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(7, 9, 10, 0.58) 0%, rgba(7, 9, 10, 0.26) 45%, var(--surface-0) 100%),
+    radial-gradient(ellipse 70% 60% at 22% 45%, rgba(7, 9, 10, 0.82) 0%, rgba(7, 9, 10, 0.35) 55%, transparent 75%);
+  pointer-events: none;
+}
+
+.header-glow {
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 60vw;
+  height: 60vw;
+  max-width: 820px;
+  max-height: 820px;
+  z-index: 1;
+  background: radial-gradient(circle,
+    rgba(0, 212, 170, 0.13) 0%,
+    rgba(0, 212, 170, 0.04) 40%,
+    transparent 70%);
+  pointer-events: none;
 }
 
 .header-content {
   position: relative;
   z-index: 2;
-  height: 100%;
-  display: flex;
-  align-items: center;
   width: 100%;
-  padding: 0;
-}
-
-.header-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0;
+  padding: 7rem 0 6rem;
 }
 
 .header-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: var(--sp-7);
   align-items: center;
-  height: 100%;
-  width: 100%;
-}
-
-.header-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
 }
 
 .brand-section {
-  max-width: 600px;
+  max-width: 36rem;
+}
+
+/* Etiqueta superior */
+.header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: var(--sp-4);
+  padding: 0.4rem 0.95rem;
+  border: 1px solid var(--border-green);
+  border-radius: var(--r-pill);
+  background: rgba(0, 212, 170, 0.07);
+  color: var(--primary-green);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary-green);
+  box-shadow: 0 0 10px var(--primary-green);
+  animation: pulse 2.4s ease-in-out infinite;
 }
 
 .logo-container {
-  margin-bottom: 2rem;
+  margin-bottom: var(--sp-4);
 }
 
 .logo-text {
-  margin-bottom: 1rem;
+  margin: 0;
+  line-height: 1;
 }
 
 .brand-title {
-  font-family: "BebasNeue";
-  font-size: clamp(4rem, 8vw, 8rem);
-  line-height: 0.9;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   display: inline-block;
-  position: relative;
-  animation: brandTitleAnimation 2s ease-out forwards;
-  /* Mejorar contraste con sombra de texto */
-  text-shadow: 
-    0 0 20px rgba(0, 212, 170, 0.5),
-    0 0 40px rgba(0, 212, 170, 0.3),
-    0 0 60px rgba(0, 212, 170, 0.1);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
-}
-
-.brand-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  background: linear-gradient(120deg,
+    var(--primary-green) 0%,
+    var(--accent-green) 55%,
+    var(--primary-green-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: brandTitleGlow 3s ease-in-out infinite alternate;
-  opacity: 0;
+  /* Un solo halo, suave: antes se apilaban tres sombras + drop-shadow */
+  filter: drop-shadow(0 6px 28px rgba(0, 212, 170, 0.28));
+  animation: brandTitleAnimation 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes brandTitleAnimation {
-  0% {
+  from {
     opacity: 0;
-    transform: translateY(30px) scale(0.8);
-    filter: blur(10px);
+    transform: translateY(24px);
+    filter: blur(8px) drop-shadow(0 6px 28px rgba(0, 212, 170, 0.28));
   }
-  50% {
-    opacity: 0.7;
-    transform: translateY(-5px) scale(1.05);
-    filter: blur(2px);
-  }
-  100% {
+  to {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes brandTitleGlow {
-  0% {
-    opacity: 0;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0.3;
-    transform: scale(1.02);
+    transform: translateY(0);
+    filter: blur(0) drop-shadow(0 6px 28px rgba(0, 212, 170, 0.28));
   }
 }
 
 .logo-subtitle {
-  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  margin-top: 0.35rem;
   color: var(--text-light);
-  font-weight: 400;
-  letter-spacing: 0.1em;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-weight: 500;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  animation: subtitleAnimation 2s ease-out 0.5s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-  /* Mejorar contraste */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@keyframes subtitleAnimation {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.tagline {
-  margin-bottom: 3rem;
-  animation: taglineAnimation 2s ease-out 1s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-@keyframes taglineAnimation {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: fadeInUp 0.9s ease-out 0.25s both;
 }
 
 .tagline-text {
-  font-size: clamp(1.1rem, 2vw, 1.5rem);
-  line-height: 1.6;
-  color: var(--text-light);
-  font-weight: 500;
-  max-width: 500px;
-  /* Mejorar contraste */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  background: rgba(0, 0, 0, 0.4);
-  padding: 1.5rem;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-bottom: var(--sp-6);
+  max-width: 30rem;
+  color: var(--text-body);
+  font-size: var(--fs-lead);
+  line-height: 1.65;
+  animation: fadeInUp 0.9s ease-out 0.4s both;
 }
 
 .cta-section {
   display: flex;
-  gap: 1.5rem;
   flex-wrap: wrap;
-  animation: ctaAnimation 2s ease-out 1.5s forwards;
-  opacity: 0;
-  transform: translateY(20px);
+  gap: var(--sp-3);
+  animation: fadeInUp 0.9s ease-out 0.55s both;
 }
 
-@keyframes ctaAnimation {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.btn-primary {
-  background: var(--primary-green-dark);
-  /* Mejorar contraste */
-  box-shadow: 
-    0 4px 16px rgba(0, 48, 38, 0.4),
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(0, 48, 38, 0.3);
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  color: var(--text-light);
-}
-
-.btn-primary:hover {
-  box-shadow: 
-    0 8px 24px rgba(0, 48, 38, 0.6),
-    0 12px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  color: var(--text-light);
-  border-color: var(--primary-green-light);
-  text-decoration: none;
-}
-
-.btn-secondary {
-  background: rgba(0, 48, 38, 0.1);
-  border: 2px solid var(--primary-green-dark);
-  color: var(--primary-green);
-  /* Mejorar contraste */
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 4px 16px rgba(0, 48, 38, 0.2),
-    0 8px 32px rgba(0, 0, 0, 0.3);
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.btn-secondary:hover {
-  background: var(--primary-green-dark);
-  color: var(--text-light);
-  box-shadow: 
-    0 8px 24px rgba(0, 48, 38, 0.6),
-    0 12px 40px rgba(0, 0, 0, 0.4);
-  transform: translateY(-2px);
-  border-color: var(--primary-green-light);
-  text-decoration: none;
-}
-
-/* Elementos flotantes */
+/* --- Columna visual: tarjetas escalonadas --- */
 .header-visual {
-  position: relative;
-  height: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
 .floating-elements {
-  position: relative;
-  width: 500px;
-  height: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  width: min(100%, 22rem);
 }
 
 .floating-card {
-  position: absolute;
-  background: var(--bg-gradient-card);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: center;
-  box-shadow: var(--shadow-card);
-  transition: var(--transition-medium);
-  animation: float 6s ease-in-out infinite;
-  width: 140px;
-  height: 120px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: var(--sp-3);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-md);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 100%);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-medium),
+              border-color var(--transition-medium),
+              box-shadow var(--transition-medium);
+  animation: floatCard 7s ease-in-out infinite;
 }
+
+/* Escalonado horizontal: da profundidad sin posicionamiento absoluto */
+.floating-card:nth-child(1) { margin-right: 2.5rem; }
+.floating-card:nth-child(2) { margin-left: 2.5rem; }
+.floating-card:nth-child(3) { margin-right: 1.25rem; }
 
 .floating-card:hover {
-  transform: translateY(-10px) scale(1.05);
-  box-shadow: var(--shadow-hover);
-}
-
-.card-1 {
-  top: 20px;
-  left: 20px;
-  animation-delay: 0s;
-}
-
-.card-2 {
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  animation-delay: 2s;
-}
-
-.card-3 {
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation-delay: 4s;
+  transform: translateY(-4px);
+  border-color: var(--border-green);
+  box-shadow: var(--shadow-hover), var(--ring-green);
 }
 
 .card-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.22) 0%, rgba(0, 184, 148, 0.1) 100%);
+  border: 1px solid var(--border-green);
+  color: var(--primary-green);
+  font-size: 1.1rem;
 }
 
 .card-text {
-  font-size: 0.8rem;
-  font-weight: 500;
   color: var(--text-light);
-  line-height: 1.2;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.3;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
-/* Scroll indicator */
+/* --- Indicador de scroll --- */
 .scroll-indicator {
   position: absolute;
-  bottom: 2rem;
+  bottom: 1.75rem;
   left: 50%;
-  transform: translateX(-50%);
+  translate: -50% 0;
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-faint);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.scroll-dot {
-  width: 8px;
-  height: 8px;
+.scroll-indicator:hover {
+  color: var(--primary-green);
+}
+
+.scroll-mouse {
+  display: flex;
+  justify-content: center;
+  width: 22px;
+  height: 34px;
+  padding-top: 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--r-pill);
+}
+
+.scroll-wheel {
+  width: 3px;
+  height: 7px;
+  border-radius: var(--r-pill);
   background: var(--primary-green);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: scrollWheel 1.8s ease-in-out infinite;
 }
 
-/* Responsive */
+.scroll-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@keyframes scrollWheel {
+  0% { opacity: 0; transform: translateY(-4px); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(10px); }
+}
+
+/* --- Responsive --- */
 @media (max-width: 1024px) {
   .header-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: var(--sp-6);
     text-align: center;
   }
-  
-  .header-visual {
-    order: -1;
-    height: 300px;
+
+  .brand-section {
+    max-width: none;
+    margin: 0 auto;
   }
-  
+
+  .tagline-text {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-section {
+    justify-content: center;
+  }
+
   .floating-elements {
-    width: 400px;
-    height: 400px;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
   }
-  
+
   .floating-card {
-    width: 120px;
-    height: 100px;
+    flex-direction: column;
+    text-align: center;
+    gap: var(--sp-2);
+    flex: 1 1 8rem;
+    max-width: 11rem;
+    margin: 0 !important;
   }
 }
 
 @media (max-width: 768px) {
-  .cta-section {
-    justify-content: center;
+  .header-content {
+    padding: 6rem 0 5rem;
   }
-  
-  .floating-elements {
-    width: 320px;
-    height: 320px;
+
+  .logo-subtitle {
+    letter-spacing: 0.16em;
   }
-  
-  .floating-card {
-    width: 100px;
-    height: 90px;
-    padding: 0.8rem;
-  }
-  
-  .card-icon {
-    font-size: 1.5rem;
-  }
-  
-  .card-text {
-    font-size: 0.7rem;
+
+  .cta-section .btn-modern {
+    flex: 1 1 12rem;
   }
 }
 
 @media (max-width: 480px) {
-  .header-grid {
-    gap: 1rem;
-  }
-  
-  .floating-elements {
-    width: 280px;
-    height: 280px;
-  }
-  
   .floating-card {
-    width: 90px;
-    height: 80px;
-    padding: 0.6rem;
+    padding: 0.9rem;
+    flex: 1 1 6rem;
   }
-  
+
   .card-icon {
-    font-size: 1.2rem;
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
   }
-  
+
   .card-text {
-    font-size: 0.6rem;
+    font-size: var(--fs-xs);
+  }
+
+  .scroll-indicator {
+    display: none;
   }
 }
 </style>

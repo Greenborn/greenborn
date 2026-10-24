@@ -1,267 +1,188 @@
 <template>
-  <div class="service-card-modern"
-      @mousemove="handleMouseMove"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-      ref="card">
-    
-    <div class="card-content" :style="cardStyle()">
-      <div class="card-background" :style="cardBgStyle()"></div>
-      
-      <div class="card-overlay">
-        <div class="service-icon">
-          <img :src="data.img_src" :alt="data.name" class="icon-image" />
-        </div>
-        
-        <div class="service-info">
-          <h3 class="service-title">{{ data.name }}</h3>
-          <p class="service-description">{{ data.description }}</p>
-        </div>
-        
-        <div class="service-cta">
-          <a v-if="data.link" :href="data.link" class="learn-more" target="_blank" rel="noopener">Ir a Cuenta Greenborn →</a>
-          <a v-else href="#seccion-contacto" class="learn-more">Saber más →</a>
-        </div>
+  <article
+    ref="card"
+    class="service-card"
+    @mousemove="handleMouseMove"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
+    <div class="card-inner" :style="cardStyle()">
+      <span class="card-glow" aria-hidden="true"></span>
+
+      <div class="service-icon">
+        <img :src="data.img_src" :alt="data.name" class="icon-image" />
       </div>
-      
+
+      <h3 class="service-title">{{ data.name }}</h3>
+      <p class="service-description">{{ data.description }}</p>
+
+      <a
+        v-if="data.link"
+        :href="data.link"
+        class="service-link"
+        target="_blank"
+        rel="noopener"
+      >
+        Ir a Cuenta Greenborn
+        <span aria-hidden="true">→</span>
+      </a>
+      <a v-else href="#seccion-contacto" class="service-link">
+        Saber más
+        <span aria-hidden="true">→</span>
+      </a>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 
-const props = defineProps([ "data" ])
+defineProps({ data: { type: Object, required: true } })
 
-const width = ref(0)
-const height = ref(0)
+const card = ref(null)
 const mouseX = ref(0)
 const mouseY = ref(0)
-const mouseLeaveDelay = ref(null)
-const card = ref()
-
-onMounted(() => {
-  width.value = 400
-  height.value = 300
-})
-
-function mousePX() {
-  return mouseX.value / width.value;
-}
-
-function mousePY() {
-  return mouseY.value / height.value;
-}
-
-function cardBgStyle(){
-  const tX = mousePX() * -10; // Reducido de -20 a -10
-  const tY = mousePY() * -10; // Reducido de -20 a -10
-  return {
-    transform: `translateX(${tX}px) translateY(${tY}px) scale(1.05)`, // Reducido scale de 1.1 a 1.05
-    backgroundImage: `url(${props.data.img_src})`
-  }
-}
-
-function cardStyle() {
-  const rX = mousePX() * 5; // Reducido de 10 a 5
-  const rY = mousePY() * 5; // Reducido de 10 a 5
-  return {
-    transform: `rotateY(${rX}deg) rotateX(${rY}deg)`,
-  };
-}
+let leaveTimer = null
 
 function handleMouseMove(e) {
-  mouseX.value = e.pageX - card.value.offsetLeft - width.value/2;
-  mouseY.value = e.pageY - card.value.offsetTop - height.value/2;
+  if (!card.value) return
+  if (window.matchMedia('(hover: none)').matches) return
+
+  const rect = card.value.getBoundingClientRect()
+  mouseX.value = (e.clientX - rect.left - rect.width / 2) / rect.width
+  mouseY.value = (e.clientY - rect.top - rect.height / 2) / rect.height
 }
 
 function handleMouseEnter() {
-  clearTimeout(mouseLeaveDelay.value);
+  clearTimeout(leaveTimer)
 }
 
 function handleMouseLeave() {
-  mouseLeaveDelay.value = setTimeout(()=>{
-    mouseX.value = 0;
-    mouseY.value = 0;
-  }, 300);
+  leaveTimer = setTimeout(() => {
+    mouseX.value = 0
+    mouseY.value = 0
+  }, 250)
 }
+
+function cardStyle() {
+  return {
+    transform: `rotateY(${mouseX.value * 5}deg) rotateX(${-mouseY.value * 5}deg)`,
+  }
+}
+
+onUnmounted(() => clearTimeout(leaveTimer))
 </script>
 
 <style scoped>
-.service-card-modern {
-  position: relative;
-  height: 400px;
-  perspective: 1000px;
-  cursor: pointer;
-}
-
-.card-content {
-  position: relative;
-  width: 100%;
+.service-card {
   height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
-  border-radius: 20px;
-  overflow: hidden;
+  perspective: 900px;
 }
 
-.card-background {
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  width: calc(100% + 40px);
-  height: calc(100% + 40px);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  opacity: 0.1;
-  transition: all 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
-  filter: blur(2px);
-}
-
-.card-overlay {
+.card-inner {
   position: relative;
-  z-index: 2;
-  height: 100%;
-  background: linear-gradient(135deg, 
-    rgba(0, 212, 170, 0.1) 0%, 
-    rgba(0, 184, 148, 0.05) 50%, 
-    rgba(0, 0, 0, 0.8) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 212, 170, 0.2);
-  border-radius: 20px;
-  padding: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.4s ease-out; /* Cambiado de 0.6s cubic-bezier a 0.4s ease-out */
+  height: 100%;
+  min-height: 22rem;
+  padding: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-lg);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%);
+  box-shadow: var(--shadow-card);
+  transform-style: preserve-3d;
+  transition:
+    transform var(--transition-medium),
+    border-color var(--transition-medium),
+    box-shadow var(--transition-medium);
+}
+
+.card-glow {
+  position: absolute;
+  top: -55%;
+  right: -30%;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.16) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+  pointer-events: none;
+}
+
+.service-card:hover .card-inner {
+  border-color: var(--border-green);
+  box-shadow: var(--shadow-hover), var(--ring-green);
+}
+
+.service-card:hover .card-glow {
+  opacity: 1;
 }
 
 .service-icon {
-  text-align: center;
-  margin-bottom: 1.5rem;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--sp-4);
+  border: 1px solid var(--border-green);
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.18) 0%, rgba(0, 184, 148, 0.06) 100%);
+  transition: transform var(--transition-medium), border-color var(--transition-medium);
+}
+
+.service-card:hover .service-icon {
+  transform: translateZ(20px) scale(1.05);
+  border-color: var(--primary-green);
 }
 
 .icon-image {
-  width: 60px;
-  height: 60px;
+  width: 30px;
+  height: 30px;
   filter: brightness(0) invert(1);
-  opacity: 0.8;
-  transition: all 0.4s ease;
-}
-
-.service-info {
-  flex: 1;
+  opacity: 0.85;
 }
 
 .service-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  margin-bottom: var(--sp-2);
   color: var(--text-light);
-  margin-bottom: 1rem;
-  line-height: 1.3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .service-description {
-  font-size: 1rem;
-  line-height: 1.6;
+  flex: 1;
+  margin-bottom: var(--sp-5);
   color: var(--text-gray);
-  margin-bottom: 1.5rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
 }
 
-.service-cta {
-  text-align: center;
-}
-
-.learn-more {
+.service-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  align-self: flex-start;
   color: var(--primary-green);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
+  transition: gap var(--transition-fast), color var(--transition-fast);
 }
 
-/* Hover effects */
-.service-card-modern:hover .card-content {
-  transform: translateY(-5px); /* Reducido de -10px a -5px */
-  box-shadow: 
-    0 10px 20px rgba(0, 212, 170, 0.15), /* Reducida intensidad */
-    0 0 0 1px rgba(0, 212, 170, 0.2); /* Reducida intensidad */
-}
-
-.service-card-modern:hover .card-background {
-  opacity: 0.15; /* Reducido de 0.2 a 0.15 */
-  transform: scale(1.02); /* Reducido de 1.05 a 1.02 */
-}
-
-.service-card-modern:hover .card-overlay {
-  background: linear-gradient(135deg, 
-    rgba(0, 212, 170, 0.12) 0%, /* Reducido de 0.15 a 0.12 */
-    rgba(0, 184, 148, 0.08) 50%, /* Reducido de 0.1 a 0.08 */
-    rgba(0, 0, 0, 0.75) 100%); /* Aumentado de 0.7 a 0.75 */
-  border-color: var(--primary-green-light); /* Cambiado a verde claro */
-}
-
-.service-card-modern:hover .icon-image {
-  transform: scale(1.05); /* Reducido de 1.1 a 1.05 */
-  opacity: 0.9; /* Reducido de 1 a 0.9 */
-  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(140deg); /* Reducido saturate de 5 a 3 */
-}
-
-.service-card-modern:hover .learn-more {
+.service-link:hover {
+  gap: 0.75rem;
   color: var(--accent-green);
-  transform: translateX(3px); /* Reducido de 5px a 3px */
 }
 
-/* Animación de entrada */
-.service-card-modern {
-  animation: fadeInUp 0.8s ease-out both;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-  .service-card-modern {
-    height: 350px;
-  }
-  
-  .card-overlay {
-    padding: 1.5rem;
-  }
-  
-  .service-title {
-    font-size: 1.3rem;
-  }
-  
-  .service-description {
-    font-size: 0.9rem;
-  }
-  
-  .icon-image {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .service-card-modern {
-    height: 320px;
-  }
-  
-  .card-overlay {
-    padding: 1.2rem;
-  }
-  
-  .service-title {
-    font-size: 1.2rem;
-  }
-  
-  .service-description {
-    font-size: 0.85rem;
+  .card-inner {
+    min-height: 0;
+    padding: 1.6rem;
   }
 }
 </style>

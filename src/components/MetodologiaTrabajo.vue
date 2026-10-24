@@ -4,7 +4,8 @@
       
       <!-- Header de la sección -->
       <div class="section-header">
-        <h2 class="section-title">Nuestra Metodología</h2>
+        <p class="section-eyebrow">Metodología</p>
+        <h2 class="section-title">Cómo <em>trabajamos</em></h2>
         <p class="section-subtitle">
           Un proceso ágil y transparente para llevar tu proyecto del concepto a la realidad
         </p>
@@ -30,10 +31,12 @@
           <!-- Contenido del paso -->
           <div class="step-content">
             <div class="step-card">
-              <div class="step-icon">
-                <i :class="step.icon"></i>
+              <div class="step-head">
+                <div class="step-icon">
+                  <i :class="step.icon"></i>
+                </div>
+                <h3 class="step-title">{{ step.title }}</h3>
               </div>
-              <h3 class="step-title">{{ step.title }}</h3>
               <p class="step-description">{{ step.description }}</p>
             </div>
           </div>
@@ -42,14 +45,12 @@
       </div>
 
       <!-- CTA de metodología -->
-      <div class="methodology-cta">
-        <div class="cta-content">
-          <h3>¿Listo para comenzar?</h3>
-          <p>Agenda una consulta gratuita y descubre cómo podemos transformar tu idea en realidad</p>
-          <a href="#seccion-contacto" class="btn-modern">
-            Agendar Consulta
-          </a>
-        </div>
+      <div class="cta-panel">
+        <h3>¿Listo para comenzar?</h3>
+        <p>Agendá una consulta gratuita y descubrí cómo podemos transformar tu idea en realidad.</p>
+        <a href="#seccion-contacto" class="btn-modern">
+          Agendar consulta
+        </a>
       </div>
 
     </div>
@@ -113,49 +114,10 @@ const methodologySteps = ref([
 </script>
 
 <style scoped>
-.methodology-section {
-  background: var(--bg-gradient-dark);
-  position: relative;
-}
-
-.methodology-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--primary-green) 50%, transparent 100%);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  color: var(--text-gray);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 .methodology-timeline {
   position: relative;
-  max-width: 1000px;
-  margin: 0 auto 4rem;
+  max-width: 960px;
+  margin: 0 auto var(--sp-7);
 }
 
 .methodology-timeline::before {
@@ -164,15 +126,23 @@ const methodologySteps = ref([
   left: 50%;
   top: 0;
   bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, var(--primary-green) 0%, transparent 50%, var(--primary-green) 100%);
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    var(--border-green) 12%,
+    var(--border-green) 88%,
+    transparent 100%);
   transform: translateX(-50%);
 }
 
 .timeline-step {
   position: relative;
-  margin-bottom: 4rem;
+  margin-bottom: var(--sp-6);
   animation: fadeInUp 0.8s ease-out both;
+}
+
+.timeline-step:last-child {
+  margin-bottom: 0;
 }
 
 .step-number {
@@ -180,35 +150,36 @@ const methodologySteps = ref([
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 2;
 }
 
 .number-circle {
-  width: 60px;
-  height: 60px;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid var(--border-green);
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
-  transition: var(--transition-medium);
+  background: var(--surface-1);
+  box-shadow: var(--glow-green);
+  transition: transform var(--transition-medium), border-color var(--transition-medium);
 }
 
 .timeline-step:hover .number-circle {
-  transform: scale(1.1);
-  box-shadow: 0 8px 30px rgba(0, 212, 170, 0.4);
+  transform: scale(1.08);
+  border-color: var(--primary-green);
 }
 
 .number {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-light);
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--primary-green);
 }
 
 .step-content {
-  width: 45%;
-  margin-top: 2rem;
+  width: 44%;
+  padding-top: 0.5rem;
 }
 
 .step-right .step-content {
@@ -216,110 +187,95 @@ const methodologySteps = ref([
 }
 
 .step-card {
-  background: var(--bg-gradient-card);
+  height: 100%;
+  padding: 1.6rem 1.75rem;
   border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 2rem;
-  transition: var(--transition-medium);
-  position: relative;
+  border-radius: var(--r-md);
+  background: linear-gradient(160deg, var(--surface-raised-strong) 0%, var(--surface-raised) 100%);
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--transition-medium),
+    border-color var(--transition-medium),
+    box-shadow var(--transition-medium);
 }
 
 .step-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--primary-green-light);
+  transform: translateY(-4px);
+  border-color: var(--border-green);
+  box-shadow: var(--shadow-hover), var(--ring-green);
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
 }
 
 .step-icon {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.step-icon i {
-  font-size: 2rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-green);
+  border-radius: var(--r-sm);
+  background: rgba(0, 212, 170, 0.1);
   color: var(--primary-green);
+  font-size: 1rem;
 }
 
 .step-title {
-  font-size: 1.5rem;
-  font-weight: 700;
   color: var(--text-light);
-  margin-bottom: 1rem;
-  text-align: center;
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .step-description {
-  font-size: 1rem;
-  line-height: 1.6;
   color: var(--text-gray);
-  text-align: center;
+  font-size: var(--fs-sm);
+  line-height: 1.65;
 }
 
-.methodology-cta {
-  text-align: center;
-  padding: 3rem;
-  background: var(--bg-gradient-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  margin-top: 2rem;
-  animation: fadeInUp 0.8s ease-out 0.5s both;
-}
-
-.cta-content h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: 1rem;
-  color: var(--text-light);
-}
-
-.cta-content p {
-  font-size: 1.1rem;
-  color: var(--text-gray);
-  margin-bottom: 2rem;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .methodology-timeline::before {
-    left: 30px;
+    left: 26px;
   }
-  
+
   .step-number {
-    left: 30px;
-    transform: none;
+    left: 26px;
+    transform: translateX(-50%);
   }
-  
-  .step-content {
-    width: calc(100% - 80px);
-    margin-left: 80px;
+
+  .number-circle {
+    width: 46px;
+    height: 46px;
   }
-  
+
+  .number {
+    font-size: 1.35rem;
+  }
+
+  .step-content,
   .step-right .step-content {
-    margin-left: 80px;
+    width: calc(100% - 68px);
+    margin-left: 68px;
+    padding-top: 0;
   }
-  
-  .methodology-cta {
-    padding: 2rem 1.5rem;
+
+  .timeline-step {
+    margin-bottom: var(--sp-4);
   }
 }
 
 @media (max-width: 480px) {
   .step-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
-  
-  .step-title {
-    font-size: 1.3rem;
-  }
-  
-  .step-description {
-    font-size: 0.9rem;
-  }
-  
-  .methodology-cta {
-    padding: 1.5rem 1rem;
+
+  .step-head {
+    align-items: flex-start;
   }
 }
 </style>
