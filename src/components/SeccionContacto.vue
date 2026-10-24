@@ -44,20 +44,6 @@
             <p>Lunes a viernes, a convenir</p>
           </div>
         </div>
-
-        <div class="info-card">
-          <div class="info-icon">
-            <i class="fab fa-whatsapp"></i>
-          </div>
-          <div>
-            <h3>WhatsApp</h3>
-            <p>
-              <a href="https://wa.me/542494279833" target="_blank" rel="noopener">
-                +54 9 249 427 9833
-              </a>
-            </p>
-          </div>
-        </div>
       </div>
 
       <!-- Formulario de contacto -->
