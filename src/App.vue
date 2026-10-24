@@ -29,10 +29,6 @@ const quick_replies = ref([
     text: "Desarrollo de APP's",
     phone: "542494279833"
   },
-  {
-    text: "Testing",
-    phone: "542494067516"
-  },
 ])
 
 import SeccionHeader from './components/SeccionHeader.vue'
