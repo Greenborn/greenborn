@@ -3,6 +3,7 @@
 <SeccionHeader />
 <SeccionServicios />
 <MetodologiaTrabajo />
+<SeccionProyectoPropio />
 <!--
   SECCIÓN PORTFOLIO OCULTA (temporalmente)
   Se comentó el componente para que no se muestre en la página. El archivo
@@ -39,6 +40,7 @@ import SeccionContacto from './components/SeccionContacto.vue'
 import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'
 import MetodologiaTrabajo from './components/MetodologiaTrabajo.vue'
+import SeccionProyectoPropio from './components/SeccionProyectoPropio.vue'
 import MenuLateralFlotante from './components/genericos/MenuLateralFlotante.vue'
 </script>
 
