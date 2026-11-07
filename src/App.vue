@@ -3,7 +3,14 @@
 <SeccionHeader />
 <SeccionServicios />
 <MetodologiaTrabajo />
-<SeccionProyectoPropio />
+<!--
+  SECCIÓN PROYECTO PROPIO / profesionales.top OCULTA (temporalmente)
+  Se comentó el componente para que no se muestre en la página. El archivo
+  components/SeccionProyectoPropio.vue NO fue eliminado.
+  Para volver a mostrarla: descomentar esta línea, el import de abajo,
+  y la entrada "Proyecto propio" en components/genericos/MenuLateralFlotante.vue.
+  <SeccionProyectoPropio />
+-->
 <!--
   SECCIÓN PORTFOLIO OCULTA (temporalmente)
   Se comentó el componente para que no se muestre en la página. El archivo
@@ -40,7 +47,8 @@ import SeccionContacto from './components/SeccionContacto.vue'
 import SeccionFooter from './components/SeccionFooter.vue'
 import SeccionServicios from './components/SeccionServicios.vue'
 import MetodologiaTrabajo from './components/MetodologiaTrabajo.vue'
-import SeccionProyectoPropio from './components/SeccionProyectoPropio.vue'
+// Oculto temporalmente (ver comentario en el template):
+// import SeccionProyectoPropio from './components/SeccionProyectoPropio.vue'
 import MenuLateralFlotante from './components/genericos/MenuLateralFlotante.vue'
 </script>
 

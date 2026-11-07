@@ -77,7 +77,8 @@ const enlaces = ref([
   { label: 'Inicio', active: true, section_id: "seccion-inicio", element: null },
   { label: 'Servicios', active: false, section_id: "seccion-servicios", element: null },
   { label: 'Metodología', active: false, section_id: "seccion-metodologia", element: null },
-  { label: 'Proyecto propio', active: false, section_id: "seccion-proyecto-propio", element: null },
+  // Proyecto propio oculto temporalmente (la sección está comentada en App.vue).
+  // { label: 'Proyecto propio', active: false, section_id: "seccion-proyecto-propio", element: null },
   // Portfolio oculto temporalmente (la sección está comentada en App.vue).
   // Si no se quita, al hacer scroll se accede a element.offsetTop con element null.
   // { label: 'Portfolio', active: false, section_id: "seccion-portfolio", element: null },
