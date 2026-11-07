@@ -21,7 +21,7 @@
           </div>
           <div>
             <h3>Ubicación</h3>
-            <p>Tandil, Buenos Aires, Argentina</p>
+            <p>Buenos Aires, Argentina</p>
           </div>
         </div>
 

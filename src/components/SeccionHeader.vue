@@ -16,7 +16,7 @@
           <div class="brand-section">
             <p class="header-eyebrow">
               <span class="eyebrow-dot"></span>
-              Software libre · Tandil, Argentina
+              Software libre · Argentina
             </p>
 
             <div class="logo-container">

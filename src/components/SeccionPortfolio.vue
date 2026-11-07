@@ -48,7 +48,7 @@ const trabajos = ref([
     descripcion_organizacion: `Desarrollé un Sistema de Gestión de Concursos Fotográficos para El GFC (Grupo Fotográfico Centro) que agrupa desde 
       el año 1967 a los fotoclubes del centro este de la provincia de Buenos Aires 
       pertenecientes a la F.A.F (Federación Argentina de Fotografía). <br><br>Las ciudades que se encuentran representadas actualmente son: Balcarce, 
-      Benito Juarez, Necochea, Olavarria y Tandil. 
+      Benito Juarez, Necochea y Olavarria. 
       Cuenta como objetivo la promoción de la actividad fotográfica en el ámbito fotoclubista y el aprendizaje continuo.`,
     url: "https://www.grupofotograficocentro.com/",
     imgs: ["gfc_1.webp", "gfc_2.webp", "gfc_3.webp"],

@@ -8,7 +8,7 @@
         <h2 class="section-title">profesionales<em>.top</em></h2>
         <p class="section-subtitle">
           Una plataforma propia, ideada y desarrollada por Greenborn, para conectar a todos
-          los profesionales de Tandil con quienes buscan sus servicios.
+          los profesionales de la ciudad con quienes buscan sus servicios.
         </p>
       </div>
 
@@ -25,10 +25,10 @@
           </div>
         </div>
 
-        <h3 class="proyecto-titulo">Un espacio para encontrar y ofrecer servicios profesionales en Tandil</h3>
+        <h3 class="proyecto-titulo">Un espacio para encontrar y ofrecer servicios profesionales</h3>
         <p class="proyecto-descripcion">
           <strong>profesionales.top</strong> es un desarrollo propio pensado para reunir, en un
-          solo lugar, a profesionales y oficios de Tandil junto con las personas que necesitan
+          solo lugar, a profesionales y oficios de la ciudad junto con las personas que necesitan
           contratarlos: desde electricistas, plomeros y albañiles hasta abogados, diseñadores
           y técnicos. El objetivo es simplificar la búsqueda, dar visibilidad a quienes
           trabajan en la ciudad y ordenar el contacto entre ambas partes.
@@ -71,7 +71,7 @@
               <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="feature-text">
-              <h4>Pensado para Tandil</h4>
+              <h4>Pensado para la comunidad</h4>
               <p>Enfocado en la comunidad local, para fortalecer el trabajo de la ciudad.</p>
             </div>
           </div>

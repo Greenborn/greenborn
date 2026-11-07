@@ -34,7 +34,7 @@
         <ul class="footer-contact">
           <li>
             <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-            Tandil, Buenos Aires, Argentina
+            Buenos Aires, Argentina
           </li>
           <li>
             <i class="fas fa-envelope" aria-hidden="true"></i>

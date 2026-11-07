@@ -34,7 +34,7 @@ const portfolio = [
   [0, "Grupo Fotográfico Centro", `Desarrollé un Sistema de Gestión de Concursos Fotográficos para El GFC (Grupo Fotográfico Centro) que agrupa desde 
       el año 1967 a los fotoclubes del centro este de la provincia de Buenos Aires 
       pertenecientes a la F.A.F (Federación Argentina de Fotografía). <br><br>Las ciudades que se encuentran representadas actualmente son: Balcarce, 
-      Benito Juarez, Necochea, Olavarria y Tandil. 
+      Benito Juarez, Necochea y Olavarria. 
       <br><br> El sistema permite el registro de fotoclubes, salones, fotógrafos, obras, etc. 
       Cuenta como objetivo la promoción de la actividad fotográfica en el ámbito fotoclubista y el aprendizaje continuo.`, "https://www.grupofotograficocentro.com/", ["gfc_1.webp", "gfc_2.webp", "gfc_3.webp"], ["PHP", "Yii", "Postgres", "Angular", "Ionic"]],
   [1, "Buscador e Histórico de Precios", `Desarrollé un sistema de control de scrapers para la obtención de precios de diversas fuentes, registrando
