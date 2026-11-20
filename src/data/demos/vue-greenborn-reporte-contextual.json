@@ -1,0 +1,24 @@
+{
+ "slug": "vue-greenborn-reporte-contextual",
+ "nombre": "Reporte contextual para Vue",
+ "paquete": "@greenborn/vue-greenborn-reporte-contextual",
+ "version": "0.1.10",
+ "categoria": "Interfaz Vue",
+ "resumen": "Permite reportar cualquier elemento de una aplicación con un clic derecho: se completa solo con la pantalla y el contexto.",
+ "detalle": {
+   "descripcion": "Componente para aplicaciones Vue 3 que agrega un menú contextual para reportar problemas o ideas sobre cualquier parte de la interfaz. Al usarlo, se abre un formulario ya completado con el elemento seleccionado, la dirección de la vista actual y el proyecto, para que quien reporta solo tenga que describir lo que observa. La nota queda registrada directamente en el sistema de seguimiento de desarrollo.",
+   "caracteristicas": [
+     "Menú contextual con Alt + clic derecho sobre cualquier elemento",
+     "Alternativa con la tecla D + clic izquierdo, útil cuando el sistema operativo usa esa combinación",
+     "Formulario precompletado con el elemento, la vista y el proyecto",
+     "Envío directo de la nota al sistema de desarrollo",
+     "Se integra con una sola línea en la raíz de la aplicación"
+   ],
+   "casos_uso": [
+     "Relevar errores de diseño o de texto durante una revisión con el cliente",
+     "Cargar observaciones de usabilidad sin salir de la aplicación",
+     "Centralizar en un solo lugar los comentarios de testers y equipo interno"
+   ],
+   "tecnologias": ["Vue 3", "JavaScript", "Vite", "CSS"]
+ }
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "accesorios-personaje",
+  "nombre": "Accesorios de Personaje",
+  "paquete": "@greenborn/accesorios-personaje",
+  "version": "0.2.0",
+  "categoria": "Juegos 3D",
+  "resumen": "Librería que suma gorras, sombreros, lentes y canastas para vender a los personajes 3D de estilo voxel.",
+  "detalle": {
+    "descripcion": "Accesorios de Personaje es una librería para escenas 3D hechas con three.js. Agrega a los personajes de estilo voxel (formados por pequeños cubos) elementos como gorra, sombrero, lentes y una canasta con mercancía para vender. Cada accesorio se pega al cuerpo del personaje y acompaña sus movimientos, por ejemplo la canasta se mueve con el brazo. Sirve para dar variedad visual a una multitud de personajes sin dibujarlos uno por uno.",
+    "caracteristicas": [
+      "Gorra, sombrero, lentes y canasta con mercancía",
+      "Colores y productos de la canasta configurables",
+      "Generación aleatoria de personajes completos con accesorios",
+      "Resultados repetibles usando una misma semilla",
+      "Se integra con el paquete de personajes voxel de Greenborn"
+    ],
+    "casos_uso": [
+      "Poblar escenas con vendedores y personajes variados",
+      "Personalizar avatares en juegos de estilo voxel",
+      "Generar personajes de prueba para prototipos 3D"
+    ],
+    "tecnologias": [
+      "three.js",
+      "JavaScript (módulos ES)",
+      "Node.js",
+      "Voxel art"
+    ]
+  }
+}

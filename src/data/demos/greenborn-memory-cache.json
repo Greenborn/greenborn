@@ -1,0 +1,30 @@
+{
+  "slug": "greenborn-memory-cache",
+  "nombre": "Memory Cache",
+  "paquete": "@greenborn/greenborn-memory-cache",
+  "version": "1.0.1",
+  "categoria": "Backend Node",
+  "resumen": "Caché en memoria para servidores Node.js: guarda datos temporalmente con vencimiento automático para responder más rápido.",
+  "detalle": {
+    "descripcion": "Greenborn Memory Cache es una librería para Node.js que guarda datos temporalmente en la memoria del servidor, para no tener que volver a calcularlos o consultarlos cada vez. Cada entrada puede tener su propio tiempo de vida y se elimina automáticamente al vencer. Además, avisa mediante eventos cuándo una entrada se guarda, se lee, vence o es expulsada, y no requiere dependencias externas para funcionar.",
+    "caracteristicas": [
+      "Tiempo de vida (TTL) configurable por entrada",
+      "Limpieza periódica automática de datos vencidos",
+      "Límite de tamaño con expulsión de los datos menos usados (LRU)",
+      "Eventos para seguir altas, lecturas, vencimientos y expulsiones",
+      "Sin dependencias de runtime, compatible con ESM y CommonJS"
+    ],
+    "casos_uso": [
+      "Guardar respuestas de consultas costosas a bases de datos o APIs",
+      "Reducir cálculos repetidos en servidores web",
+      "Mantener datos de configuración o sesión por un tiempo limitado"
+    ],
+    "tecnologias": [
+      "Node.js",
+      "JavaScript",
+      "EventEmitter (node:events)",
+      "ESM / CommonJS",
+      "TypeScript (tipos incluidos)"
+    ]
+  }
+}

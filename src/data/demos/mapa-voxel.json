@@ -1,0 +1,30 @@
+{
+  "slug": "mapa-voxel",
+  "nombre": "Mapa voxel",
+  "paquete": "@greenborn/mapa-voxel",
+  "version": "0.1.0",
+  "categoria": "Juegos 3D",
+  "resumen": "Convierte mapas construidos con bloques 3D en geometría liviana y fluida para dibujar en el navegador.",
+  "detalle": {
+    "descripcion": "Librería de visualización para mapas construidos con voxeles, es decir, con bloques cúbicos como los que se usan en juegos y escenarios 3D. Transforma esos bloques en una geometría optimizada que se dibuja de forma fluida en el navegador, uniendo las caras contiguas del mismo material para reducir la cantidad de trabajo que necesita la placa de video.\nEl cálculo de la malla puede hacerse en segundo plano, sin trabar la página. Sirve tanto para mapas que cambian en tiempo real como para escenarios fijos que se cargan una vez y se reutilizan.",
+    "caracteristicas": [
+      "Unión de caras contiguas para generar menos geometría",
+      "Cálculo en segundo plano con Web Workers",
+      "Edición de bloques en tiempo real",
+      "Modo estático para escenarios que no cambian",
+      "Iluminación personalizable y soporte para bloques transparentes",
+      "Integración opcional con three.js"
+    ],
+    "casos_uso": [
+      "Mapas editables en juegos o simuladores web",
+      "Escenarios 3D precargados que se reutilizan en distintos proyectos",
+      "Visualización de construcciones o terrenos por bloques en el navegador"
+    ],
+    "tecnologias": [
+      "JavaScript (módulos ES)",
+      "Web Workers",
+      "three.js",
+      "Node.js"
+    ]
+  }
+}

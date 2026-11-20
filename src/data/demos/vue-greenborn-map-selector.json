@@ -1,0 +1,30 @@
+{
+  "slug": "vue-greenborn-map-selector",
+  "nombre": "Selector de ubicación en mapa",
+  "paquete": "@greenborn/vue-greenborn-map-selector",
+  "version": "1.1.1",
+  "categoria": "Interfaz Vue",
+  "resumen": "Permite elegir una ubicación haciendo clic en un mapa interactivo, con opción de usar la ubicación actual del dispositivo.",
+  "detalle": {
+    "descripcion": "Selector de ubicación en mapa para aplicaciones Vue 3. Abre una ventana con un mapa interactivo donde el usuario marca el punto exacto y confirma la latitud y la longitud, que la aplicación recibe al instante.\n\nResuelve el problema habitual de los mapas que quedan detrás de otras ventanas: se apila correctamente sobre cualquier otro modal abierto. También puede arrancar desde coordenadas previas, para editar una ubicación ya guardada.",
+    "caracteristicas": [
+      "Mapa interactivo con marcador que se coloca con un clic y se puede arrastrar",
+      "Coordenadas iniciales opcionales para editar una ubicación existente",
+      "Botón para centrar el mapa en la ubicación actual del dispositivo",
+      "Aviso claro si el navegador no soporta geolocalización o el permiso es rechazado",
+      "Se integra con el gestor de modales de Greenborn y se apila sobre otras ventanas"
+    ],
+    "casos_uso": [
+      "Cargar la ubicación de un comercio o sucursal en un formulario",
+      "Indicar el punto de entrega o de encuentro en una aplicación de pedidos",
+      "Registrar la posición de un evento, un reclamo o un relevamiento en terreno"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "Leaflet",
+      "OpenStreetMap",
+      "Bootstrap",
+      "Geolocalización del navegador"
+    ]
+  }
+}

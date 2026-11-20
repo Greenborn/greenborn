@@ -1,0 +1,24 @@
+{
+  "slug": "express-greenborn-sso-back",
+  "nombre": "SSO para backends Express",
+  "paquete": "@greenborn/express-greenborn-sso-back",
+  "version": "1.10.4",
+  "categoria": "Backend Node",
+  "resumen": "Inicio de sesión único (SSO) para servidores Express: valida usuarios, frena intentos masivos de acceso y se integra fácilmente.",
+  "detalle": {
+    "descripcion": "Es un paquete reutilizable que agrega autenticación de inicio de sesión único a un servidor Node.js con Express. Conecta la aplicación con el servicio de autenticación de Greenborn, de modo que los usuarios ingresan con una sola cuenta en todos los sistemas que lo usen.\n\nResuelve la parte repetitiva y delicada de la seguridad: verificar la identidad, crear automáticamente los usuarios nuevos, renovar sesiones vencidas y limitar los intentos fallidos. Se adapta a la base de datos existente del proyecto sin imponer un esquema.",
+    "caracteristicas": [
+      "Verificación de sesiones y renovación automática",
+      "Alta automática de usuarios con rol asignado por correo",
+      "Límite de intentos fallidos por IP",
+      "Cabeceras de seguridad preconfiguradas",
+      "Funciona con la base de datos del proyecto"
+    ],
+    "casos_uso": [
+      "Agregar inicio de sesión con Google a una aplicación propia",
+      "Proteger rutas de una API con un solo middleware",
+      "Reutilizar la misma autenticación en varios proyectos"
+    ],
+    "tecnologias": ["Node.js", "Express", "Knex", "Socket.io", "Helmet"]
+  }
+}

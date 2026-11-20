@@ -1,0 +1,29 @@
+{
+  "slug": "motor-multijugador",
+  "nombre": "Motor Multijugador",
+  "paquete": "@greenborn/motor-multijugador",
+  "version": "0.1.0",
+  "categoria": "Backend Node",
+  "resumen": "Base para crear juegos y apps en tiempo real con varios usuarios: organiza salas, conexiones y eventos sin imponer reglas de juego.",
+  "detalle": {
+    "descripcion": "Motor Multijugador es un núcleo genérico para Node.js que resuelve la parte técnica de las experiencias en tiempo real con varios participantes: crear salas, conectar a cada usuario con la sala correcta, poner en cola a quienes llegan antes de que la sala esté lista y cerrar las salas que quedan inactivas. No impone reglas de juego: cada proyecto define su propia lógica mediante sistemas con hooks para cuando un jugador entra o sale, en cada tick y ante cada mensaje.",
+    "caracteristicas": [
+      "Gestión de salas con códigos, cola de espera y cierre por inactividad",
+      "Comunicación en tiempo real basada en socket.io",
+      "Procesamiento de la lógica de cada sala en hilos separados",
+      "Registro de sistemas con hooks personalizables",
+      "Sin dependencias de ejecución externas"
+    ],
+    "casos_uso": [
+      "Juegos multijugador en tiempo real",
+      "Aplicaciones colaborativas con salas de trabajo",
+      "Salas de encuentro o competencias en línea"
+    ],
+    "tecnologias": [
+      "Node.js",
+      "socket.io",
+      "worker_threads",
+      "JavaScript (módulos ES)"
+    ]
+  }
+}

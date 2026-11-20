@@ -1,0 +1,30 @@
+{
+  "slug": "express-greenborn-notificaciones",
+  "nombre": "Notificaciones Push",
+  "paquete": "@greenborn/express-greenborn-notificaciones",
+  "version": "0.1.1",
+  "categoria": "Backend Node",
+  "resumen": "Notificaciones push para el navegador de tus usuarios: se suscriben desde la web y tu sistema les envía avisos a uno o a todos.",
+  "detalle": {
+    "descripcion": "Módulo para backends Node.js y Express que permite enviar notificaciones push a los navegadores de los usuarios, aunque la aplicación no esté abierta en ese momento. Resuelve la parte técnica de la suscripción y el envío, incluyendo las rutas que la web necesita para activar o desactivar los avisos.\n\nNo reemplaza el sistema de login del proyecto: se integra con el middleware de autenticación existente, de modo que solo los usuarios con sesión válida pueden suscribirse.",
+    "caracteristicas": [
+      "Suscripción y desuscripción desde el navegador",
+      "Envío de avisos a un usuario o a todos",
+      "Rutas listas para integrar en Express",
+      "Migración de base de datos reutilizable",
+      "Limpieza automática de suscripciones vencidas"
+    ],
+    "casos_uso": [
+      "Avisar a un usuario sobre novedades de su cuenta",
+      "Enviar anuncios generales a todos los usuarios",
+      "Probar la configuración de notificaciones desde un panel de administración"
+    ],
+    "tecnologias": [
+      "Node.js",
+      "Express",
+      "Knex",
+      "Web Push (VAPID)",
+      "web-push"
+    ]
+  }
+}

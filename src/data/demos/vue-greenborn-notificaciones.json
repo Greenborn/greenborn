@@ -1,0 +1,24 @@
+{
+ "slug": "vue-greenborn-notificaciones",
+ "nombre": "Notificaciones Push para Vue",
+ "paquete": "@greenborn/vue-greenborn-notificaciones",
+ "version": "0.1.0",
+ "categoria": "Interfaz Vue",
+ "resumen": "Permite que tu sitio o app web envíe notificaciones push a los usuarios, aun cuando no tengan la página abierta.",
+ "detalle": {
+   "descripcion": "Cliente de notificaciones push (Web Push con claves VAPID) para aplicaciones Vue 3 y PWA. Se encarga de la suscripción y desuscripción de los usuarios desde el frontend y deja preparada la lógica del service worker para mostrar las notificaciones y responder a los clics sobre ellas.\n\nResuelve la parte más técnica de avisar a los usuarios: pedir el permiso del navegador, registrar el dispositivo en el servidor y mostrar el aviso del sistema. Es independiente de la librería HTTP que use el proyecto y está pensado para trabajar junto a un backend de notificaciones del ecosistema Greenborn.",
+   "caracteristicas": [
+     "Suscripción y desuscripción de notificaciones desde el frontend",
+     "Composable usePush para Vue 3, con estado reactivo",
+     "Listeners de push y de clic listos para el service worker de la PWA",
+     "Compatible con axios o con fetch",
+     "Personalizable: ícono, vibración y página de destino"
+   ],
+   "casos_uso": [
+     "Avisar a los usuarios sobre pedidos, turnos o cambios de estado",
+     "Enviar alertas o mensajes importantes a quienes instalaron la app",
+     "Agregar un botón para activar o desactivar las notificaciones"
+   ],
+   "tecnologias": ["Vue 3", "Web Push (VAPID)", "Service Workers", "PWA", "Vite"]
+ }
+}

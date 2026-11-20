@@ -1,0 +1,30 @@
+{
+  "slug": "vue-greenborn-webcam-viewer",
+  "nombre": "Visor de webcam para Vue",
+  "paquete": "@greenborn/vue-greenborn-webcam-viewer",
+  "version": "1.0.3",
+  "categoria": "Interfaz Vue",
+  "resumen": "Componente para Vue 3 que muestra la cámara del equipo, permite elegir la cuenta de cámaras y captura imágenes para analizarlas.",
+  "detalle": {
+    "descripcion": "Es un componente para aplicaciones web hechas con Vue 3 que resuelve todo lo necesario para trabajar con la cámara del usuario: pedir el permiso del navegador, elegir entre varias cámaras conectadas, mostrar el video en vivo y sacar fotos o cuadros del video. Sobre la imagen puede dibujar recuadros de detección que la aplicación le indique, y ofrece espacios para agregar overlays propios. El componente no depende de ningún servicio de análisis: entrega las imágenes capturadas y la aplicación decide qué hacer con ellas.",
+    "caracteristicas": [
+      "Solicitud de permisos y selección de cámara con controles integrados",
+      "Captura de cuadros y fotos listos para enviar a un servicio propio",
+      "Dibujo de recuadros de detección sobre el video, con etiquetas y puntajes",
+      "Espacios personalizables para agregar overlays o acciones adicionales",
+      "Sin dependencias adicionales más allá de Vue"
+    ],
+    "casos_uso": [
+      "Captura de fotos desde la webcam dentro de formularios o paneles de carga",
+      "Visualización de detecciones en tiempo real sobre el video de la cámara",
+      "Integración de una cámara propia en aplicaciones de control o inspección"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "JavaScript",
+      "API MediaDevices (getUserMedia)",
+      "Canvas",
+      "Vite"
+    ]
+  }
+}

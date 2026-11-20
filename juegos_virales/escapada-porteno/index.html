@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Escapada porteña</title>
+    <link rel="stylesheet" href="../libs/constructor-personaje/constructor-personaje.css" />
+    <link rel="stylesheet" href="estilo.css" />
+  </head>
+  <body>
+    <main class="juego">
+      <header class="hud">
+        <div class="bloque">
+          <span>Bolsa</span>
+          <div id="bolsa-iconos" class="iconos"></div>
+          <span id="bolsa-contador">0/6</span>
+        </div>
+        <div class="bloque">
+          <span>Vendido</span>
+          <strong id="puntos">$0</strong>
+        </div>
+        <div class="bloque">
+          <span>Tiempo</span>
+          <strong id="tiempo">0s</strong>
+        </div>
+        <div class="bloque">
+          <span>Aire</span>
+          <div class="barra"><div id="aire"></div></div>
+        </div>
+      </header>
+
+      <div class="escenario">
+        <canvas id="mundo" width="320" height="192" aria-label="Escenario del juego"></canvas>
+      </div>
+
+      <p id="aviso" class="aviso" aria-live="polite"></p>
+
+      <div class="controles-tactiles">
+        <div class="cruz">
+          <button data-dir="arriba" class="arriba" aria-label="Arriba">▲</button>
+          <button data-dir="izquierda" class="izquierda" aria-label="Izquierda">◀</button>
+          <button data-dir="abajo" class="abajo" aria-label="Abajo">▼</button>
+          <button data-dir="derecha" class="derecha" aria-label="Derecha">▶</button>
+        </div>
+        <button id="btn-hablar" class="hablar">Hablar</button>
+        <button id="btn-correr" class="correr">Correr</button>
+      </div>
+
+      <p class="ayuda">
+        Flechas o WASD para moverte · Shift para correr (gasta aire) · E o Espacio para hablar con un peatón y vender ·
+        Escondete en los arbustos · Si te atrapan, perdés lo que llevás en la bolsa.
+      </p>
+    </main>
+
+    <section id="pantalla-personaje" class="pantalla">
+      <div class="tarjeta">
+        <h1>Armá tu vendedor</h1>
+        <div class="previa-caja">
+          <canvas id="previa" width="12" height="16" aria-label="Vista previa del personaje"></canvas>
+        </div>
+        <div id="opciones"></div>
+        <div class="acciones">
+          <button id="btn-azar" type="button">Al azar</button>
+          <button id="btn-jugar" type="button" class="principal">Jugar</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="pantalla-fin" class="pantalla oculta">
+      <div class="tarjeta">
+        <h2 id="fin-titulo">¡Te atraparon!</h2>
+        <p id="fin-texto"></p>
+        <div class="acciones">
+          <button id="btn-cambiar" type="button">Cambiar personaje</button>
+          <button id="btn-otra" type="button" class="principal">Otra vez</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="../libs/constructor-personaje/constructor-personaje.js"></script>
+    <script src="js/pixel.js"></script>
+    <script src="js/personaje.js"></script>
+    <script src="js/juego.js"></script>
+  </body>
+</html>

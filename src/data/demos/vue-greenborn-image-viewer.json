@@ -1,0 +1,24 @@
+{
+ "slug": "vue-greenborn-image-viewer",
+ "nombre": "Visor de imágenes para Vue",
+ "paquete": "@greenborn/vue-greenborn-image-viewer",
+ "version": "1.0.3",
+ "categoria": "Interfaz Vue",
+ "resumen": "Visor de imágenes para Vue 3 con zoom, desplazamiento y rotación libre con vista previa, pensado para superponer anotaciones.",
+ "detalle": {
+   "descripcion": "Componente para mostrar imágenes en aplicaciones Vue 3. Permite acercar y alejar con la rueda del mouse o con botones, desplazarse por la imagen y rotarla en un ángulo libre con vista previa. Está pensado para que otros elementos, como anotaciones o detecciones, se superpongan a la imagen y se mantengan alineados al hacer zoom o rotar. No guarda cambios ni modifica el archivo original: la aplicación decide cuándo aplicar y persistir las modificaciones.",
+   "caracteristicas": [
+     "Zoom con la rueda del mouse, centrado en el cursor",
+     "Desplazamiento de la imagen con Ctrl + arrastre",
+     "Rotación libre con vista previa",
+     "Capa superpuesta sincronizada con la escala y el ángulo",
+     "Sin dependencias de interfaz ni de runtime"
+   ],
+   "casos_uso": [
+     "Visualizar fotos con marcas o anotaciones sobre la imagen",
+     "Revisar imágenes con zoom de precisión",
+     "Permitir al usuario rotar una imagen antes de confirmar el cambio"
+   ],
+   "tecnologias": ["Vue 3", "JavaScript", "CSS", "Vite"]
+ }
+}

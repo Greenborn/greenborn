@@ -1,0 +1,31 @@
+{
+  "slug": "vue-greenborn-dashboard-cards",
+  "nombre": "Dashboard por cards para Vue",
+  "paquete": "@greenborn/vue-greenborn-dashboard-cards",
+  "version": "1.2.1",
+  "categoria": "Interfaz Vue",
+  "resumen": "Base para paneles de control en Vue 3: tarjetas reordenables, pestañas por usuario, filtro y gráficos sparkline listos para usar.",
+  "detalle": {
+    "descripcion": "Es una base para armar paneles de control con tarjetas en Vue 3. Permite organizar la información en una grilla que se adapta al espacio disponible, con arrastrar y soltar, tarjetas ocultas y menús contextuales. Cada usuario puede crear sus propias pestañas para agrupar las tarjetas según lo que necesita ver. No trae tarjetas de contenido: cada proyecto define las suyas, de acuerdo con sus datos. Así se resuelve el armado de un panel completo sin empezar desde cero.",
+    "caracteristicas": [
+      "Grilla de tarjetas sin librerías externas, con tamaños de 1 a 4 columnas",
+      "Pestañas personalizables por usuario, con sus propias tarjetas y ocultas",
+      "Arrastrar y soltar para reordenar tarjetas",
+      "Filtro por título y subtítulo",
+      "Gráfico sparkline en SVG incluido",
+      "Preferencias y permisos conectables a cada proyecto"
+    ],
+    "casos_uso": [
+      "Panel de indicadores para áreas de administración u operaciones",
+      "Tablero personal donde cada usuario arma su vista de trabajo",
+      "Pantalla de resumen para sistemas internos con datos en tiempo casi real"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "JavaScript",
+      "SVG",
+      "CSS",
+      "Vite"
+    ]
+  }
+}

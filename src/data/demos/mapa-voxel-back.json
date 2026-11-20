@@ -1,0 +1,29 @@
+{
+ "slug": "mapa-voxel-back",
+ "nombre": "Mapa Voxel",
+ "paquete": "@greenborn/mapa-voxel-back",
+ "version": "0.1.1",
+ "categoria": "Backend Node",
+ "resumen": "Genera mapas 3D de bloques para juegos multijugador: terreno, edificios, refugios y tiendas, listos para jugar en cada sala.",
+ "detalle": {
+   "descripcion": "Módulo de software que crea, del lado del servidor, los mapas de un juego en 3D armados con bloques (voxels). Genera el terreno, casas de varios pisos, vehículos, árboles, refugios subterráneos y tiendas, y divide el mundo en partes para cargar solo lo necesario. Corre en Node o en procesos en segundo plano, así que el juego no se traba mientras se arma un mapa. Cada sala puede tener su propio mapa y modo de juego.",
+   "caracteristicas": [
+     "Terreno, edificios, vehículos y árboles generados automáticamente",
+     "Refugios subterráneos, nidos y tiendas según el modo de juego",
+     "Mapas divididos en partes para cargar solo lo necesario",
+     "Modos de juego por equipos y de supervivencia",
+     "Funciona en el servidor o en procesos paralelos, sin depender del navegador"
+   ],
+   "casos_uso": [
+     "Juegos multijugador con una sala y un mapa propio por partida",
+     "Partidas de supervivencia o por equipos",
+     "Pruebas de mapas reproducibles usando una misma semilla"
+   ],
+   "tecnologias": [
+     "JavaScript (módulos ES)",
+     "Node.js",
+     "pngjs",
+     "worker_threads / Web Workers"
+   ]
+ }
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "modelos-arboles",
+  "nombre": "Modelos de árboles",
+  "paquete": "@greenborn/modelos-arboles",
+  "version": "0.1.0",
+  "categoria": "Juegos 3D",
+  "resumen": "Genera árboles 3D variados y realistas, en trece especies, para mundos virtuales y juegos, sin necesidad de modelarlos a mano.",
+  "detalle": {
+    "descripcion": "Biblioteca que crea modelos de árboles en 3D de forma automática para escenas virtuales. Incluye trece especies, desde el roble y el pino hasta la palmera, el sauce o el ceibo. Cada árbol se genera a partir de una semilla: la misma semilla siempre produce el mismo árbol, lo que permite que un mismo paisaje se vea igual en distintos equipos. Se integra con three.js y sirve para poblar bosques y parques sin cargar modelos prearmados.",
+    "caracteristicas": [
+      "Trece especies de árbol, entre ellas roble, pino, palmera, sauce y abedul",
+      "Resultados repetibles: una misma semilla produce siempre el mismo árbol",
+      "Colisión calculada a partir del tronco real de cada árbol",
+      "Materiales separados para corteza, hojas y flores",
+      "Núcleo sin dependencias, que puede ejecutarse fuera del hilo principal del navegador"
+    ],
+    "casos_uso": [
+      "Poblar bosques, parques y calles en videojuegos 3D",
+      "Recorridos virtuales y escenas interactivas en la web",
+      "Previsualizar paisajes con distintas especies de árbol"
+    ],
+    "tecnologias": [
+      "JavaScript (módulos ES)",
+      "three.js",
+      "Node.js"
+    ]
+  }
+}

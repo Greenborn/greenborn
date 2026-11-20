@@ -1,0 +1,29 @@
+{
+ "slug": "vue-greenborn-line-chart",
+ "nombre": "Gráfico de líneas para Vue",
+ "paquete": "@greenborn/vue-greenborn-line-chart",
+ "version": "1.0.1",
+ "categoria": "Interfaz Vue",
+ "resumen": "Gráfico de líneas para Vue 3 que muestra la evolución de una o varias métricas en el tiempo, sin dependencias de terceros.",
+ "detalle": {
+   "descripcion": "Componente de gráfico de líneas para Vue 3, dibujado en SVG sin librerías de gráficos de terceros. Permite mostrar una o varias series de datos sobre un eje Y configurable, con leyenda, grilla y tooltips por punto. Resuelve la necesidad de agregar paneles de métricas simples, como porcentajes o conteos, sin sumar dependencias pesadas al proyecto.",
+   "caracteristicas": [
+     "Una o varias series en el mismo gráfico",
+     "Eje Y configurable con valor máximo y sufijo (%, unidades, etc.)",
+     "Leyenda, grilla y marcas en el eje X",
+     "Tooltips con el valor de cada punto",
+     "Estado vacío cuando no hay datos para graficar"
+   ],
+   "casos_uso": [
+     "Paneles de métricas con evolución de porcentajes de avance",
+     "Seguimiento de conteos diarios o semanales de usuarios, ventas o consultas",
+     "Comparación de dos o más series en un mismo período"
+   ],
+   "tecnologias": [
+     "Vue 3",
+     "SVG",
+     "CSS con estilos aislados",
+     "Vite"
+   ]
+ }
+}

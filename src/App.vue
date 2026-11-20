@@ -21,6 +21,7 @@
   <SeccionPortfolio />
 -->
 <SeccionTecnologias />
+<SeccionComponentes />
 <SeccionContacto />
 <SeccionFooter />
 <!--<CustomCursor :config='{ highlighted_tags: [ "a", "button", ".text-res-1", ".circ-met", ".text-effect", ".menu-item" ], 
@@ -41,6 +42,7 @@ const quick_replies = ref([
 
 import SeccionHeader from './components/SeccionHeader.vue'
 import SeccionTecnologias from './components/SeccionTecnologias.vue'
+import SeccionComponentes from './components/SeccionComponentes.vue'
 // Oculto temporalmente (ver comentario en el template):
 // import SeccionPortfolio from './components/SeccionPortfolio.vue'
 import SeccionContacto from './components/SeccionContacto.vue'

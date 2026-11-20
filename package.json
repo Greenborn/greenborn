@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build && zip -r dist_greenborn.zip dist",
+    "build": "vite build && npm --prefix juegos_virales run build && rm -rf dist/juegos_virales && cp -r juegos_virales/dist dist/juegos_virales && zip -r dist_greenborn.zip dist",
     "preview": "vite preview"
   },
   "dependencies": {

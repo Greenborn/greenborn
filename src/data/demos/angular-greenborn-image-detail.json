@@ -1,0 +1,30 @@
+{
+  "slug": "angular-greenborn-image-detail",
+  "nombre": "Visor de imágenes para Angular",
+  "paquete": "@greenborn/angular-greenborn-image-detail",
+  "version": "1.0.1",
+  "categoria": "Angular",
+  "resumen": "Componente para mostrar fotos con zoom, desplazamiento, pantalla completa y descarga, con navegación entre imágenes.",
+  "detalle": {
+    "descripcion": "Librería para aplicaciones Angular que permite mostrar imágenes en detalle, al estilo de las galerías profesionales. Incluye un visor con zoom y desplazamiento, modo pantalla completa y descarga de la imagen, además de un modal que permite pasar de una foto a otra con botones, teclado o gestos. Se incorpora a un proyecto con una sola instalación y facilita entregar una experiencia de galería fotográfica sin desarrollar el visor desde cero.",
+    "caracteristicas": [
+      "Zoom y desplazamiento de la imagen con rueda del mouse, botones o gestos táctiles",
+      "Modo pantalla completa",
+      "Descarga directa de la imagen",
+      "Navegación anterior y siguiente con teclado (flechas y Esc)",
+      "Panel lateral opcional con metadatos de cada foto"
+    ],
+    "casos_uso": [
+      "Galerías de fotografía de eventos o archivos",
+      "Catálogos de productos con imágenes de alta resolución",
+      "Portfolios de fotógrafos y artistas"
+    ],
+    "tecnologias": [
+      "Angular 21",
+      "TypeScript",
+      "Bootstrap",
+      "Bootstrap Icons",
+      "SCSS"
+    ]
+  }
+}

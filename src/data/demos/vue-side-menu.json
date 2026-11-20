@@ -1,0 +1,29 @@
+{
+ "slug": "vue-side-menu",
+ "nombre": "Menú lateral Vue",
+ "paquete": "@greenborn/vue-side-menu",
+ "version": "1.1.3",
+ "categoria": "Interfaz Vue",
+ "resumen": "Menú lateral reutilizable para aplicaciones Vue 3, con diseño responsive, filtrado por permisos y submenús.",
+ "detalle": {
+   "descripcion": "Componente de menú lateral para aplicaciones Vue 3 que se configura por completo desde sus propiedades y no requiere librerías de interfaz, ya que incluye su propio estilo. En pantallas angostas se muestra como un panel superpuesto que se cierra al elegir una opción. Permite mostrar u ocultar cada opción según los permisos del usuario y se integra con vue-router si la aplicación lo utiliza. Resuelve la navegación lateral de forma consistente en distintos proyectos.",
+   "caracteristicas": [
+     "Configurable íntegramente por propiedades",
+     "Diseño responsive con panel superpuesto en móviles",
+     "Filtrado de opciones según permisos de usuario",
+     "Submenús desplegables de varios niveles",
+     "Integración opcional con vue-router"
+   ],
+   "casos_uso": [
+     "Paneles de administración con distintos roles de usuario",
+     "Aplicaciones web con navegación lateral en escritorio y móvil",
+     "Sistemas de gestión con múltiples secciones y submenús"
+   ],
+   "tecnologias": [
+     "Vue 3",
+     "JavaScript",
+     "CSS",
+     "Vue Router (opcional)"
+   ]
+ }
+}

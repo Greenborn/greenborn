@@ -1,0 +1,30 @@
+{
+ "slug": "vue-greenborn-map-viewer",
+ "nombre": "Visor de mapa para Vue",
+ "paquete": "@greenborn/vue-greenborn-map-viewer",
+ "version": "1.3.1",
+ "categoria": "Interfaz Vue",
+ "resumen": "Componente para mostrar en un mapa interactivo varias ubicaciones a la vez, con información emergente para cada una.",
+ "detalle": {
+   "descripcion": "Componente listo para usar en aplicaciones Vue 3 que muestra en un mapa interactivo múltiples puntos o marcadores. Ideal para publicar la ubicación de profesionales, sucursales, servicios o cualquier otro recurso geográfico. Cada punto puede mostrar su nombre, subtítulo y descripción en una ventana emergente, y el mapa se ajusta automáticamente para que todos los puntos queden visibles. Está construido sobre Leaflet y OpenStreetMap, por lo que no requiere claves de servicios pagos.",
+   "caracteristicas": [
+     "Muestra múltiples marcadores con ventanas emergentes informativas",
+     "Ajuste automático de la vista para encontrar todos los puntos",
+     "Color y tamaño de marcadores personalizables",
+     "Eventos al hacer clic en un punto y al estar listo el mapa",
+     "Diseño adaptable a celulares y computadoras",
+     "Etiquetas de accesibilidad para lectores de pantalla"
+   ],
+   "casos_uso": [
+     "Directorio de profesionales o consultorios con su ubicación",
+     "Mapa de sucursales, puntos de venta o servicios",
+     "Localización de recursos o establecimientos en una zona"
+   ],
+   "tecnologias": [
+     "Vue 3",
+     "Leaflet",
+     "OpenStreetMap",
+     "Vite"
+   ]
+ }
+}

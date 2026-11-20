@@ -1,0 +1,30 @@
+{
+  "slug": "vue-greenborn-modal-manager",
+  "nombre": "Gestor de modales para Vue",
+  "paquete": "@greenborn/vue-greenborn-modal-manager",
+  "version": "1.7.1",
+  "categoria": "Interfaz Vue",
+  "resumen": "Librería para Vue 3 que organiza las ventanas emergentes de una aplicación: abrirlas, anidarlas, minimizarlas y confirmar acciones.",
+  "detalle": {
+    "descripcion": "Es un gestor de ventanas modales para aplicaciones web hechas con Vue 3. Permite abrir formularios, alertas y confirmaciones desde cualquier parte de la aplicación, y mantiene el orden de las ventanas abiertas, incluso cuando una se abre desde otra. Resuelve la necesidad de manejar varias ventanas a la vez de forma uniforme, sin depender de otras librerías de estado ni de frameworks de interfaz.",
+    "caracteristicas": [
+      "Modales anidados: una ventana puede abrir otra y cerrarse sin afectar a la anterior",
+      "Pasaje de parámetros entre la aplicación y el contenido de cada ventana",
+      "Alertas y confirmaciones listas para usar",
+      "Ventanas redimensionables, arrastrables y minimizables",
+      "Estilos propios, sin necesidad de Bootstrap ni PrimeVue"
+    ],
+    "casos_uso": [
+      "Formularios de alta o edición que se abren sobre la pantalla actual",
+      "Confirmaciones antes de borrar un registro",
+      "Flujos de varios pasos donde cada paso abre una ventana nueva"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "JavaScript",
+      "CSS",
+      "Vite",
+      "npm"
+    ]
+  }
+}

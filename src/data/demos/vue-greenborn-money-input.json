@@ -1,0 +1,24 @@
+{
+ "slug": "vue-greenborn-money-input",
+ "nombre": "Campo de moneda para Vue",
+ "paquete": "@greenborn/vue-greenborn-money-input",
+ "version": "1.0.1",
+ "categoria": "Interfaz Vue",
+ "resumen": "Campo de moneda para Vue 3 que muestra el monto con formato argentino y entrega un número listo para guardar en la base de datos.",
+ "detalle": {
+   "descripcion": "Componente de entrada de moneda para Vue 3 que aplica automáticamente el formato argentino (punto para los miles, coma para los centavos) mientras se escribe. Solo permite ingresar dígitos y siempre devuelve un valor numérico sin separadores, listo para guardarse en columnas monetarias de bases de datos. Está pensado también para celulares, con teclado numérico y ajustes de tamaño en pantallas chicas.",
+   "caracteristicas": [
+     "Formato de moneda argentino automático mientras se escribe",
+     "Solo acepta dígitos; el resto de los caracteres se descarta",
+     "Entrega un número limpio, sin separadores de miles",
+     "Límite opcional de dígitos enteros",
+     "Teclado numérico en celulares y estilos personalizables"
+   ],
+   "casos_uso": [
+     "Formularios de precios, presupuestos y facturación",
+     "Carga de montos en paneles administrativos y sistemas de ventas",
+     "Registro de pagos o transacciones en aplicaciones Vue"
+   ],
+   "tecnologias": ["Vue 3", "JavaScript", "CSS", "Vite", "npm"]
+ }
+}

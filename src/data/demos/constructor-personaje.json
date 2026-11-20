@@ -1,0 +1,29 @@
+{
+  "slug": "constructor-personaje",
+  "nombre": "Constructor de personaje",
+  "paquete": "@greenborn/constructor-personaje",
+  "version": "0.1.0",
+  "categoria": "Juegos 3D",
+  "resumen": "Herramienta para crear personajes voxel en 3D: elegís cuerpo, ropa, accesorios y nombre, con vista previa en tiempo real.",
+  "detalle": {
+    "descripcion": "Constructor de personajes en 3D con estilo voxel. Permite elegir peinado, colores de pelo, remera, pantalón y calzado, sumar accesorios como gorra, sombrero, lentes o canasta, y definir el nombre y el tono de piel. El resultado se ve en una vista previa 3D que se puede girar. Resuelve el paso de crear un avatar propio para un juego o una aplicación sin tener que modelar cada personaje a mano.",
+    "caracteristicas": [
+      "Panel con opciones por categoría: peinado, colores, ropa y calzado",
+      "Accesorios: gorra, sombrero, lentes y canasta",
+      "Vista previa 3D que se puede girar en cuatro posiciones",
+      "Generación de personajes al azar",
+      "Botón para volver a la configuración inicial"
+    ],
+    "casos_uso": [
+      "Crear avatares de jugador para un juego 3D",
+      "Armar personajes para mapas o escenas voxel",
+      "Probar combinaciones de ropa y accesorios antes de elegir"
+    ],
+    "tecnologias": [
+      "JavaScript (módulos ES)",
+      "three.js",
+      "WebGPU",
+      "Node.js"
+    ]
+  }
+}
