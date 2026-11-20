@@ -1,0 +1,30 @@
+{
+  "slug": "express-greenborn-galeria-image",
+  "nombre": "Galería de imágenes",
+  "paquete": "@greenborn/express-greenborn-galeria-image",
+  "version": "1.0.1",
+  "categoria": "Backend Node",
+  "resumen": "Módulo para backends Express que gestiona una galería de imágenes: subida, miniaturas automáticas y listado paginado.",
+  "detalle": {
+    "descripcion": "Galería de imágenes lista para sumar a cualquier backend Express. Permite subir fotos, generar miniaturas y guardar sus datos (título, descripción, sección y orden) sin tener que armar esa lógica desde cero. Las imágenes se guardan en disco local y el listado se entrega paginado y con búsqueda. Se integra con la base de datos que ya usa el proyecto y puede funcionar sin autenticación o con los controles de acceso que el proyecto defina.",
+    "caracteristicas": [
+      "Subida de imágenes con validación de tipo y tamaño",
+      "Miniaturas y dimensiones generadas automáticamente",
+      "Listado paginado con filtros por sección y búsqueda",
+      "Edición de metadatos y eliminación de imágenes",
+      "Permisos configurables por operación"
+    ],
+    "casos_uso": [
+      "Galerías de productos o de trabajos realizados",
+      "Banners y fotos de sitios institucionales",
+      "Catálogos con imágenes administrados desde un panel"
+    ],
+    "tecnologias": [
+      "Node.js",
+      "Express",
+      "Knex",
+      "Multer",
+      "Sharp"
+    ]
+  }
+}

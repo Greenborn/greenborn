@@ -1,0 +1,30 @@
+{
+ "slug": "vue-greenborn-tree-view",
+ "nombre": "Vista de árbol para Vue",
+ "paquete": "@greenborn/vue-greenborn-tree-view",
+ "version": "1.0.1",
+ "categoria": "Interfaz Vue",
+ "resumen": "Vista de árbol para Vue 3 que carga los niveles bajo demanda, al expandir cada nodo, para navegar datos jerárquicos grandes.",
+ "detalle": {
+   "descripcion": "Componente de árbol para Vue 3 con carga diferida: muestra primero los elementos raíz y pide los hijos de cada nodo solo cuando el usuario lo expande. No impone un backend ni una forma de datos: el desarrollador define cómo obtener los nodos, ya sea desde una API o desde un array local. Permite personalizar el contenido de cada fila y el ícono de expansión, y no tiene dependencias de interfaz ni de runtime.",
+   "caracteristicas": [
+     "Carga diferida: los hijos se piden al expandir cada nodo",
+     "Fuente de datos libre: API, array local u otra",
+     "Slots para personalizar filas e íconos",
+     "Estilos propios con variables CSS",
+     "Método para refrescar el árbol tras cambios",
+     "Sin dependencias de runtime"
+   ],
+   "casos_uso": [
+     "Navegar catálogos o categorías jerárquicas",
+     "Explorar estructuras de carpetas o áreas anidadas",
+     "Seleccionar elementos dentro de un árbol de datos grande"
+   ],
+   "tecnologias": [
+     "Vue 3",
+     "JavaScript",
+     "CSS",
+     "Vite"
+   ]
+ }
+}

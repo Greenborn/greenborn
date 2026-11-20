@@ -1,0 +1,30 @@
+{
+  "slug": "express-greenborn-mercado-pago",
+  "nombre": "Integración Mercado Pago para Express",
+  "paquete": "@greenborn/express-greenborn-mercado-pago",
+  "version": "1.0.1",
+  "categoria": "Backend Node",
+  "resumen": "Conecta tu backend Express con Mercado Pago: consulta pagos y recibe notificaciones automáticas de forma ordenada y segura.",
+  "detalle": {
+    "descripcion": "Paquete para backends Express/Node.js que centraliza la integración con Mercado Pago en un único módulo reutilizable. Incluye un cliente para consultar pagos y órdenes, y un receptor de notificaciones (webhooks) que registra cada evento una sola vez, aunque Mercado Pago lo reenvíe. La base de datos del proyecto se inyecta desde fuera, así que se adapta a la estructura que ya tengas.",
+    "caracteristicas": [
+      "Cliente de la API de Mercado Pago para consultar pagos y órdenes",
+      "Receptor de notificaciones con control de eventos repetidos",
+      "Configuración por variables de entorno o por parámetros",
+      "Compatible con Express 4 y 5 y con Knex",
+      "Pensado para incorporar nuevas funciones de Mercado Pago a futuro"
+    ],
+    "casos_uso": [
+      "Confirmar pedidos automáticamente cuando Mercado Pago informa un pago aprobado",
+      "Consultar el estado de un pago desde el panel de administración",
+      "Generar cobros con código QR desde un punto de venta"
+    ],
+    "tecnologias": [
+      "Node.js",
+      "Express",
+      "Knex",
+      "Axios",
+      "API de Mercado Pago"
+    ]
+  }
+}

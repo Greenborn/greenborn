@@ -1,0 +1,30 @@
+{
+ "slug": "vue-greenborn-markdown-viewer",
+ "nombre": "Visor de Markdown para Vue",
+ "paquete": "@greenborn/vue-greenborn-markdown-viewer",
+ "version": "1.0.1",
+ "categoria": "Interfaz Vue",
+ "resumen": "Componente para Vue que muestra textos en formato Markdown como páginas bien formateadas, de forma segura y lista para usar.",
+ "detalle": {
+  "descripcion": "Visor de Markdown para Vue 3 que convierte textos con formato Markdown, incluidas tablas, listas de tareas y enlaces, en contenido web prolijo. Antes de mostrarlo, el contenido se limpia con DOMPurify, de modo que el código malicioso incluido en el texto no se ejecuta. Sirve para publicar políticas, documentación o textos largos sin tener que maquetarlos a mano.",
+  "caracteristicas": [
+   "Soporte de Markdown GFM: tablas, listas de tareas y enlaces",
+   "Contenido sanitizado con DOMPurify por seguridad",
+   "Tipografía propia lista para usar, sin dependencias de UI",
+   "Colores personalizables mediante variables CSS",
+   "Opción de obtener solo el HTML para otros motores de render"
+  ],
+  "casos_uso": [
+   "Mostrar políticas de privacidad o términos y condiciones",
+   "Publicar documentación o guías dentro de una aplicación",
+   "Mostrar textos cargados desde una base de datos o un panel de administración"
+  ],
+  "tecnologias": [
+   "Vue 3",
+   "Markdown (GFM)",
+   "marked",
+   "DOMPurify",
+   "Vite"
+  ]
+ }
+}

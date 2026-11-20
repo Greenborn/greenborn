@@ -1,0 +1,30 @@
+{
+ "slug": "vue-greenborn-sso-front",
+ "nombre": "SSO para Vue",
+ "paquete": "@greenborn/vue-greenborn-sso-front",
+ "version": "1.7.1",
+ "categoria": "Interfaz Vue",
+ "resumen": "Permite que las aplicaciones Vue 3 ofrezcan ingreso con cuenta de Google, mantengan la sesión y protejan sus páginas privadas.",
+ "detalle": {
+   "descripcion": "Librería para aplicaciones Vue 3 que centraliza el inicio de sesión con cuenta de Google mediante un servicio de autenticación única (SSO). Se encarga del ingreso, la verificación de la sesión al arrancar, el cierre de sesión y el manejo de roles y permisos del usuario. Cada aplicación se conecta con una sola configuración, sin resolver la autenticación por su cuenta.",
+   "caracteristicas": [
+     "Ingreso con cuenta de Google",
+     "Verificación de la sesión al iniciar la aplicación",
+     "Pantalla de carga mientras se verifica el acceso",
+     "Control de roles y permisos del usuario",
+     "Comunicación en tiempo real opcional"
+   ],
+   "casos_uso": [
+     "Aplicaciones internas donde el personal ingresa con su cuenta de Google",
+     "Paneles con secciones privadas que requieren sesión iniciada",
+     "Varias aplicaciones Vue que comparten un mismo sistema de acceso"
+   ],
+   "tecnologias": [
+     "Vue 3",
+     "Vue Router",
+     "JavaScript",
+     "Vite",
+     "Socket.IO"
+   ]
+ }
+}

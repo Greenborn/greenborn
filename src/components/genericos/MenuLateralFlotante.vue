@@ -83,6 +83,7 @@ const enlaces = ref([
   // Si no se quita, al hacer scroll se accede a element.offsetTop con element null.
   // { label: 'Portfolio', active: false, section_id: "seccion-portfolio", element: null },
   { label: 'Tecnologías', active: false, section_id: "seccion-tecnologias", element: null },
+  { label: 'Componentes', active: false, section_id: "seccion-componentes", element: null },
   { label: 'Contacto', active: false, section_id: "seccion-contacto", element: null },
 ])
 
@@ -96,6 +97,7 @@ function getIconForSection(sectionId) {
     'seccion-proyecto-propio': 'fas fa-lightbulb',
     'seccion-portfolio': 'fas fa-briefcase',
     'seccion-tecnologias': 'fas fa-code',
+    'seccion-componentes': 'fas fa-cubes',
     'seccion-contacto': 'fas fa-envelope'
   }
   return icons[sectionId] || 'fas fa-circle'

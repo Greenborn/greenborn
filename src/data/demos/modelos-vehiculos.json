@@ -1,0 +1,24 @@
+{
+ "slug": "modelos-vehiculos",
+ "nombre": "Modelos de vehículos 3D",
+ "paquete": "@greenborn/modelos-vehiculos",
+ "version": "0.2.0",
+ "categoria": "Juegos 3D",
+ "resumen": "Biblioteca que genera modelos 3D de autos, camiones, motos y drones de forma procedural, lista para escenas web interactivas.",
+ "detalle": {
+   "descripcion": "Modelos visuales de vehículos para escenas 3D en el navegador: autos, pickups, furgones, buses, camiones, motos y drones. Cada modelo se arma a partir de formas simples (cajas, cuñas, cilindros y toros) que se combinan en geometrías optimizadas, sin necesidad de modelar archivos 3D a mano. La construcción puede ejecutarse en segundo plano, sin trabar la pantalla, y las medidas y asientos se configuran desde la aplicación que la usa.",
+   "caracteristicas": [
+     "Siete familias de vehículos: autos, pickups, furgones, buses, camiones, motos y drones",
+     "Generación procedural: no requiere modelos 3D precargados",
+     "Construcción en segundo plano mediante Web Workers",
+     "Materiales compartidos que reducen el costo de renderizado",
+     "Independiente del juego o aplicación: medidas y colores se definen por parámetro"
+   ],
+   "casos_uso": [
+     "Juegos de conducción o simulación en el navegador",
+     "Visualizaciones de tráfico o flotas en mapas 3D",
+     "Escenas interactivas para configuradores de vehículos"
+   ],
+   "tecnologias": ["three.js", "JavaScript", "Web Workers", "Node.js"]
+ }
+}

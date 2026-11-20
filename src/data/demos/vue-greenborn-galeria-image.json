@@ -1,0 +1,30 @@
+{
+  "slug": "vue-greenborn-galeria-image",
+  "nombre": "Galería de imágenes para Vue",
+  "paquete": "@greenborn/vue-greenborn-galeria-image",
+  "version": "1.1.1",
+  "categoria": "Interfaz Vue",
+  "resumen": "Galería de imágenes para sitios Vue: grilla con carga diferida y visor a pantalla completa con zoom, navegación y descarga.",
+  "detalle": {
+    "descripcion": "Componente de galería de imágenes para aplicaciones Vue 3. Muestra las fotos en una grilla que carga las miniaturas a medida que se necesitan y, al hacer clic en una, abre un visor con zoom, desplazamiento, pantalla completa, navegación entre imágenes y panel de datos. Permite presentar colecciones de fotos sin depender de librerías de interfaz externas, y controlar qué acciones están disponibles para cada usuario cuando la aplicación lo requiere.",
+    "caracteristicas": [
+      "Grilla adaptable con carga diferida de imágenes",
+      "Visor con zoom, arrastre y pantalla completa",
+      "Navegación anterior/siguiente con atajos de teclado",
+      "Descarga directa y panel lateral con metadatos",
+      "Permisos opcionales por acción"
+    ],
+    "casos_uso": [
+      "Catálogos de productos o portfolios con fotografías",
+      "Galerías de eventos, noticias o proyectos",
+      "Paneles de administración con gestión de imágenes"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "JavaScript",
+      "Vite",
+      "Fetch API",
+      "CSS propio"
+    ]
+  }
+}

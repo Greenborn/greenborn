@@ -1,0 +1,29 @@
+{
+  "slug": "vue-greenborn-panels",
+  "nombre": "Paneles y pestañas reordenables para Vue",
+  "paquete": "@greenborn/vue-greenborn-panels",
+  "version": "1.0.3",
+  "categoria": "Interfaz Vue",
+  "resumen": "Paneles y pestañas para Vue 3 que se pueden reordenar arrastrando, colapsar y redimensionar, con el estado del diseño recordado.",
+  "detalle": {
+    "descripcion": "Es un conjunto de piezas para organizar la pantalla de una aplicación Vue 3 en paneles laterales o inferiores, con pestañas que el usuario puede reordenar arrastrándolas. Cada zona de la pantalla tiene su propio registro de pestañas, así que las funciones se agregan desde cualquier parte del proyecto sin acoplarlas entre sí. Resuelve el armado de interfaces tipo escritorio, con paneles que se pueden plegar y ajustar de tamaño, sin tener que programar esa lógica desde cero.",
+    "caracteristicas": [
+      "Pestañas reordenables con arrastrar y soltar, sin librerías externas",
+      "Registro de pestañas por zona de la pantalla",
+      "Paneles laterales o inferiores colapsables y redimensionables",
+      "Estado del diseño compartido entre componentes, sin Pinia",
+      "Persistencia del orden y del diseño conectable a cualquier servicio"
+    ],
+    "casos_uso": [
+      "Panel de herramientas lateral en aplicaciones de gestión o diseño",
+      "Consola o panel inferior de desarrollo con varias pestañas",
+      "Pantallas internas donde cada usuario acomoda su espacio de trabajo"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "JavaScript",
+      "CSS",
+      "Vite"
+    ]
+  }
+}

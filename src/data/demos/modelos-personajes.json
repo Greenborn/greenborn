@@ -1,0 +1,31 @@
+{
+  "slug": "modelos-personajes",
+  "nombre": "Modelos de personajes 3D",
+  "paquete": "@greenborn/modelos-personajes",
+  "version": "0.6.0",
+  "categoria": "Juegos 3D",
+  "resumen": "Personajes 3D animados para juegos web: muñecos y figuras de cubos con caminata, carrera, agachado y muerte, listos para three.js.",
+  "detalle": {
+    "descripcion": "Librería de modelos visuales de personajes para juegos 3D hechos con three.js. Incluye un muñeco articulado con esqueleto y un personaje de cubos al estilo voxel, además de un generador de personajes aleatorios. Las animaciones de caminar, correr, agacharse y morir se calculan por separado de la parte visual, y la geometría puede prepararse en segundo plano para no trabar la pantalla. Resuelve el trabajo de armar y animar personajes desde cero, y de dibujar muchos personajes sin perder rendimiento.",
+    "caracteristicas": [
+      "Muñeco articulado con esqueleto de 10 huesos",
+      "Personaje de cubos (voxel) y generador de personajes aleatorios",
+      "Animaciones de caminar, correr, agacharse, morir y cadáver",
+      "Geometría precalculada en segundo plano con Web Worker",
+      "Dibujo de muchos personajes con pocas llamadas de render",
+      "Colores y referencias configurables, sin atarse a un juego en particular"
+    ],
+    "casos_uso": [
+      "Jugadores y bots cercanos, con todas las animaciones",
+      "Multitudes de peatones o zombies en una misma escena",
+      "Cadáveres tendidos en escena con una sola llamada de dibujo"
+    ],
+    "tecnologias": [
+      "three.js",
+      "WebGPU",
+      "JavaScript (módulos ES)",
+      "Web Workers",
+      "Node.js 18+"
+    ]
+  }
+}

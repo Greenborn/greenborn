@@ -1,0 +1,30 @@
+{
+  "slug": "vue-greenborn-directory-picker",
+  "nombre": "Selector de directorios para Vue",
+  "paquete": "@greenborn/vue-greenborn-directory-picker",
+  "version": "1.0.1",
+  "categoria": "Interfaz Vue",
+  "resumen": "Componente para Vue 3 que permite navegar un árbol de carpetas y elegir una ruta, sin importar de dónde provienen los datos.",
+  "detalle": {
+    "descripcion": "Es un selector de carpetas para aplicaciones web hechas con Vue 3. Muestra el árbol de directorios y permite al usuario navegarlo hasta encontrar la ruta que necesita. El componente no accede por sí mismo al sistema de archivos: la aplicación le indica cómo obtener los subdirectorios de cada nivel (desde una API, un canal de comunicación con el escritorio u otra fuente), lo que lo hace flexible y fácil de integrar. Resuelve la necesidad de elegir carpetas de forma clara y uniforme dentro de formularios, modales o pantallas de configuración.",
+    "caracteristicas": [
+      "Navegación de carpetas en forma de árbol, expandiendo cada nivel bajo demanda",
+      "Fuente de datos independiente: la aplicación decide cómo obtener los directorios",
+      "Textos y nombres de campos personalizables",
+      "Estilos propios, fáciles de adaptar a la paleta de cada proyecto",
+      "Aviso de la ruta seleccionada en cada momento"
+    ],
+    "casos_uso": [
+      "Elegir la carpeta de destino para guardar o exportar archivos",
+      "Configurar rutas de trabajo en paneles de administración",
+      "Seleccionar directorios dentro de un modal de configuración"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "Vite",
+      "JavaScript",
+      "CSS",
+      "npm"
+    ]
+  }
+}

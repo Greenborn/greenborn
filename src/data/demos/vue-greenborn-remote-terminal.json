@@ -1,0 +1,24 @@
+{
+ "slug": "vue-greenborn-remote-terminal",
+ "nombre": "Terminal remota para Vue",
+ "paquete": "@greenborn/vue-greenborn-remote-terminal",
+ "version": "1.0.3",
+ "categoria": "Interfaz Vue",
+ "resumen": "Componente de terminal web para Vue 3 que muestra una consola remota completa, con colores, historial y pantalla completa.",
+ "detalle": {
+   "descripcion": "Es un componente de terminal para aplicaciones Vue 3, basado en xterm.js, que permite mostrar en el navegador una consola con el mismo aspecto y comportamiento de una terminal real. Se integra en cualquier pantalla de la aplicación y no está atado a una tecnología de conexión: la aplicación decide cómo se comunica con el servidor (WebSocket, socket.io u otro canal). Resuelve la necesidad de ofrecer herramientas de línea de comandos dentro de un sistema web sin construir una terminal desde cero.",
+   "caracteristicas": [
+     "Render completo de terminal con colores ANSI y cursor parpadeante",
+     "Historial de desplazamiento (scrollback) y ajuste automático del tamaño",
+     "Modo pantalla completa y barra superior con acciones",
+     "Menú contextual para copiar texto seleccionado",
+     "Independiente del transporte: se conecta a WebSocket, socket.io u otro canal"
+   ],
+   "casos_uso": [
+     "Consolas de administración integradas en un panel web",
+     "Visualización de procesos o logs en tiempo real desde el navegador",
+     "Herramientas internas de desarrollo y soporte técnico"
+   ],
+   "tecnologias": ["Vue 3", "xterm.js", "Vite", "WebSocket", "socket.io"]
+ }
+}

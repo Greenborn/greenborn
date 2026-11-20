@@ -1,0 +1,61 @@
+/* Estilos del constructor de personaje (librería constructor-personaje).
+   Usan las variables --panel, --borde, --boton, --texto y --acento de la página;
+   si no existen, aplican los valores por defecto de abajo. */
+
+.previa-caja {
+  display: flex;
+  justify-content: center;
+  background: var(--boton, #2c3150);
+  padding: 12px;
+  border: 2px solid var(--borde, #3b4166);
+}
+
+#previa {
+  width: 144px;
+  height: 192px;
+  image-rendering: pixelated;
+}
+
+#opciones { display: flex; flex-direction: column; gap: 8px; }
+
+.fila {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.fila .titulo { font-size: 13px; opacity: 0.85; }
+
+.grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.muestra {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #0e1019;
+  padding: 0;
+}
+
+.texto {
+  padding: 4px 8px;
+  background: var(--boton, #2c3150);
+  color: var(--texto, #f2efe6);
+  border: 2px solid var(--borde, #3b4166);
+  font-size: 13px;
+}
+
+.activo { outline: 3px solid var(--acento, #f2c94c); outline-offset: 1px; }
+
+@media (max-width: 600px) {
+  .fila { grid-template-columns: 1fr; }
+}
+
+/* En pantallas táctiles, objetivos de al menos 44 px. */
+@media (pointer: coarse) {
+  .muestra { width: 40px; height: 40px; }
+  .texto { min-height: 44px; padding: 8px 12px; }
+}

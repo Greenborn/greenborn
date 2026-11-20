@@ -1,0 +1,30 @@
+{
+ "slug": "angular-greenborn-sso-front",
+ "nombre": "SSO para Angular",
+ "paquete": "@greenborn/angular-greenborn-sso-front",
+ "version": "1.0.2",
+ "categoria": "Angular",
+ "resumen": "Permite que las aplicaciones Angular ofrezcan ingreso con cuenta de Google, mantengan la sesión y protejan sus páginas privadas.",
+ "detalle": {
+   "descripcion": "Librería para aplicaciones Angular que centraliza el inicio de sesión con cuenta de Google a través de un servicio de autenticación única (SSO). Se encarga del ingreso, la verificación de la sesión, el cierre de sesión y la renovación del acceso, y permite restringir secciones a usuarios autenticados. Así, cada aplicación no necesita resolver la autenticación por su cuenta.",
+   "caracteristicas": [
+     "Ingreso con cuenta de Google",
+     "Verificación y renovación automática de la sesión",
+     "Protección de rutas para usuarios autenticados",
+     "Envío automático de credenciales en las llamadas al API",
+     "Comunicación en tiempo real opcional"
+   ],
+   "casos_uso": [
+     "Aplicaciones internas donde el personal ingresa con su cuenta de Google",
+     "Paneles con secciones privadas que requieren sesión iniciada",
+     "Varias aplicaciones que comparten un mismo sistema de acceso"
+   ],
+   "tecnologias": [
+     "Angular 21",
+     "TypeScript",
+     "RxJS",
+     "Axios",
+     "Socket.IO"
+   ]
+ }
+}

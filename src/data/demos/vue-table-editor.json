@@ -1,0 +1,29 @@
+{
+  "slug": "vue-table-editor",
+  "nombre": "Vue Table Editor",
+  "paquete": "@greenborn/vue-table-editor",
+  "version": "1.4.9",
+  "categoria": "Interfaz Vue",
+  "resumen": "Tabla reutilizable para Vue 3 con búsqueda, orden, paginación, edición inline y exportación a CSV, lista para usar sin dependencias.",
+  "detalle": {
+    "descripcion": "Vue Table Editor es un componente de tabla genérico y autocontenido para Vue 3. Permite mostrar grandes volúmenes de datos con búsqueda, filtros, ordenamiento, paginación o scroll infinito, tanto del lado del cliente como del servidor. Además, permite editar celdas directamente, dar de alta, modificar y borrar registros, y exportar la información a CSV. Como no depende de frameworks de UI, se integra fácilmente en cualquier proyecto Vue y conserva las preferencias de cada usuario, como el orden y ancho de columnas.",
+    "caracteristicas": [
+      "Columnas redimensionables y reordenables, con preferencias guardadas por usuario",
+      "Búsqueda global, filtros por columna y ordenamiento",
+      "Paginación o scroll infinito, con carga desde el servidor",
+      "Edición inline con validación y alta, modificación y baja de registros",
+      "Exportación a CSV y vista de tarjetas para pantallas angostas"
+    ],
+    "casos_uso": [
+      "Paneles de administración con listados de clientes, productos o pedidos",
+      "Consultas sobre grandes volúmenes de datos cargados desde un servidor",
+      "Planillas editables donde el usuario corrige datos en el mismo lugar"
+    ],
+    "tecnologias": [
+      "Vue 3",
+      "JavaScript",
+      "CSS propio",
+      "Vite"
+    ]
+  }
+}

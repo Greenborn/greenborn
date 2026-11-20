@@ -1,0 +1,29 @@
+{
+ "slug": "transito",
+ "nombre": "Tránsito",
+ "paquete": "@greenborn/transito",
+ "version": "0.1.0",
+ "categoria": "Utilidades",
+ "resumen": "Simula el tránsito de autos, camiones y colectivos en un mapa de calles: circulan, doblan en las esquinas y respetan su turno.",
+ "detalle": {
+   "descripcion": "Tránsito es un módulo que da vida al movimiento vehicular en mapas de calles armados en grilla. Calcula por sí solo los carriles, los sentidos de circulación (por la derecha) y las conexiones de las intersecciones, y luego simula vehículos que avanzan, frenan detrás de otros y se reparten el paso en los cruces sin superponerse. Es un paquete puro: no dibuja nada, sólo indica dónde está y hacia dónde mira cada vehículo, y el mapa se encarga de la presentación.",
+   "caracteristicas": [
+     "Carriles y sentidos de circulación calculados automáticamente",
+     "Los vehículos frenan y mantienen distancia con el de adelante",
+     "Turnos en las intersecciones, sin choques en los cruces",
+     "Siete tipos de vehículo: auto, taxi, pickup, furgón, bus, camión y moto",
+     "Liviano: unas décimas de milisegundo por cuadro con cientos de vehículos"
+   ],
+   "casos_uso": [
+     "Ambientar una ciudad virtual o un videojuego con tráfico creíble",
+     "Simular flujos de circulación en un barrio o en una zona urbana",
+     "Mostrar la movilidad de una ciudad en mapas interactivos"
+   ],
+   "tecnologias": [
+     "JavaScript (módulos ES)",
+     "Node.js 18 o superior",
+     "Modelo IDM para el seguimiento entre vehículos",
+     "Pruebas automatizadas con node --test"
+   ]
+ }
+}

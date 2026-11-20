@@ -1,0 +1,29 @@
+{
+  "slug": "sombras-horneadas",
+  "nombre": "Sombras horneadas",
+  "paquete": "@greenborn/sombras-horneadas",
+  "version": "0.1.0",
+  "categoria": "Utilidades",
+  "resumen": "Calcula por adelantado cómo llega la luz del sol a cada superficie de un mapa 3D, para ver sombras realistas sin frenar el juego.",
+  "detalle": {
+    "descripcion": "Sombras horneadas es un módulo que calcula una sola vez cuánta luz solar llega a cada cara de un mapa construido con bloques voxel. El resultado se guarda junto a la geometría, así el juego no necesita recalcular las sombras en cada cuadro, lo que mantiene una buena velocidad aun en mapas grandes. Corre en segundo plano, sin depender de interfaz gráfica, y se integra con el resto de la aplicación.",
+    "caracteristicas": [
+      "Sombras calculadas una sola vez al generar cada parte del mapa",
+      "Tres modos de sombra: horneado, mixto y tiempo real",
+      "Árboles y postes que también proyectan sombra",
+      "Sombras graduales, con varios niveles de penumbra",
+      "Sin dependencias, pensado para ejecutarse en segundo plano"
+    ],
+    "casos_uso": [
+      "Mapas 3D de bloques con iluminación solar y buen rendimiento",
+      "Juegos web que necesitan elegir entre calidad y velocidad de sombras",
+      "Generación de mapas por partes en segundo plano"
+    ],
+    "tecnologias": [
+      "JavaScript (módulos ES)",
+      "Node.js",
+      "Three.js",
+      "Web Workers"
+    ]
+  }
+}
