@@ -290,6 +290,10 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 **Estrellas (0 a 5).** +1 por ofrecer a la vista de un agente, se concrete o no la venta (`ofertaVista`, que además pone a perseguir a todos los que lo ven) y +1 por empezar a correr (flanco) a la vista de un agente que todavía no estaba alertado (correr ante uno ya alertado no suma); cooldown de 2 s por motivo.
 
+**Contagio de persecución.** Un agente atento en patrulla o regreso que ve en su cono a otro que persigue se suma (`sumarseSiVe`), aunque supere la respuesta del nivel (tope `POLI_MAX_PERS`). No suma estrellas.
+
+**Sin atascos.** Los agentes no pisan celdas fuera de la grilla del A* (árboles incluidos), solo van en línea recta si el tramo es caminable y, si pasan `POLI_TRABA_T` (1.5 s) sin avanzar, recalculan en el acto y como último recurso saltan al punto siguiente (`destrabar`).
+
 **Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), haya o no estrellas, incluso durante la ceguera por coima. Ese agente no se desvía ni se cancela (correr u ofrecer frente a él, zafar o pagar coima) hasta llegar al lugar; recién ahí actúa si ve al jugador, o vuelve a su esquina.
 
 **Correr en un cono.** Si un agente atento (o en alerta) ve al jugador corriendo, pasa a persecución en el acto (`vioCorrer`), aunque la respuesta del nivel ya esté cubierta (tope `POLI_MAX_PERS`). Correr solo suma estrella si alerta a un agente que todavía no estaba alertado (ni en `alerta` ni en `persecucion`).

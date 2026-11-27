@@ -46,7 +46,7 @@ console.log('1. Estrellas por venta y cantidad exacta de perseguidores y vehícu
   }
   let max = 0, min = 99;
   for (let k = 0; k < 20; k++) { pl.px = 20.5 + k; pl.prevPx = pl.px; stepAgentes(sim, pl, 0.02); if (sim.G.capT > 0) break; max = Math.max(max, nComp(sim)); min = Math.min(min, nComp(sim)); }
-  check('durante la persecución nunca hay más ni menos de 4 a pie', max === 4 && min === 4, min + '..' + max);
+  check('durante la persecución hay al menos 4 a pie y nunca más de 12 (se suman los que los ven)', min >= 4 && max <= 12, min + '..' + max);
   alertarAgentes(sim, pl.px, pl.py);
   check('un llamado con estrellas activas no suma perseguidores y envía un solo agente', nComp(sim) === 4 && sim.agentes.filter(a => a.aviso).length === 1);
 }
@@ -167,7 +167,7 @@ console.log('8. Mapa real: 5 estrellas, patrullas por calles y rendimiento');
       if (corrida || f > 60) { maxMs = Math.max(maxMs, ms); suma += ms; n++; }
       if (sim.G.capT > 0) { sim.G.capT = 0; sim.G.capAg = null; Object.assign(pl, { prevPx: pl.px, prevPy: pl.py }); for (const v of sim.patrullas) { v.x = -50; } sim.patrullas.length = 0; for (const a of sim.agentes) if (Math.hypot(a.x - pl.px, a.z - pl.py) < 2) { a.estado = 'patrulla'; a.x = a.esquinaBase.x; a.z = a.esquinaBase.z; } }
       if (sim.busq.nivel < 5) { sim.busq.nivel = 5; sim.ultima ??= { x: pl.px, z: pl.py, heading: 0 }; }
-      else if (f > 1 && sim.G.capT === 0 && nComp(sim) > 4) exactos = false;
+      else if (f > 1 && sim.G.capT === 0 && nComp(sim) > 12) exactos = false;
       for (const v of sim.patrullas) {
         if (real.C[Math.floor(v.z) * real.N + Math.floor(v.x)].t !== 'road') fueraV++;
         if (!ini.has(v)) ini.set(v, [v.x, v.z]); else movidas = Math.max(movidas, Math.hypot(v.x - ini.get(v)[0], v.z - ini.get(v)[1]));
@@ -177,7 +177,7 @@ console.log('8. Mapa real: 5 estrellas, patrullas por calles y rendimiento');
     }
     nodos = Math.max(nodos, sim.rutas.stats.maxFrame + 0, sim.rutasCalle.stats.maxFrame);
   }
-  check('nunca más de 4 perseguidores a pie', exactos);
+  check('nunca más de 12 perseguidores a pie', exactos);
   check('las patrullas solo pisan calles', fueraV === 0, String(fueraV));
   check('las patrullas se desplazan', movidas > 10, movidas.toFixed(1));
   check('el helicóptero no pasa de su tiempo en escena', heliMax <= HELI_T_ESCENA + 0.05, heliMax.toFixed(1));

@@ -8,8 +8,8 @@
 // Los perseguidores solo conocen la posición del jugador mientras alguno (o el helicóptero) lo ve; si no, van a sim.ultima.
 // Agentes en cada esquina: con muchas esquinas solo existen en sim.agentes los cercanos al jugador (activarAgentes).
 // Coordenadas: agentes y jugador en celdas. Agente: (x, z). Jugador: (px, py). Yaw 0 mira hacia +z; forward = (sin yaw, cos yaw).
-import { celdaPeatonal, lineaLibre, obstaculoEn, esquinasAgentes, ladoDe } from './ciudad.js';
-import { crearPlanificador, lineaCaminable } from './rutas.js';
+import { celdaPeatonal, lineaLibre, obstaculoEn, walkable, esquinasAgentes, ladoDe } from './ciudad.js';
+import { crearPlanificador, lineaCaminable, buscarRuta } from './rutas.js';
 import {
   COIMA_CIEGO, RUTA_NODOS_FRAME, RUTA_UMBRAL_OBJ, RUTA_ATASCO_T, RUTA_ATASCO_D, SEP_RADIO, SEP_FUERZA, INTERCEPT_T_MAX,
 } from './config.js';
@@ -179,7 +179,7 @@ function nuevoAgente(sim, idx, e) {
     estado: 'patrulla',    // 'patrulla' | 'alerta' | 'persecucion' | 'regreso'
     aviso: false, acude: false, tAlerta: 0, tAviso: 0, objetivo: null, reintentos: 0,
     ruta: null, k: 0, tRuta: 0, pend: 0, obj: null,   // pend: pedido de ruta en curso (0 = ninguno); obj: destino de la última ruta
-    refX: e.x, refZ: e.z, tAtasco: 0, atascado: false,
+    refX: e.x, refZ: e.z, tAtasco: 0, atascado: false, wx: e.x, wz: e.z, wt: 0, trabas: 0,
     tVis: sim.rand() * POLI_VIS_DT, ve: false, ventaT: 0,
     fuerza: 0, phase: 0, fase: sim.rand() * TAU, tPat: 0.5 + sim.rand(),
     atento: esAtento(sim, idx), buscando: false,
@@ -194,6 +194,14 @@ export function agenteVe(city, p, pl, d, dx, dz, radio = POLI_RADIO) {
   return lineaLibre(city, p.x, p.z, pl.px, pl.py);
 }
 
+// Colisión de los agentes: además de los obstáculos, no pisan celdas que el A* no usa (p. ej. la de un árbol, fuera del
+// tronco), porque desde ahí pueden quedar encajados. Si ya están en una, sí pueden moverse para salir.
+function chocaAgente(city, p, x, z) {
+  if (obstaculoEn(city, x, z)) return true;
+  const i = Math.floor(x), j = Math.floor(z);
+  return !walkable(city, i, j) && walkable(city, Math.floor(p.x), Math.floor(p.z));
+}
+
 // Avanza por p.ruta (celdas) a `vel`. Devuelve lo recorrido; al terminar deja p.k = ruta.length.
 function agenteSigueRuta(city, p, vel, dt) {
   let budget = dt * vel, moved = 0;
@@ -202,9 +210,9 @@ function agenteSigueRuta(city, p, vel, dt) {
     if (dist > 1e-4) giraAgente(p, Math.atan2(dx, dz), dt, 12);
     if (dist <= budget) { budget -= dist; moved += dist; p.x = tx; p.z = tz; p.k++; continue; }
     const mx = dx / dist * budget, mz = dz / dist * budget;
-    if (!obstaculoEn(city, p.x + mx, p.z + mz)) { p.x += mx; p.z += mz; moved += budget; }
-    else if (!obstaculoEn(city, p.x + mx, p.z)) { p.x += mx; moved += Math.abs(mx); }       // roce con una esquina: desliza
-    else if (!obstaculoEn(city, p.x, p.z + mz)) { p.z += mz; moved += Math.abs(mz); }
+    if (!chocaAgente(city, p, p.x + mx, p.z + mz)) { p.x += mx; p.z += mz; moved += budget; }
+    else if (!chocaAgente(city, p, p.x + mx, p.z)) { p.x += mx; moved += Math.abs(mx); }       // roce con una esquina: desliza
+    else if (!chocaAgente(city, p, p.x, p.z + mz)) { p.z += mz; moved += Math.abs(mz); }
     budget = 0;
   }
   return moved;
@@ -228,8 +236,11 @@ function pedirRuta(sim, p, t, prio, fin) {
 // (la búsqueda pudo tardar unos frames y el agente se movió).
 function ponerRuta(sim, p, ruta) {
   p.ruta = ruta; p.k = 0; p.atascado = false; p.tAtasco = 0; p.refX = p.x; p.refZ = p.z;
-  if (!ruta) return;
+  if (!ruta?.length) return;
   while (p.k + 1 < ruta.length && lineaCaminable(sim.city, p.x, p.z, ruta[p.k + 1].i + .5, ruta[p.k + 1].j + .5)) p.k++;
+  // Si el primer tramo en línea recta roza un obstáculo, primero va al centro de su celda.
+  const t = p.ruta[p.k], i = Math.floor(p.x), j = Math.floor(p.z);
+  if (!lineaCaminable(sim.city, p.x, p.z, t.i + .5, t.j + .5, 0) && walkable(sim.city, i, j)) { p.ruta = [{ i, j }, ...ruta.slice(p.k)]; p.k = 0; }
 }
 
 // Movimiento directo hacia (tx, tz) con colisión (desliza por el eje libre). Devuelve lo recorrido.
@@ -238,9 +249,9 @@ function agenteVaDirecto(city, p, tx, tz, vel, dt) {
   if (dist < 1e-4) return 0;
   const m = Math.min(dist, dt * vel), mx = dx / dist * m, mz = dz / dist * m;
   giraAgente(p, Math.atan2(dx, dz), dt, 12);
-  if (!obstaculoEn(city, p.x + mx, p.z + mz)) { p.x += mx; p.z += mz; return m; }
-  if (mx && !obstaculoEn(city, p.x + mx, p.z)) { p.x += mx; return Math.abs(mx); }
-  if (mz && !obstaculoEn(city, p.x, p.z + mz)) { p.z += mz; return Math.abs(mz); }
+  if (!chocaAgente(city, p, p.x + mx, p.z + mz)) { p.x += mx; p.z += mz; return m; }
+  if (mx && !chocaAgente(city, p, p.x + mx, p.z)) { p.x += mx; return Math.abs(mx); }
+  if (mz && !chocaAgente(city, p, p.x, p.z + mz)) { p.z += mz; return Math.abs(mz); }
   return 0;
 }
 
@@ -330,8 +341,8 @@ function separar(sim, dt) {
     if (d >= SEP_RADIO) continue;
     if (d < 1e-4) { const ang = (p.idx * 2.399) % TAU; dx = Math.sin(ang); dz = Math.cos(ang); d = 1; }   // encimados: dirección fija por índice
     const m = (SEP_RADIO - Math.min(d, SEP_RADIO)) * 0.5 * k, ux = dx / d * m, uz = dz / d * m;
-    if (!obstaculoEn(sim.city, p.x - ux, p.z - uz)) { p.x -= ux; p.z -= uz; }
-    if (!obstaculoEn(sim.city, q.x + ux, q.z + uz)) { q.x += ux; q.z += uz; }
+    if (!chocaAgente(sim.city, p, p.x - ux, p.z - uz)) { p.x -= ux; p.z -= uz; }
+    if (!chocaAgente(sim.city, q, q.x + ux, q.z + uz)) { q.x += ux; q.z += uz; }
   }
 }
 
@@ -343,6 +354,37 @@ function atascado(p, dt) {
   if (p.tAtasco < RUTA_ATASCO_T) return false;
   p.tAtasco = 0; p.refX = p.x; p.refZ = p.z;
   return true;
+}
+
+// Red de seguridad: ningún agente que quiere moverse se queda trabado. Si pasa POLI_TRABA_T s sin avanzar, busca en el acto
+// (sin cola ni presupuesto) un camino desde el centro de su celda; si tampoco así avanza, salta al próximo punto del camino.
+export const POLI_TRABA_T = 1.5, POLI_TRABA_D = 0.4;
+function destinoDe(sim, p, pl) {
+  if (p.estado === 'persecucion') return sim.visto || !sim.ultima ? { x: pl.px, z: pl.py } : p.buscando ? null : sim.ultima;
+  if (p.estado === 'regreso') return p.esquinaBase;
+  if (p.estado === 'alerta' && p.aviso) return p.objetivo;
+  if (p.estado === 'patrulla' && p.ruta && p.k < p.ruta.length) { const t = p.ruta[p.ruta.length - 1]; return { x: t.i + .5, z: t.j + .5 }; }
+  return null;
+}
+function destrabar(sim, p, pl, dt) {
+  const dest = destinoDe(sim, p, pl);
+  if (!dest || Math.hypot(dest.x - p.x, dest.z - p.z) < 1 || Math.hypot(p.x - (p.wx ?? Infinity), p.z - (p.wz ?? 0)) >= POLI_TRABA_D) {
+    p.wx = p.x; p.wz = p.z; p.wt = 0; p.trabas = 0; return;
+  }
+  p.wt += dt;
+  if (p.wt < POLI_TRABA_T) return;
+  p.wt = 0; p.trabas++;
+  const city = sim.city, o = celdaPeatonal(city, p.x, p.z, 4), t = celdaPeatonal(city, dest.x, dest.z, 6);
+  const r = o && t ? buscarRuta(city, o, t, { suave: true }) : null;
+  if (!o) return;
+  if (p.trabas === 1 && r) {
+    p.pend = 0; p.obj = t; p.tRuta = POLI_T_RUTA * 2; p.atascado = false;
+    p.ruta = [o, ...r]; p.k = 0; p.tAtasco = 0; p.refX = p.x; p.refZ = p.z;
+  } else {
+    const s = r?.[0] ?? o;                                           // último recurso
+    p.x = s.i + .5; p.z = s.j + .5; p.ruta = null; p.k = 0; p.pend = 0; p.obj = null; p.tRuta = 0; p.trabas = 0;
+    if (p.estado === 'regreso') agenteRegresa(sim, p);
+  }
 }
 
 const verUltima = (sim, x, z, heading = 0) => { sim.ultima = { x, z, heading }; };
@@ -468,6 +510,18 @@ function vioCorrer(sim, p, pl) {
   agentePersigue(sim, p);
 }
 
+// Un agente atento que no está haciendo nada (patrulla o regreso) y ve en su cono a otro que persigue, se suma.
+function sumarseSiVe(sim, p, radio) {
+  if (!p.atento || (p.estado !== 'patrulla' && p.estado !== 'regreso')) return;
+  const pers = sim.agentes.filter(q => q.estado === 'persecucion');
+  if (!pers.length || pers.length >= POLI_MAX_PERS) return;
+  const ve = pers.some(q => {
+    const dx = q.x - p.x, dz = q.z - p.z;
+    return agenteVe(sim.city, p, { px: q.x, py: q.z }, Math.hypot(dx, dz), dx, dz, radio);
+  });
+  if (ve) agentePersigue(sim, p);
+}
+
 // Todos vuelven a su esquina en patrulla (nueva partida o ronda). patrulla y ronda (opcionales) para lo que empieza.
 export function resetAgentes(sim, patrulla, ronda) {
   const G = sim.G;
@@ -480,7 +534,7 @@ export function resetAgentes(sim, patrulla, ronda) {
   for (const p of sim.agentes) {
     const b = p.esquinaBase;
     Object.assign(p, { x: b.x, z: b.z, yaw: b.yaw, estado: 'patrulla', ruta: null, k: 0, aviso: false, acude: false, ve: false, ventaT: 0, fuerza: 0, tAlerta: 0, tPat: 0.5,
-      pend: 0, obj: null, refX: b.x, refZ: b.z, tAtasco: 0, atascado: false, buscando: false, atento: esAtento(sim, p.idx) });
+      pend: 0, obj: null, refX: b.x, refZ: b.z, wx: b.x, wz: b.z, wt: 0, trabas: 0, tAtasco: 0, atascado: false, buscando: false, atento: esAtento(sim, p.idx) });
   }
   sim.rutas.vaciar(); sim.vel.x = sim.vel.z = 0;
 }
@@ -589,7 +643,7 @@ export function stepAgentes(sim, pl, dt) {
     const d = Math.sqrt(d2);
     if (p.ventaT > 0) p.ventaT -= dt;
     p.tVis -= dt;
-    if (p.tVis <= 0) { p.tVis = POLI_VIS_DT; p.ve = G.ciegoT <= 0 && agenteVe(city, p, pl, d, dx, dz, radio); }
+    if (p.tVis <= 0) { p.tVis = POLI_VIS_DT; p.ve = G.ciegoT <= 0 && agenteVe(city, p, pl, d, dx, dz, radio); sumarseSiVe(sim, p, radio); }
     if (pl.corre && p.ve && p.estado !== 'persecucion' && !p.acude && G.ciegoT <= 0 && (p.atento || p.estado === 'alerta')) vioCorrer(sim, p, pl);
     let moved = 0;
     switch (p.estado) {
@@ -638,7 +692,7 @@ export function stepAgentes(sim, pl, dt) {
         // Destino conocido: el jugador si alguien lo ve; si no, la última posición vista.
         const gx = sim.visto ? pl.px : u.x, gz = sim.visto ? pl.py : u.z, dg = Math.hypot(gx - p.x, gz - p.z);
         if (sim.visto) p.buscando = false; else if (dg < BUSCA_LLEGA) p.buscando = true;
-        if (d < POLI_DIRECTO && p.ve) moved = agenteVaDirecto(city, p, pl.px, pl.py, vel, dt);
+        if (d < POLI_DIRECTO && p.ve && lineaCaminable(city, p.x, p.z, pl.px, pl.py, 0)) moved = agenteVaDirecto(city, p, pl.px, pl.py, vel, dt);
         else {
           p.tRuta -= dt;
           if (p.tRuta <= 0 && G.bfs > 0 && !p.pend) {
@@ -675,6 +729,7 @@ export function stepAgentes(sim, pl, dt) {
         break;
     }
     if (G.capT > 0) return;
+    destrabar(sim, p, pl, dt);
     p.fuerza = moved > 0 ? 1 : 0;
     p.phase += moved * 10;
   }

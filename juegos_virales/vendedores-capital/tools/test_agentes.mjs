@@ -89,7 +89,7 @@ console.log('5. Safar: sin ser visto POLI_T_PERDER s y lejos');
   const city = ciudadVacia();
   const sim = crearSimulacion(city, { esquinas: [ag(30.5, 30.5, 0)], rand: () => 0.5 });
   const p = sim.agentes[0];
-  p.estado = 'persecucion'; p.tRuta = 999; p.ruta = null; p.tVis = 999; p.x = 34.5;   // persigue pero sin ruta: se queda en su lugar (lejos de su esquina)
+  p.estado = 'persecucion'; p.tRuta = 999; p.ruta = null; p.tVis = 999; p.x = 34.5; p.wx = 34.5; p.wt = -999;   // sin red de seguridad   // persigue pero sin ruta: se queda en su lugar (lejos de su esquina)
   const pl = pl0(30.5, 50.5);                          // a 20 celdas: más allá de POLI_DIST_SAFAR y de visión de persecucion
   paso(sim, pl, POLI_T_PERDER - 0.5);
   check('antes de POLI_T_PERDER no zafó', sim.escapes === 0, 'escapes=' + sim.escapes);
@@ -98,6 +98,17 @@ console.log('5. Safar: sin ser visto POLI_T_PERDER s y lejos');
   check('el perseguidor vuelve a regreso', p.estado === 'regreso', p.estado);
   paso(sim, pl, 1);
   check('tras zafar, en regreso hacia su esquina (x disminuye)', p.x < 34.5, 'x=' + p.x);
+}
+
+console.log('5b. Sin atascos');
+{
+  const city = ciudadVacia();
+  const sim = crearSimulacion(city, { esquinas: [ag(30.5, 30.5, 0)], rand: () => 0.5 });
+  const p = sim.agentes[0], pl = pl0(30.5, 45.5);
+  Object.assign(p, { estado: 'persecucion', tRuta: 999, ruta: null });
+  sim.busq.nivel = 1; sim.ultima = { x: pl.px, z: pl.py, heading: 0 };
+  for (let t = 0; t < 3; t += 0.05) { sim.busq.sinVista = 0; stepAgentes(sim, pl, 0.05); }
+  check('un perseguidor sin ruta se destraba y avanza', p.z > 32, p.z.toFixed(2));
 }
 
 console.log('6. Captura: distancia < POLI_CAPTURA y fin de partida');

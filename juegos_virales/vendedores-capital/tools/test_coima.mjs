@@ -203,6 +203,19 @@ console.log('7c. Ofrecer dentro del cono alerta, sin venta');
   check('ofrecer en el cono: 1 estrella y todos los que lo ven persiguen', sim.busq.nivel === 1 && sim.agentes.every(p => p.estado === 'persecucion'), String(sim.busq.nivel));
 }
 
+console.log('7d. Ver pasar a un perseguidor suma al agente');
+{
+  const armar = atento => {
+    const sim = crearSimulacion(ciudadVacia(), { esquinas: [{ x: 30.5, z: 30.5, yaw: 0 }, { x: 30.5, z: 34.5, yaw: 0 }], rand: () => 0.5, patrulla: 1 });
+    const [a, b] = sim.agentes; a.atento = atento; a.tVis = 0; Object.assign(b, { estado: 'persecucion', tRuta: 999 });
+    sim.busq.nivel = 1; sim.ultima = { x: 50.5, z: 58.5, heading: 0 };
+    stepAgentes(sim, pl0(50.5, 58.5), 0.01);
+    return a;
+  };
+  check('agente libre que ve en su cono a un perseguidor: se suma', armar(true).estado === 'persecucion');
+  check('agente distraído (sin cono): no se suma', armar(false).estado === 'patrulla');
+}
+
 console.log('8. Ciudad generada: la coima no rompe la simulación');
 {
   const city = generarCiudad();
