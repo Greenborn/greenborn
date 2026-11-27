@@ -80,13 +80,23 @@
   <div id="toasts"></div>
 </div>
 
-<!-- ============ TÍTULO ============ -->
-<div id="pantallaTitulo" class="overlay">
+<!-- ============ AVISO (solo la primera vez, js/aviso.js) ============ -->
+<div id="pantallaAviso" class="overlay" role="dialog" aria-modal="true" aria-labelledby="avisoTitulo" hidden>
   <div class="tarjeta">
+    <h2 id="avisoTitulo">Antes de jugar</h2>
     <aside class="disclaimer" role="note">
       <p><strong>Aviso:</strong> este juego es una parodia que busca sensibilizar sobre la realidad que atraviesan muchas personas que viven de la venta callejera. No busca denostar ni atacar a nadie: no apunta contra personas, instituciones ni agentes, sino a exponer una situación con el objetivo de lograr una mejora en la misma.</p>
       <p><strong>Ojo:</strong> los precios y las situaciones que se muestran están exagerados con fines del juego. Son referencias aproximadas y no reflejan necesariamente la realidad.</p>
     </aside>
+    <div class="menu-col">
+      <button id="btnAvisoSeguir" class="boton" type="button">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TÍTULO ============ -->
+<div id="pantallaTitulo" class="overlay">
+  <div class="tarjeta">
     <h1>Vendedores Capital 2D</h1>
     <p class="sub">Vista cenital · Vendé todo sin que te detengan</p>
     <div class="menu-col">

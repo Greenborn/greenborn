@@ -31,6 +31,7 @@ import {
   ajustarPeatones, stepPeatones,
 } from './peatones.js';
 import { pistaUnaVez } from './pistas.js';
+import { avisoVisto, marcarAviso } from './aviso.js';   // aviso de parodia: solo la primera vez
 import { MOMENTO_INICIAL, jornadaPorId, momentoEn, cantidadPeatones, luzDe, acercarLuz } from './jornada.js';
 import { mostrar, ocultar, ocultarTodas, irA, estaVisible, pasoNav } from './pantallas.js';
 import { cargarAjustes, guardarAjustes } from './ajustes.js';
@@ -816,6 +817,10 @@ montarVenta({
   volverMercaderia: () => { ocultar('mejoras'); mostrar('mercaderia'); pintarMercaderia(); },
   comprarMejora: comprarMejoraUI,
 });
+
+// Primera vez: el aviso de parodia va en su propia vista, antes del título.
+if (!avisoVisto()) { ocultar('titulo'); mostrar('aviso'); }
+$('btnAvisoSeguir').addEventListener('click', () => { marcarAviso(); irA('titulo'); });
 
 // Menú principal, pausa y pantallas de apoyo (todas con fundido por irA, salvo las que se abren sobre otra).
 $('btnJugar').addEventListener('click', jugar);

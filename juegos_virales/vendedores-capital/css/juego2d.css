@@ -220,7 +220,7 @@ body.tactil .tarjeta { -webkit-overflow-scrolling: touch; }
 .pers-cat { display: grid; gap: 6px; }
 .pers-cat > span { font-size: 13px; color: var(--texto); opacity: .85; }
 .pers-fila { display: flex; flex-wrap: wrap; gap: 6px; }
-.pers-sw { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #3a3a44; background: var(--sw); padding: 0; }
+.pers-sw { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #3a3a44; background: var(--sw); padding: 0; }
 .pers-op { min-height: 44px; padding: 8px 12px; border: 2px solid #3a3a44; border-radius: 8px; background: #2a2b34; color: var(--texto); font-size: 14px; font-weight: 600; }
 .pers-sw[aria-pressed="true"], .pers-op[aria-pressed="true"] { border-color: var(--acento); }
 .pers-op[aria-pressed="true"] { background: #3d3a22; }
@@ -320,7 +320,8 @@ body.tactil .hud-panel .ico-prod img { width: 30px; height: 30px; }
 }
 
 /* Atribución del mapa (OpenStreetMap, ODbL): visible en el título y en la selección de zona */
-.atribucion-mapa { margin: 10px 0 0; font-size: 11px; }
+/* Con .tarjeta adelante para ganarle al margen negativo de .tarjeta .nota (si no, se monta sobre lo de arriba). */
+.tarjeta .atribucion-mapa { margin: 10px 0 0; font-size: 11px; }
 .atribucion-mapa a { color: inherit; }
 
 /* Estrellas de búsqueda (0 a 5), dentro de la píldora de alerta: heredan su posición en escritorio y en móvil. */

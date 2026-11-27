@@ -12,9 +12,10 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
 
 ```
 2d/
-├── index.html          canvas, HUD, nav de pasos, fundido y pantallas (título, personaje, opciones, ayuda, pausa, fin)
+├── index.html          canvas, HUD, nav de pasos, fundido y pantallas (aviso, título, personaje, opciones, ayuda, pausa, fin)
 ├── package.json        "type": "module" (para Node)
-├── css/juego2d.css
+├── css/juego2d.css     estilos base
+├── css/movil.css       se carga después: menús responsivos, safe areas, alto visible y controles táctiles
 ├── js/
 │   ├── main.js         arranque, bucle (con límite de FPS), estados (titulo / venta / jugando / fin), pausa, peatones, ofrecer, cierre de ronda, energía
 │   ├── config.js       constantes de la 2D (jugador, venta, energía, peatones, economía, puntaje, opciones de zoom, distancia y FPS), copiadas de la 3D o propias
@@ -31,6 +32,7 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
 │   ├── barrios.js      perfiles visuales de barrio (9 de la grilla de respaldo y su asignación a los barrios reales), zonaDe() y centroides (sin DOM)
 │   ├── peatones.js     peatones: movimiento por veredas, memoria por ronda (N/I/C/M/P/A), reacciones con DEMANDA, contagio por insulto, reciclado y objetivo de ofrecer (sin DOM)
 │   ├── personaje.js    personaje del vendedor (D1): categorías y valores, validación, "Al azar" con generador inyectable, sprite pixelart procedural 12 x 16 (quieto, dos cuadros de caminata, de frente o de espaldas según el heading) y guardado en "2d_personaje" (sin DOM)
+│   ├── aviso.js        aviso de parodia de la primera vez, en localStorage con la clave "2d_aviso" (sin DOM)
 │   ├── pistas.js       pistas de tutorial de una sola vez, guardadas en localStorage con la clave "2d_pistas" (sin DOM)
 │   ├── jornada.js      momentos del día (mañana, mediodía, tarde), demanda y cantidad de peatones por momento, colores de cielo y niebla (sin DOM)
 │   ├── agentes.js      agentes (pool por cercanía, atentos y distraídos), FOV, director de la búsqueda, última posición vista, safar, captura (sin DOM)
@@ -76,7 +78,7 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
 - Clic o toque en el mapa para caminar hasta ese punto (ver abajo).
 - Opciones > Controles en pantalla: **Joystick** (por defecto) o **Flechas**. El pad de flechas (▲ ◀ ▶ ▼) ocupa la misma esquina que el joystick, así que lo reemplaza y no se muestran los dos a la vez. Cada flecha suma su dirección mientras tenga un dedo encima. Si ya hay un dedo en el joystick, el pad lo ignora, y al revés (gana el primero que se usa hasta soltarlo). Las flechas no corren: CORRER sigue siendo el botón.
 - Áreas táctiles de al menos 44 px en botones de menú, zoom, giro, selección y pad. `touch-action: manipulation` en todo el documento evita el zoom del navegador por doble toque; el canvas conserva `none` para sus gestos propios (joystick y pellizco).
-- Pantallas en vertical: las tarjetas ocupan el alto disponible y hacen scroll. En apaisado de poca altura (`max-height: 500px`) los menús van a la izquierda para dejar libres el joystick y los botones CORRER y OFRECER.
+- Menús: siempre centrados y dentro del alto visible, con scroll dentro de la tarjeta (ver "Experiencia móvil").
 
 ## Caminar con clic o toque (F9, G22)
 
@@ -93,7 +95,8 @@ Pantallas de `index.html`, todas con id `pantalla*` y nombre en el router (`pant
 
 | Nombre | Overlay | Qué muestra |
 |---|---|---|
-| `titulo` | `pantallaTitulo` | Aviso de parodia (mismo texto que la 3D), Jugar (va a Mercadería y arranca una partida nueva), Personaje, Cómo se juega, Opciones y Pantalla completa |
+| `aviso` | `pantallaAviso` | Aviso de parodia (mismo texto que la 3D) y Continuar (va al título). Solo la primera vez: al continuar se guarda `2d_aviso`. Sin `localStorage` no falla, pero vuelve a aparecer en cada carga |
+| `titulo` | `pantallaTitulo` | Jugar (va a Mercadería y arranca una partida nueva), Personaje, Cómo se juega, Opciones, Pantalla completa y la atribución del mapa |
 | `mercaderia` | `pantallaMercaderia` | "¿Qué vas a vender?", panel de reposición (Ronda, Disponible, Ganancia última ronda, Tope de stock, Costo total), una tarjeta por producto con precio, estrellas y contadores − / + (los bloqueados se ven apagados con "Ronda N"), Reponer y salir a la calle, Volver al personaje y Mejoras del vendedor |
 | `mejoras` | `pantallaMejoras` | Cinco mejoras con nivel y costo del siguiente, caja disponible y Volver a la mercadería |
 | `personaje` | `pantallaPersonaje` | Personalizador del vendedor (D1): vista previa pixelart a escala entera, una fila por categoría (color de piel, color y estilo de pelo, color de ropa, accesorio y color de calzado), Al azar, Guardar y Volver. Se entra desde el título, desde la pausa (Cambiar personaje) y desde Mercadería (paso 1) |
@@ -105,7 +108,7 @@ Pantallas de `index.html`, todas con id `pantalla*` y nombre en el router (`pant
 
 - Esc o P abren la pausa durante una partida y la cierran. Esc cierra Opciones y Cómo se juega, y vuelve desde Personaje. Mientras la pausa está abierta, el juego no avanza.
 - Jugar, Reiniciar y los cambios entre títulos, personaje y pausa usan un fundido corto (`#fundido`). Si el sistema pide reducir movimiento, el cambio es directo.
-- La nav de pasos (`#pasos`: 1 Personaje, 2 Mercadería, 3 ¡A vender!) acompaña el flujo: Mercadería y Mejoras marcan "2", la calle marca "3". Se oculta en celular apaisado de poca altura.
+- La nav de pasos (`#pasos`: 1 Personaje, 2 Mercadería, 3 ¡A vender!) acompaña el flujo: Mercadería y Mejoras marcan "2", la calle marca "3". Se oculta en pantallas de poca altura (500 px o menos) y, en escritorio angosto (menos de 600 px), durante la calle. Desde 600 x 601 px queda arriba de las tarjetas de Personaje, Mercadería, Mejoras y selección de zona.
 - Los ajustes se guardan en `localStorage` con la clave `2d_ajustes` (valores validados en `ajustes.js`).
 
 ## Audio (D6)
@@ -471,7 +474,9 @@ Solo presentación: no cambia ningún valor de juego (velocidades, precios, prob
 - Joystick flotante: tocar el cuarto inferior izquierdo lo centra en el dedo (opción de joystick fijo). Zona muerta 0.18.
 - Botones en arco abajo a la derecha: Ofrecer (grande), Correr (mantener), Cambiar producto y Pausa; mínimo 48 px, multitoque por pointerId y vibración corta opcional.
 - Apaisado: al tocar Jugar se pide pantalla completa y bloqueo apaisado; en vertical la capa "Girá el teléfono" aparece en menús y partida (en iOS es el plan B).
-- Menús dentro del viewport con `css/movil.css` y `js/viewport.js` (alto visible real con visualViewport, safe areas, pie fijo en las tarjetas).
+- Menús dentro del viewport con `css/movil.css` y `js/viewport.js` (alto visible real con visualViewport y respaldo dvh/svh, safe areas con `viewport-fit=cover`, pie fijo en las tarjetas salvo título y pausa). Áreas táctiles de 44 px o más.
+- Apaisado bajo: título y pausa con botones en dos columnas, grillas en mercadería, mejoras y personaje, y selección de zona con el mapa a la izquierda. Vertical angosto: vista previa del personaje chica y botones secundarios del pie de a dos.
+- La capa de giro depende de táctil y vertical, así que en un celular o tablet en vertical tapa también los menús. Los menús en vertical se ven en escritorio con ventana angosta.
 - En Opciones (sección Táctil): controles (joystick o flechas), tipo de joystick (se oculta con flechas), vibración (se oculta sin API) y calidad gráfica.
 - Con un menú abierto se ocultan los controles táctiles. En apaisado bajo (alto de 500 px o menos) la alerta va abajo al centro.
 - Preferencias táctiles en `localStorage` con la clave `2d_movil` (joystick, vibración, calidad).

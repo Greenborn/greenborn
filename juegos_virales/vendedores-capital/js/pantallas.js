@@ -4,6 +4,7 @@
 // irA(destino, cuando, paso) cambia de pantalla con un fundido corto (#fundido) y actualiza la nav de pasos (#pasos).
 
 const PANTALLAS = {
+  aviso: 'pantallaAviso',
   titulo: 'pantallaTitulo',
   personaje: 'pantallaPersonaje',
   mercaderia: 'pantallaMercaderia',

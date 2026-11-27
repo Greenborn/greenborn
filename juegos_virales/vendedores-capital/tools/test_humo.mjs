@@ -90,6 +90,14 @@ check('main.js arranca con el mapa real', J.sim.city.real === true && J.estado =
 correr(30);
 check('en el título hay agentes cerca', J.sim.agentes.length > 0);
 
+console.log('Aviso de la primera vez');
+const { avisoVisto, marcarAviso, CLAVE_AVISO } = await import('../js/aviso.js');
+check('primera vez: aviso en vez del título', !$('pantallaAviso').hidden && $('pantallaTitulo').hidden && !avisoVisto());
+clic('btnAvisoSeguir');
+check('Continuar lleva al título y queda guardado', $('pantallaAviso').hidden && !$('pantallaTitulo').hidden && almacen.get(CLAVE_AVISO) === '1' && avisoVisto());
+const roto = { getItem() { throw new Error('bloqueado'); }, setItem() { throw new Error('bloqueado'); } };
+check('sin almacenamiento no rompe', !avisoVisto(roto) && !marcarAviso(roto) && !avisoVisto(null) && !marcarAviso(null));
+
 console.log('Partida');
 clic('btnJugar');
 check('Mercadería', J.estado === 'venta' && !$('pantallaMercaderia').hidden);
