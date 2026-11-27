@@ -13,7 +13,7 @@ import { crearPlanificador, lineaCaminable, buscarRuta } from './rutas.js';
 import {
   COIMA_CIEGO, RUTA_NODOS_FRAME, RUTA_UMBRAL_OBJ, RUTA_ATASCO_T, RUTA_ATASCO_D, SEP_RADIO, SEP_FUERZA, INTERCEPT_T_MAX,
 } from './config.js';
-import { puedeOfrecer, bajarCooldown, cooldownInicial } from './coima.js';
+import { bajarCooldown, cooldownInicial } from './coima.js';
 import {
   crearBusqueda, sumarEstrella, respuesta, stepBusqueda, asignarPerseguidores, indiceEsquinas, esquinasCerca,
   BUSQ_R_ACTIVA, BUSQ_MAX_ACTIVOS,
@@ -116,7 +116,8 @@ export function conFijos(city, lista, esquinas, frac = AG_FIJOS) {
 // opts.patrulla: POLI_FASE (1 esquina, 2 vereda; por defecto 2); opts.ronda: dificultad; opts.escalar: aplicar la fracción de
 // atentos (por defecto sí con las esquinas de la ciudad, no con esquinas dadas); opts.pool: activar por cercanía (por defecto si
 // hay más de 2 x BUSQ_MAX_ACTIVOS esquinas); opts.coima(p): lo llama main.js al capturar (p: agente o patrulla). Devuelve true
-// si se acepta la coima (main.js ya descontó lo pagado); false si se rechaza o no hay nada que pagar.
+// si se acepta la coima (main.js ya descontó lo pagado); false si se rechaza o no hay nada que pagar; o 'pendiente' si abrió un
+// diálogo: la simulación espera hasta resolverCoima(sim, aceptada, pl).
 export function crearSimulacion(city, opts = {}) {
   const esquinas = opts.esquinas ?? conFijos(city, conRefuerzos(city, esquinasAgentes(city)), esquinasAgentes(city));
   const sim = {
@@ -132,7 +133,7 @@ export function crearSimulacion(city, opts = {}) {
     ultima: null,          // última posición vista del jugador { x, z, heading }
     visto: false,          // algún perseguidor o el helicóptero lo ve ahora
     patrullas: [], heli: null, heliUsado: false,
-    G: { capT: 0, capAg: null, bfs: 0, corria: false, coimaCd: 0, ciegoT: 0 },   // estado global; coimaCd: cooldown de coima; ciegoT: s sin ver al jugador
+    G: { capT: 0, capAg: null, bfs: 0, corria: false, coimaCd: 0, ciegoT: 0, coimaPend: null },   // estado global; coimaCd: cooldown de coima; ciegoT: s sin ver al jugador
     perseguido: false,     // alguna vez hubo persecución en esta ronda
     escapes: 0,
     eventos: [],           // cola para main.js: { t: 'alerta'|'estrella'|'persecucion'|'patrulla'|'heli'|'heli_fin'|'zafe'|'atrapado'|'capturado'|'coima' }
@@ -298,9 +299,19 @@ export function limpiarBusqueda(sim) {
 
 // Coima al capturar (agente o patrulla): sin cooldown y con callback, pregunta a main.js. Aceptada: no hay captura y la
 // búsqueda termina para todos los perseguidores.
+// sim.coima(p) devuelve true (aceptada), false (no hay coima o rechazada) o 'pendiente': main.js abrió un diálogo y la
+// simulación queda congelada (G.coimaPend = p) hasta que main.js llame a resolverCoima(). Solo hay una decisión pendiente:
+// otras capturas en el mismo instante se ignoran (la respuesta vale para todos).
 function intentaCoima(sim, p) {
-  if (!puedeOfrecer(sim.G.coimaCd) || !sim.coima) return false;
-  if (!sim.coima(p)) return false;
+  if (!sim.coima) return false;                                      // sin cooldown: siempre se ofrece (coimaCd ya no bloquea)
+  const r = sim.coima(p);
+  if (r === 'pendiente') { sim.G.coimaPend = p; return true; }
+  if (!r) return false;
+  return aceptarCoima(sim, p);
+}
+
+// Efectos de una coima aceptada (inmediata o tras el diálogo).
+function aceptarCoima(sim, p) {
   sim.G.coimaCd = cooldownInicial();
   limpiarBusqueda(sim);
   sim.G.ciegoT = COIMA_CIEGO;                                        // durante este tiempo hacen de cuenta que no te ven
@@ -311,10 +322,25 @@ function intentaCoima(sim, p) {
 
 // Captura (agente o patrulla), salvo coima aceptada.
 function capturar(sim, p, pl) {
+  if (sim.G.coimaPend) return;                                       // ya hay un diálogo de coima abierto: una sola decisión
   if (intentaCoima(sim, p)) return;
+  iniciarCaptura(sim, p, pl);
+}
+
+function iniciarCaptura(sim, p, pl) {
   sim.G.capT = POLI_PAUSA_CAPT; sim.G.capAg = p;
   sim.eventos.push({ t: 'atrapado', idx: p.idx });
   pl.spd = 0; pl.path = []; pl.target = null;
+}
+
+// Respuesta del jugador a una coima 'pendiente' (la llama main.js al elegir). aceptada=true: efectos de coima aceptada;
+// false: la captura sigue como siempre (termina la partida). Sin decisión pendiente no hace nada.
+export function resolverCoima(sim, aceptada, pl) {
+  const p = sim.G.coimaPend;
+  if (!p) return false;
+  sim.G.coimaPend = null;
+  if (aceptada) aceptarCoima(sim, p); else iniciarCaptura(sim, p, pl);
+  return true;
 }
 
 // Punto de intercepción de cada perseguidor: `rango` es su orden entre los que persiguen (reparte POLI_INTERCEPT, así no
@@ -528,7 +554,7 @@ export function resetAgentes(sim, patrulla, ronda) {
   if (patrulla) sim.patrulla = patrulla;
   if (ronda) sim.ronda = ronda;
   limpiarBusqueda(sim);
-  G.capT = 0; G.capAg = null; G.coimaCd = 0; G.ciegoT = 0; G.corria = false; sim.perseguido = false; sim.escapes = 0; sim.eventos.length = 0;
+  G.capT = 0; G.capAg = null; G.coimaCd = 0; G.ciegoT = 0; G.coimaPend = null; G.corria = false; sim.perseguido = false; sim.escapes = 0; sim.eventos.length = 0;
   sim.t = 0; sim.tPool = 0;
   if (sim.pool) sim.agentes.length = 0;
   for (const p of sim.agentes) {
@@ -610,6 +636,7 @@ function stepVehiculos(sim, pl, dt) {
 export function stepAgentes(sim, pl, dt) {
   const { city, G, agentes } = sim;
   if (!city || !pl) return;
+  if (G.coimaPend) return;                                           // esperando la decisión del jugador (diálogo de coima): todo congelado
   G.coimaCd = bajarCooldown(G.coimaCd, dt);
   G.ciegoT = Math.max(0, G.ciegoT - dt);
   if (G.capT > 0) {                                                  // captura: todos quietos, el jugador "se sacude" y luego fin

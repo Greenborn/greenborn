@@ -195,7 +195,7 @@ Valores iguales a los de la Fase 3 (líneas aprox. 530 a 560 y 2490 a 2800):
 | `POLI_VEL_PAT` / `POLI_PAT_R` / `POLI_PAT_PAUSA` | 1.5 / 10 / 3 | `agentes.js` |
 | `POLI_SIM` | 40 celdas | `agentes.js` |
 | `POLI_FASE` | 2 (vereda); 1 = esquina | `agentes.js` |
-| `COIMA_MODO` / `COIMA_FRAC` | 'dinero' / 0.6 (3D: 0.5) | `config.js` |
+| `COIMA_FRAC` | 0.6 (3D: 0.5), solo para el dinero | `config.js` |
 | `COIMA_ACEPTA` / `COIMA_CD` | 0.55 / 8 s (3D: 0.6 / 3 s) | `config.js` |
 | `POLI_VENTA_VENTANA` | 1.5 s | `agentes.js` |
 | `SPEED` / `RUN_SPEED` | 4.5 / 7.5 celdas/s | `config.js` |
@@ -248,9 +248,10 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 ## Coima y patrulla (F5)
 
-- **Coima (`coima.js`):** al capturar (un agente o una patrulla), si no hay cooldown, se propone una coima. Paga `COIMA_FRAC` (60 %) del valor de la mercadería, limitado a lo vendido en la ronda; si queda por debajo de `COIMA_MIN` ($500) no hay coima. Probabilidad de aceptación `COIMA_ACEPTA` (55 %) x `COIMA_DECAE` (0.6) por cada coima ya aceptada en la partida. Aceptada: no hay captura, la búsqueda termina para todos (0 estrellas, los agentes vuelven, se van patrullas y helicóptero; no suma puntos ni cuenta como zafada) y hay `COIMA_CD` (8 s) sin nueva oferta. Rechazada o imposible: la captura termina la partida.
-- **Tras aceptar:** 0 estrellas y, durante `COIMA_CIEGO` (10 s, `config.js`), agentes y patrullas no te ven: ventas, carreras y llamados de peatones no suman estrellas (el agente llamado igual va al lugar).
-- **Modo producto:** entrega el 60 % de las unidades del producto activo (redondeo hacia arriba, siempre queda 1), sin mínimo en pesos. Se activa con `COIMA_MODO` en `config.js`; no hay pantalla para elegirlo.
+- **Coima (`coima.js`):** al capturar (un agente o una patrulla) se tira la aceptación y, si acepta, se propone una coima (sin cooldown: se ofrece siempre). Paga `COIMA_FRAC` (60 %) del valor de la mercadería, limitado a lo vendido en la ronda; si queda por debajo de `COIMA_MIN` ($500) no hay coima. Probabilidad de aceptación `COIMA_ACEPTA` (55 %) x `COIMA_DECAE` (0.6) por cada coima ya aceptada en la partida. Aceptada: no hay captura, la búsqueda termina para todos (0 estrellas, los agentes vuelven, se van patrullas y helicóptero; no suma puntos ni cuenta como zafada) ; `COIMA_CD` (8 s) se sigue seteando pero ya no bloquea nuevas ofertas. Rechazada, sin nada para pagar o "no pagar": la captura termina la partida.
+- **Tras aceptar:** 0 estrellas y, durante `COIMA_CIEGO` (10 s, `config.js`), agentes y patrullas no te ven: ventas, carreras y llamados de peatones no suman estrellas (el agente llamado igual va al lugar). Mientras dura la ceguera los conos de visión de los agentes se pintan en verde (`render.js`, `colorCono`, lee `G.ciegoT`).
+- **Diálogo de elección (opción B):** al capturar, primero se tira el dado (`tirarAceptacion`, con el decaimiento). Si el agente rechaza, la captura termina la partida sin diálogo. Si acepta (y hay algo para pagar), la partida se congela y el overlay `pantallaCoima` ofrece: **pagar con mercadería** (la mitad de las unidades del producto activo, `ceil(stock / 2)`, siempre queda 1: con stock 1 queda deshabilitada aunque haya dinero; stock 2 -> 1, 3 -> 2, 4 -> 2), **pagar con dinero** (60 % del valor de la mercadería, limitado a lo vendido, mínimo `COIMA_MIN`) o **no pagar** (termina la partida). Cada opción muestra qué se paga o el motivo por el que está deshabilitada. La probabilidad no se muestra. Elegir pagar ya no vuelve a tirar. Se eliminaron `ofrecerCoima`, `COIMA_MODO` y `COIMA_MOSTRAR_PROB`.
+- **Flujo técnico:** `sim.coima(p)` (agentes.js) puede devolver `true`/`false` como antes o `'pendiente'`: `G.coimaPend` congela `stepAgentes` y descarta otras capturas simultáneas (un solo diálogo). main.js responde con `resolverCoima(sim, aceptada, pl)`: aceptada aplica cooldown, ceguera y limpieza de búsqueda; no aceptada inicia la captura normal. La lógica pura está en `coima.js` (`opcionesCoima`, `elegirCoima`, `tirarAceptacion`).
 
 ## Puntaje, medallas, récord y compartir (F6)
 
@@ -267,6 +268,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 - **Barrios (G27, decisión D2):** en el mapa real son Balvanera, Monserrat, San Nicolás, San Telmo, Recoleta, Retiro y Puerto Madero (`meta.barrios`). Cada uno toma un perfil visual de `BARRIOS` (`PERFIL_REAL`): San Nicolás como Microcentro, Monserrat como Centro, Retiro como Belgrano (otro color), Puerto Madero como Microcentro en vidrio, Balvanera como Almagro; San Telmo y Recoleta con el suyo. En la ciudad de respaldo siguen los 9 barrios en 3 x 3 bloques de 44 x 44 celdas (`zonaDe`, índice `fila * 3 + columna`).
 - **Suelo de barrio:** calles, veredas y parques se tiñen con el color del barrio mezclado 14 % con el terreno. Los techos usan la paleta del perfil.
+- **Variedad por barrio:** la tabla `VARIEDAD` de `barrios.js` agrega a cada perfil `gente` (multiplicador de aparición de peatones: Microcentro 1,6, Centro 1,4, Barracas 0,6, Parque 0,7; `crearPeaton` reintenta hasta 3 veces si cae en un barrio con menos gente y como los peatones lejanos se reciclan cerca del jugador, la densidad se nota al recorrer), `verde` (arbustos y canteros pintados en veredas), `copa` (tonos de copa de los árboles), `tinte` (fuerza del color del barrio en el suelo, 0,16 a 0,26 en lugar del 0,14 fijo) y `rasgo` (detalle pintado en `rasgoVereda` de `render.js`: toldos de feria en San Telmo y Almagro, muros de colores en La Boca, óxido en Barracas, reflejos de vidriera en Microcentro y Centro, canteros con flores en Parque y Recoleta). Los barrios reales heredan estos datos de su perfil base. No hay demanda de productos por barrio: `DEMANDA` es igual en toda la ciudad. La luz de la jornada sigue siendo la capa de pantalla de siempre (el mapa horneado no cambia con la hora).
 - **Minimapa (G28):** esquina superior derecha, a la izquierda de la columna de botones. Muestra ±30 celdas alrededor del jugador, con el barrio tintado (en el mapa real también los edificios, y el agua en azul), el jugador (triángulo que indica su rumbo en la vista) y los agentes (amarillo, naranja o rojo según el estado). **Arriba del minimapa es arriba de la vista**, que gira con la cámara (Q, R o botones); el texto de la decisión "arriba = hacia donde mira el jugador" no se cumple tal cual, porque en la 2D la cámara no sigue el rumbo: el triángulo muestra el rumbo.
 - **Zona en el HUD (G29):** la línea "Barrio" del panel superior muestra el barrio de la celda del jugador. Se reescribe solo cuando cambia.
 - **Rotación (G30):** Q y R giran la vista 45 grados (una pulsación por tecla, sin repetición). Los botones ⟲ y ⟳ hacen lo mismo en celular. El mapa, los agentes, el cono de ofrecer, las flechas y el minimapa se dibujan con el mismo giro, y la entrada de movimiento se convierte a coordenadas de la ciudad.
@@ -367,7 +369,7 @@ node 2d/tools/test_puntaje.mjs
 - `test_audio.mjs`: con un AudioContext simulado, `sfx` con nombre desconocido (y de Object.prototype) no lanza, el volumen se recorta a 0..1 (y NaN o texto se ignoran), `silenciar(true)` deja la ganancia maestra en 0 y no sintetiza nada, `desbloquear` crea el contexto una sola vez y lo reanuda si quedó suspendido, y sin AudioContext todo es no-op sin error.
 
 - `test_camino.mjs`: clic para caminar con la ciudad generada (el camino llega a la celda clicada y recorrido con colisiones llega al destino), destino no caminable reemplazado por la caminable más cercana, rodeo de un muro con hueco (largo de la ruta suavizada), entrada manual que cancela el camino (lógica pura) y cancelación por trabado.
-- `test_coima.mjs`: modo dinero limitado a la caja de la ronda, modo producto con redondeo y siempre 1 unidad, aceptación determinista con generador inyectado, cooldown, captura sin coima (termina la partida), coima rechazada, coima aceptada (el agente vuelve a su esquina y hay cooldown).
+- `test_coima.mjs`: modo dinero limitado a la caja de la ronda, modo producto (mitad del stock, siempre 1 unidad), tirada de aceptación determinista, diálogo de elección, sin cooldown, captura sin coima (termina la partida), coima rechazada, coima aceptada (el agente vuelve a su esquina y hay cooldown).
 
 - `test_peatones.mjs`: transiciones de la memoria (N, I, C, M, P, A y decaimiento M a I), probabilidades que suman 1, DEMANDA y momento en la compra (con muestreo), contagio en radio 3 y su caducidad, reinicio por ronda, reciclado, cantidad de peatones por momento y cambio de momento según el tiempo de la ronda.
 
@@ -412,7 +414,7 @@ Pasos para probar en navegador (los hace el humano, con el servidor que ya levan
 - **D1 (personaje):** aplicada: personalizador pixelart procedural en la pantalla Personaje (ver "Personaje del vendedor (D1)"). Falta la prueba en navegador.
 - **D6 (audio):** aplicada: audio sintetizado como la 3D, con arranque en el primer gesto, silencio y volumen de Opciones (ver "Audio (D6)"). Falta la prueba en navegador.
 - **D8 (alcance de ofrecer):** aplicado con el valor propuesto (base 2.25 celdas, semiángulo luego ampliado a 90°, +0.75 por nivel). El plan lo marca "a confirmar", así que falta la confirmación del usuario.
-- **D2, D3, D4, D5, D7:** aplicadas con la recomendación del plan. D3 no tiene pantalla para elegir el modo de coima (queda `COIMA_MODO = 'dinero'`).
+- **D2, D3, D4, D5, D7:** aplicadas con la recomendación del plan. D3 no tiene pantalla para elegir el modo de coima (el diálogo posterior deja elegir entre mercadería y dinero).
 
 **Balance (F10):** no se cambió ningún valor. Simulación sin DOM de la economía (ronda 1 solo con figuritas, vender todo el stock):
 

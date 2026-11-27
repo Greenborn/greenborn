@@ -14,6 +14,9 @@ import { crearCacheSprites, spriteAgente, personajePeaton, varianteDe, claveJuga
 export const CELDA_MAPA_PX = 8;                       // resolución del mapa rasterizado (px por celda)
 // Colores de agentes (config.js, AG_COL): amarillo / naranja / rojo, igual que la 3D. Las claves son los estados de agentes.js.
 const COL_AG = AG_COL;
+// Cono de visión: verde mientras dura la ceguera por coima (G.ciegoT > 0); si no, el color del estado. Solo pinta, no cambia la visión.
+export const COL_CONO_CIEGO = '#4cd964';
+export const colorCono = (colEstado, ciegoT = 0) => (ciegoT > 0 ? COL_CONO_CIEGO : colEstado);
 export const COL = { road: '#3b3d46', side: '#a7a093', bld: '#5b5f6b', park: '#5f8f4e', tree: '#2d5a2a', roof: '#737787', water: '#2e5d78' };
 const TINTE_BARRIO = 0.14;   // fuerza del color de barrio sobre el suelo (0 = sin tinte)
 
@@ -55,6 +58,35 @@ function paletaTecho(b) {
   return TECHOS[b.pal] ?? TECHOS.base;
 }
 
+// Detalle pintado propio del barrio sobre una celda de vereda (b.rasgo, b.verde). Ruido determinista, sin tocar la geometría.
+const COL_TOLDOS = ['#d94a3a', '#2f7fd0', '#e8b92e', '#3fa86a', '#e8782e'];
+const COL_MUROS = ['#e03131', '#1c7ed6', '#fab005', '#20c997', '#e8590c', '#9c36b5'];
+function rasgoVereda(g, b, i, j, x, y) {
+  if (b.verde && ruido(i, j, 120) < b.verde) {                    // arbusto / cantero
+    g.fillStyle = '#2f6a33'; g.fillRect(x + 2, y + 2, 4, 4);
+    g.fillStyle = '#4c8f45'; g.fillRect(x + 2, y + 2, 3, 2);
+    if (ruido(i, j, 121) < 0.4) { g.fillStyle = ruido(i, j, 122) < .5 ? '#f2a6c4' : '#f4e285'; g.fillRect(x + 4, y + 4, 1, 1); }
+    return;
+  }
+  const r = ruido(i, j, 130);
+  if (b.rasgo === 'feria' && r < 0.07) {                          // puesto de feria con toldo
+    g.fillStyle = COL_TOLDOS[Math.floor(ruido(i, j, 131) * COL_TOLDOS.length)]; g.fillRect(x + 1, y + 1, 6, 4);
+    g.fillStyle = 'rgba(255,255,255,0.55)'; g.fillRect(x + 1, y + 1, 6, 1);
+    g.fillStyle = '#5a4a3a'; g.fillRect(x + 2, y + 5, 4, 1);
+  } else if (b.rasgo === 'muros' && r < 0.12) {                   // muro o zócalo de color (chapa pintada)
+    g.fillStyle = COL_MUROS[Math.floor(ruido(i, j, 131) * COL_MUROS.length)]; g.fillRect(x, y + 5, P_RASGO, 3);
+  } else if (b.rasgo === 'oxido' && r < 0.14) {                   // manchas de óxido y aceite
+    g.fillStyle = 'rgba(150, 80, 40, 0.45)'; g.fillRect(x + 1, y + 2, 5, 3);
+    g.fillStyle = 'rgba(30, 30, 30, 0.35)'; g.fillRect(x + 4, y + 5, 3, 2);
+  } else if (b.rasgo === 'luces' && r < 0.05) {                   // baldosa con reflejo (carteles y vidrieras)
+    g.fillStyle = 'rgba(255, 244, 190, 0.5)'; g.fillRect(x + 1, y + 1, 6, 2);
+  } else if (b.rasgo === 'canteros' && r < 0.06) {                // cantero con flores
+    g.fillStyle = '#3f7a38'; g.fillRect(x + 1, y + 2, 6, 3);
+    g.fillStyle = ruido(i, j, 131) < .5 ? '#e86a92' : '#f4d35e'; g.fillRect(x + 2, y + 2, 1, 1); g.fillRect(x + 5, y + 3, 1, 1);
+  }
+}
+const P_RASGO = 8;   // ancho de una celda en el mapa (= CELDA_MAPA_PX)
+
 // Pinta las celdas [i0, i1) x [j0, j1) de la ciudad en el contexto g, con la celda (i0, j0) en el píxel (0, 0), a
 // CELDA_MAPA_PX px por celda. Recorre además un borde de 1 celda alrededor para que las sombras y las copas de árboles
 // de las celdas vecinas entren en la región (el canvas recorta lo que cae afuera): dos regiones vecinas empalman sin costura.
@@ -74,7 +106,7 @@ function pintarRegion(g, city, i0, j0, i1, j1) {
     if (!v) {
       const b = PERF[z] ?? BARRIOS[0];
       let base = t === 'road' ? mezclar(b.calle ?? COL.road, COL.road, 0.5) : t === 'side' ? (b.vereda ?? COL.side) : t === 'park' ? COL.park : t === 'water' ? COL.water : COL.side;
-      if (t !== 'water') base = mezclar(base, b.col, TINTE_BARRIO);
+      if (t !== 'water') base = mezclar(base, b.col, b.tinte ?? TINTE_BARRIO);
       v = { base, claro: aclarar(base, 0.1), osc: oscurecer(base, 0.12), muyOsc: oscurecer(base, 0.25) };
       colores.set(k, v);
     }
@@ -92,6 +124,7 @@ function pintarRegion(g, city, i0, j0, i1, j1) {
       g.fillRect(x, y + 3, P, 1); g.fillRect(x, y + 7, P, 1);
       g.fillRect(x + 3, y, 1, P); g.fillRect(x + 7, y, 1, P);
       if (ruido(i, j, 1) < 0.18) { g.fillStyle = k.claro; g.fillRect(x + (ruido(i, j, 2) < .5 ? 0 : 4), y + (ruido(i, j, 3) < .5 ? 0 : 4), 3, 3); }
+      rasgoVereda(g, b, i, j, x, y);
       g.fillStyle = k.muyOsc;                                      // cordón donde la vereda toca la calle
       if (esCalle(i, j - 1)) g.fillRect(x, y, P, 1);
       if (esCalle(i, j + 1)) g.fillRect(x, y + P - 1, P, 1);
@@ -182,7 +215,8 @@ function pintarRegion(g, city, i0, j0, i1, j1) {
   g.fill();
   for (const [i, j, r] of arboles) {
     const cx = i * P + P / 2 + ox, cy = j * P + P / 2 + oy, v = ruido(i, j, 100);
-    const base = mezclar(COL.tree, v < .33 ? '#3f7a2e' : v < .66 ? '#24502a' : '#4c6b22', 0.5);
+    const copa = (PERF[city.zona[j * N + i]] ?? BARRIOS[0]).copa;
+    const base = copa ? mezclar(copa[Math.floor(v * 3)], COL.tree, 0.25) : mezclar(COL.tree, v < .33 ? '#3f7a2e' : v < .66 ? '#24502a' : '#4c6b22', 0.5);
     g.fillStyle = oscurecer(base, 0.15); g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fill();
     g.fillStyle = aclarar(base, 0.12); g.beginPath(); g.arc(cx - r * 0.25, cy - r * 0.25, r * 0.62, 0, Math.PI * 2); g.fill();
     g.fillStyle = aclarar(base, 0.35); g.fillRect(Math.round(cx - r * 0.45), Math.round(cy - r * 0.5), 1, 1);
@@ -366,7 +400,7 @@ export function dibujar(ctx, cam, escena) {
     const [px, py] = aPantalla(cam, p.x, p.z);
     const pers = p.estado === 'persecucion';
     const rFov = (pers ? POLI_RADIO_PERS : radioVista(sim.ronda)) * cam.zoom;
-    const col = COL_AG[p.estado] ?? COL_AG.patrulla;
+    const col = colorCono(COL_AG[p.estado] ?? COL_AG.patrulla, sim.G.ciegoT);
     const late = pers && !quieto ? 0.06 * Math.sin(tiempo * 6) : 0;
     const gr = ctx.createRadialGradient(px, py, rFov * 0.08, px, py, rFov);
     gr.addColorStop(0, hexA(col, 0.34 + late)); gr.addColorStop(0.7, hexA(col, 0.16 + late)); gr.addColorStop(1, hexA(col, 0.03));

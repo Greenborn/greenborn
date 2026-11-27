@@ -334,3 +334,9 @@ body.tactil .hud-panel .ico-prod img { width: 30px; height: 30px; }
 .estrellas-hud.sube i.on { animation: estrella-sube .3s steps(2, jump-none) infinite; }
 @keyframes estrella-sube { 50% { color: #fff; opacity: .25; } }
 @media (prefers-reduced-motion: reduce) { .estrellas-hud.sube i.on { animation: none; } }
+
+/* Diálogo de coima: botones grandes (>= 44 px) con el detalle de lo que se paga o el motivo de que no se pueda. */
+.opciones-coima .boton-sec { display: grid; gap: 2px; text-align: left; min-height: 56px; }
+.opciones-coima .boton-sec small { font-weight: 400; opacity: .8; font-size: 13px; }
+.opciones-coima .boton-sec:disabled { opacity: .5; }
+#pantallaCoima { z-index: 85; }

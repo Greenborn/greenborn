@@ -75,11 +75,10 @@ export const DISTANCIA_OPCIONES = ['corta', 'media', 'larga'];
 export const FPS_OPCIONES = [30, 45, 60];
 export const CONTROLES_OPCIONES = ['joystick', 'flechas'];   // controles en pantalla en táctil: joystick (defecto) o pad de flechas
 
-// Coima al capturar (coima.js). Origen 3D: COIMA_MODO, COIMA_FRAC, COIMA_ACEPTA, COIMA_CD (defaults de la 3D).
+// Coima al capturar (coima.js). Origen 3D: COIMA_FRAC, COIMA_ACEPTA, COIMA_CD (defaults de la 3D).
 // modo 'dinero': paga COIMA_FRAC del valor de la mercadería, limitado al dinero de la ronda.
-// modo 'producto': entrega COIMA_FRAC de las unidades del producto activo (redondeo hacia arriba, siempre queda 1).
-// No hay pantalla para elegir el modo (decisión D3 del plan).
-export const COIMA_MODO = 'dinero', COIMA_FRAC = 0.6, COIMA_ACEPTA = 0.55, COIMA_CD = 8;
+// opción 'producto': entrega la mitad del stock del producto activo, ceil(stock / 2), siempre queda 1. El jugador elige en el diálogo.
+export const COIMA_FRAC = 0.6, COIMA_ACEPTA = 0.55, COIMA_CD = 8;
 export const COIMA_DECAE = 0.6;       // la aceptación se multiplica por esto con cada coima aceptada en la partida
 export const COIMA_CIEGO = 10;       // s tras una coima aceptada en los que los agentes y las patrullas no te ven
 export const COIMA_MIN = 500;         // modo dinero: sin al menos $500 para pagar no hay coima

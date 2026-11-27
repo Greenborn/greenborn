@@ -4,7 +4,7 @@ import { generarCiudad, obstaculoEn, celdaPeatonal, celdaCaminableMasCerca, zona
 import { cargarCiudadReal } from './ciudad_real.js';   // mapa real de CABA (OpenStreetMap)
 import { ZONA_CENTRO, centroideBarrio, perfilesDe } from './barrios.js';
 import { dibujarMinimapa, dibujarMapaSeleccion } from './minimapa.js';
-import { crearSimulacion, stepAgentes, ofertaVista, alertarAgentes, resetAgentes, activarAgentes } from './agentes.js';
+import { crearSimulacion, resolverCoima, stepAgentes, ofertaVista, alertarAgentes, resetAgentes, activarAgentes } from './agentes.js';
 import { hudEstrellas } from './busqueda.js';
 import { stepEnergia } from './energia.js';
 import { crearCamara, seguir, zoomPor, aMundo } from './camara.js';
@@ -22,7 +22,7 @@ import {
   crearPartida, registrarVenta, registrarEscape, marcarPerseguido, cerrarRondaPuntos, puntosTotal, desgloseFin,
   unidadesCompradas, medalla, actualizarRecord, textoCompartir, enlacesCompartir, puntosEscape, registrarCoima,
 } from './puntaje.js';
-import { ofrecerCoima } from './coima.js';
+import { opcionesCoima, hayOpcionDePago, elegirCoima, tirarAceptacion } from './coima.js';
 import { COIMA_CIEGO } from './config.js';
 import { REACCIONES, TEXTOS, MOTIVOS_FIN, MEJORAS_TEXTO } from './textos.js';
 import { NOMBRE_PRODUCTO } from './productos.js';
@@ -134,6 +134,7 @@ function ciudadSpawn() {
 
 // Partida: jugador en el centro, agentes en su esquina, peatones nuevos y contadores en cero. La economía no se toca aquí.
 function nuevaPartida() {
+  dialogoCoima = false;
   const s = ciudadSpawn();
   pl = { px: s.x, py: s.y, heading: 0, spd: 0, corre: false, prevPx: s.x, prevPy: s.y, path: [], target: null, energia: ENERGIA_MAX, agotado: false };
   if (!sim) sim = crearSimulacion(city, { coima: cobrarCoima });
@@ -153,24 +154,62 @@ function nuevaPartida() {
   actualizarHud();
 }
 
-// Coima al capturar (agentes.js llama con el agente). Paga con la ronda en curso (coima.js) y devuelve true si el agente aceptó.
-// Si no hay nada que pagar o el agente rechaza, devuelve false y la captura termina la partida como antes.
+// Coima al capturar (agentes.js llama con el agente). Primero se tira el dado (probAceptar, con decaimiento): si el agente
+// rechaza, devuelve false y la captura termina la partida sin diálogo. Si acepta, abre el diálogo de elección y devuelve
+// 'pendiente': la simulación queda congelada hasta elegirCoimaUI() -> resolverCoima(). Sin nada que pagar no hay tirada ni diálogo.
+let dialogoCoima = false;   // diálogo abierto: la partida no avanza
 function cobrarCoima() {
-  const r = ofrecerCoima(econ, rd, Math.random, undefined, partida.coimas);
-  if (!r.oferta) return false;
-  if (!r.aceptada) { toast('No aceptaron la coima', 'mal'); return false; }
+  if (!hayOpcionDePago(rd)) return false;
+  if (!tirarAceptacion(Math.random, partida.coimas)) { toast('No aceptaron la coima', 'mal'); return false; }
+  dialogoCoima = true;
+  soltarControles();
+  pintarDialogoCoima();
+  mostrar('coima');
+  audio.pausa(true);
+  return 'pendiente';
+}
+
+function cerrarDialogoCoima() {
+  dialogoCoima = false;
+  ocultar('coima');
+  pausaAudio();
+}
+
+// Pinta las tres opciones: qué se pagaría, o el motivo de que no se pueda (botón deshabilitado).
+function pintarDialogoCoima() {
+  for (const o of opcionesCoima(rd)) {
+    const b = $('btnCoima_' + o.id);
+    if (!b) continue;
+    let txt = '';
+    if (o.id === 'producto') txt = o.disponible ? 'Entregás ' + o.propuesta.unidades + ' u. de ' + NOMBRE_PRODUCTO[o.propuesta.producto] + ' (la mitad de tu stock)' : o.motivo;
+    else if (o.id === 'dinero') txt = o.disponible ? 'Pagás ' + pesos(o.propuesta.monto) : o.motivo;
+    else txt = 'Te llevan preso y termina la partida';
+    b.disabled = !o.disponible;
+    b.querySelector('small').textContent = txt;
+  }
+}
+
+// El jugador eligió: paga (con tirada de aceptación) o no paga. Rechazo y "no pagar" terminan la partida como una captura.
+function elegirCoimaUI(eleccion) {
+  if (!dialogoCoima) return;
+  const r = elegirCoima(econ, rd, eleccion);
+  if (r.resultado === 'no_disponible') return;
+  cerrarDialogoCoima();
+  if (r.resultado !== 'pagada') {
+    resolverCoima(sim, false, pl);
+    return;
+  }
   econ = r.econ; rd = r.rd;
   partida = registrarCoima(partida);
   audio.sfx('venta');
-  const txt = r.oferta.modo === 'producto'
-    ? '-' + r.oferta.unidades + ' u.' : '-' + pesos(r.oferta.monto);
+  const txt = r.oferta.modo === 'producto' ? '-' + r.oferta.unidades + ' u.' : '-' + pesos(r.oferta.monto);
   bubble(pl.px, pl.py, txt, 'mala');
   toast(r.oferta.modo === 'producto'
     ? 'Le diste ' + r.oferta.unidades + ' unidades: por ' + COIMA_CIEGO + ' s no te ven'
     : 'Le pagaste ' + pesos(r.oferta.monto) + ' y por ' + COIMA_CIEGO + ' s no te ven', 'mal');
   pintarStock();
   actualizarHud();
-  return true;
+  resolverCoima(sim, true, pl);
 }
 
 // Posición del jugador en el formato de los peatones (x, z).
@@ -261,7 +300,7 @@ function moverJugador(dt, inp) {
 
 function procesarEventos() {
   for (const e of sim.eventos) {
-    if (e.t === 'coima') continue;   // la coima ya se muestra en cobrarCoima()
+    if (e.t === 'coima') continue;   // la coima ya se muestra en elegirCoimaUI()
     if (e.t === 'zafe') {
       const pts = puntosEscape(e.nivel);
       partida = registrarEscape(partida, e.nivel);
@@ -322,6 +361,7 @@ function cerrarRondaJuego() {
 // Calcula el desglose, la medalla y el récord (puntaje.js) y muestra la pantalla de fin (M12).
 function finPartida(motivo) {
   if (estado === 'fin') return;
+  dialogoCoima = false;
   cancelarCamino(camino);
   ocultarTodas();   // también cierra Mercadería o Mejoras si la partida termina desde ahí
   if (motivo === 'capturado' || motivo === 'sin_fondos') econ = reiniciarEconomia();
@@ -354,8 +394,8 @@ function finPartida(motivo) {
   r.classList.toggle('nuevo', rec.nuevoGlobal);
   $('finRecordProd').textContent = producto ? 'Mejor con ' + NOMBRE_PRODUCTO[producto] + ': ' + fmtPuntos(rec.producto) : '';
   ultimoFin = { motivo, puntos: total, medalla: m, producto };
-  $('btnFinShare').hidden = total <= 0;
-  $('shareRedes').hidden = total <= 0;
+  $('btnFinShare').hidden = false;   // compartir disponible en todo fin (también con 0 puntos: capturado, sin fondos)
+  $('shareRedes').hidden = false;
   const L = enlacesCompartir(textoCompartir(ultimoFin), urlJuego());
   for (const a of $('shareRedes').querySelectorAll('a[data-red]')) a.href = L[a.dataset.red];
   $('btnFinShare').textContent = TXT_COMPARTIR;
@@ -428,7 +468,7 @@ function pintarIcono(p) {
 
 // Cambia el producto activo (tecla F o clic en el icono). Solo mientras se vende en la calle.
 function cambiarProductoUI() {
-  if (estado !== 'jugando' || pausaJuego || pausado) return;
+  if (estado !== 'jugando' || pausaJuego || pausado || dialogoCoima) return;
   rd = cambiarProducto(rd);
   actualizarHud();
 }
@@ -663,7 +703,7 @@ function sobreHud(x, y) {
   return false;
 }
 function alTocarMapa({ x, y }) {
-  if (estado !== 'jugando' || pausaJuego || pausado || sim.G.capT > 0 || sobreHud(x, y)) return;
+  if (estado !== 'jugando' || pausaJuego || pausado || dialogoCoima || sim.G.capT > 0 || sobreHud(x, y)) return;
   const r = canvas.getBoundingClientRect();
   const [mx, mz] = aMundo(cam, (x - r.left) * cam.w / r.width, (y - r.top) * cam.h / r.height);   // con el giro de la vista (F7)
   const plan = planearCamino(city, { x: pl.px, y: pl.py }, { x: mx, y: mz });
@@ -681,14 +721,14 @@ const controles = crearControles({ canvas, cam, onToque: alTocarMapa,
 
 // Pausa del menú: el juego no avanza mientras está abierta. Solo aplica durante una partida.
 function setPausa(p) {
-  if (estado !== 'jugando') return;
+  if (estado !== 'jugando' || dialogoCoima) return;
   pausaJuego = p;
   if (p) mostrar('pausa'); else ocultar('pausa');
   soltarControles();
   pausaAudio();
 }
 // Audio en pausa (filtro y sin sirena) mientras la pausa del menú o la del giro del celular estén activas.
-function pausaAudio() { audio.pausa(pausaJuego || pausado); }
+function pausaAudio() { audio.pausa(pausaJuego || pausado || dialogoCoima); }
 // Música de menú (escena 'menu') y luz verde, como la 3D al volver a un menú.
 function audioMenu() { audio.alerta('verde'); audio.escena('menu'); }
 function volverDePersonaje() {
@@ -777,7 +817,7 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (estaVisible('personaje')) { if (esc) volverDePersonaje(); return; }
-  if (estado === 'jugando') setPausa(!pausaJuego);
+  if (estado === 'jugando' && !dialogoCoima) setPausa(!pausaJuego);
 });
 
 // Opciones (guardadas en localStorage con la clave 2d_ajustes; ver ajustes.js).
@@ -836,6 +876,7 @@ $('btnTituloAyuda').addEventListener('click', () => mostrar('ayuda'));
 $('btnTituloOpc').addEventListener('click', abrirOpciones);
 $('btnAyudaCerrar').addEventListener('click', () => ocultar('ayuda'));
 $('btnOptCerrar').addEventListener('click', () => ocultar('opciones'));
+for (const id of ['producto', 'dinero', 'nada']) $('btnCoima_' + id).addEventListener('click', () => elegirCoimaUI(id));
 $('btnPausaSeguir').addEventListener('click', () => setPausa(false));
 $('btnPausaReiniciar').addEventListener('click', jugar);
 $('btnPausaOpc').addEventListener('click', abrirOpciones);
@@ -844,7 +885,7 @@ $('btnPausaPers').addEventListener('click', abrirPersonaje);
 // Menú: vuelve a la pantalla de título (desde la pausa o desde la pantalla de fin).
 function irAlTitulo() {
   irA('titulo', () => {
-    estado = 'titulo'; pausaJuego = false; $('hudAlerta').hidden = true; soltarControles();
+    estado = 'titulo'; pausaJuego = false; dialogoCoima = false; $('hudAlerta').hidden = true; soltarControles();
     resetAgentes(sim); activarAgentes(sim, pl);
     audioMenu();
   }, null);
@@ -869,7 +910,7 @@ const mqReducido = window.matchMedia?.('(prefers-reduced-motion: reduce)');
 const PASO_CELDAS = 0.9, PASO_CELDAS_CORRER = 1.3;
 let distPaso = 0;
 function sonarPasos() {
-  if (estado !== 'jugando' || pausado || pausaJuego || !pl) { distPaso = 0; return; }
+  if (estado !== 'jugando' || pausado || pausaJuego || dialogoCoima || !pl) { distPaso = 0; return; }
   distPaso += Math.hypot(pl.px - pl.prevPx, pl.py - pl.prevPy);
   const tramo = pl.corre ? PASO_CELDAS_CORRER : PASO_CELDAS;
   if (distPaso >= tramo) { distPaso = 0; audio.sfx(pl.corre ? 'pasoCorrer' : 'paso'); }
@@ -902,7 +943,7 @@ function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   const inp = controles.leer();
-  if (estado === 'jugando' && !pausado && !pausaJuego) { actualizar(dt, inp); sonarPasos(); }
+  if (estado === 'jugando' && !pausado && !pausaJuego && !dialogoCoima) { actualizar(dt, inp); sonarPasos(); }
   seguir(cam, pl.px, pl.py, dt, snap);
   snap = false;
   luz = acercarLuz(luz, luzDe(jornadaPorId(jornadaId)), dt);   // transición suave del cielo y la niebla

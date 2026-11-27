@@ -51,6 +51,27 @@ export const BARRIOS = [
     autos: ['#f1f3f5', '#8d8d8d', '#343a40', '#1c7ed6', '#c92a2a', '#f1f3f5'], estilo: ['galpon'], hito: 'chimeneas' },
 ];
 
+// Variedad por barrio (sólo ambiente; no toca la geometría ni el balance de productos). Se fusiona en cada perfil de BARRIOS.
+//   gente  multiplicador de la probabilidad de que un peatón nuevo aparezca en ese barrio (1 = parejo; ver peatones.js)
+//   verde  probabilidad por vereda de un arbusto o cantero pintado (render.js)
+//   copa   tres tonos de copa de árbol del barrio (render.js; sin copa usa los verdes de siempre)
+//   tinte  fuerza del color de barrio sobre el suelo (sin dato: TINTE_BARRIO de render.js)
+//   rasgo  detalle pintado propio: 'feria' (toldos), 'muros' (manchas de colores), 'oxido', 'luces', 'canteros'
+// Demanda por barrio: no hay diferencia de demanda; DEMANDA (productos.js) es la misma en toda la ciudad.
+const VARIEDAD = {
+  'Parque':      { gente: 0.7,  verde: 0.22, copa: ['#3f8a35', '#2f7a3a', '#5a9a3a'], tinte: 0.2,  rasgo: 'canteros' },
+  'Recoleta':    { gente: 0.9,  verde: 0.14, copa: ['#6a4f9a', '#3f7a3a', '#2f6a35'], tinte: 0.2,  rasgo: 'canteros' },
+  'Belgrano':    { gente: 0.85, verde: 0.1,  copa: ['#3a7a3a', '#2d6a30', '#5a8a3a'], tinte: 0.18, rasgo: null },
+  'Almagro':     { gente: 1.1,  verde: 0.05, copa: ['#4c7a2e', '#3f6a2a', '#6a8a3a'], tinte: 0.2,  rasgo: 'feria' },
+  'Microcentro': { gente: 1.6,  verde: 0.02, copa: ['#3a6a3a', '#2d5a30', '#4a7a40'], tinte: 0.16, rasgo: 'luces' },
+  'Centro':      { gente: 1.4,  verde: 0.02, copa: ['#4a6a35', '#3a5a2d', '#5a7a3a'], tinte: 0.2,  rasgo: 'luces' },
+  'La Boca':     { gente: 0.9,  verde: 0.04, copa: ['#3a8a5a', '#2a7a4a', '#5a9a4a'], tinte: 0.26, rasgo: 'muros' },
+  'San Telmo':   { gente: 1.2,  verde: 0.06, copa: ['#8a7a2a', '#4a7a2e', '#6a8a30'], tinte: 0.24, rasgo: 'feria' },
+  'Barracas':    { gente: 0.6,  verde: 0.02, copa: ['#6a7a3a', '#5a6a30', '#7a7a3a'], tinte: 0.22, rasgo: 'oxido' },
+};
+export const GENTE_MAX = Math.max(...Object.values(VARIEDAD).map(v => v.gente));
+for (let k = 0; k < BARRIOS.length; k++) BARRIOS[k] = { ...BARRIOS[k], ...VARIEDAD[BARRIOS[k].nombre] };
+
 export const ZONAS_NOMBRE = BARRIOS.map(b => b.nombre);
 
 // Barrio (índice 0..8) de la celda (i, j) en una ciudad de n x n celdas. Regla en la cabecera de este archivo.
@@ -75,7 +96,7 @@ export const PERFIL_REAL = {
   'San Telmo':     { base: 'San Telmo' },
   'Recoleta':      { base: 'Recoleta' },
   'Retiro':        { base: 'Belgrano', col: '#9fd8c4' },
-  'Puerto Madero': { base: 'Microcentro', col: '#5fd0e6', pal: 'vidrio', pisos: [8, 12] },
+  'Puerto Madero': { base: 'Microcentro', col: '#5fd0e6', pal: 'vidrio', pisos: [8, 12], gente: 0.9, verde: 0.1, rasgo: 'canteros' },
   'Balvanera':     { base: 'Almagro' },
 };
 

@@ -20,6 +20,7 @@ import {
 } from './config.js';
 import { REACCIONES } from './textos.js';
 import { DEMANDA } from './productos.js';
+import { perfilesDe, GENTE_MAX } from './barrios.js';
 
 export const COLORES_PEAT = ['#f4d35e', '#ee964b', '#f95738', '#83c5be', '#b8c0ff', '#ffffff', '#e0fbfc'];   // ropa de los transeúntes (render.js)
 
@@ -153,6 +154,12 @@ export function contagiarInsulto(peds, objetivo, tiempo, radio = PEAT_CONTAGIO_R
 
 // ---------- Creación, reciclado y movimiento ----------
 
+const PEAT_REINTENTOS = 3;   // intentos extra de aparecer en un barrio con más gente
+function gentePerfil(city, c) {
+  const z = city.zona?.[c.j * ladoDe(city) + c.i];
+  return perfilesDe(city)[z]?.gente ?? 1;
+}
+
 const pick = (arr, rnd) => arr[Math.floor(rnd() * arr.length)];
 
 // Crea un peatón en una vereda. Con `cerca` (jugador) aparece a PEAT_SPAWN_MIN..MAX celdas de él; si no, en cualquier vereda.
@@ -161,6 +168,12 @@ export function crearPeaton(city, { cerca = null, rnd = Math.random } = {}) {
   if (cerca) {
     const a = rnd() * Math.PI * 2, d = PEAT_SPAWN_MIN + rnd() * (PEAT_SPAWN_MAX - PEAT_SPAWN_MIN);
     c = celdaPeatonal(city, cerca.x + Math.cos(a) * d, cerca.z + Math.sin(a) * d, 4);
+    // Densidad por barrio: si el barrio de la celda tiene poca gente se reintenta (hasta PEAT_REINTENTOS veces); los barrios
+    // con gente = GENTE_MAX siempre aceptan, así Microcentro se llena y Barracas queda más vacío al reciclarse los peatones.
+    for (let r = 0; r < PEAT_REINTENTOS && c && rnd() > gentePerfil(city, c) / GENTE_MAX; r++) {
+      const a2 = rnd() * Math.PI * 2, d2 = PEAT_SPAWN_MIN + rnd() * (PEAT_SPAWN_MAX - PEAT_SPAWN_MIN);
+      c = celdaPeatonal(city, cerca.x + Math.cos(a2) * d2, cerca.z + Math.sin(a2) * d2, 4) ?? c;
+    }
   }
   // La ciudad real trae puntos de vereda ya calculados (ciudad_real.js, puntosPeatones).
   if (!c && city.puntosPeaton?.length) c = pick(city.puntosPeaton, rnd);

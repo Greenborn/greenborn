@@ -234,3 +234,6 @@ body.calidad-baja *, body.calidad-baja *::before, body.calidad-baja *::after { b
 /* Estrellas en táctil: en pantallas angostas la píldora (abajo al centro) deja el texto y conserva luces y estrellas. */
 body.tactil .estrellas-hud { font-size: 15px; }
 @media (max-width: 760px) { body.tactil .hud-alerta em { display: none; } }
+
+/* Coima: los botones son todo el contenido; sin pie fijo para que no tape el encabezado. */
+#pantallaCoima .tarjeta > .menu-col:last-child { position: static; margin: 4px 0 0; padding: 0; background: none; box-shadow: none; }

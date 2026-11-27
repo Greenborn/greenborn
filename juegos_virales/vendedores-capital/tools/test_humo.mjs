@@ -127,7 +127,7 @@ check('HUD con 5 estrellas encendidas', $('hudEstrellas').children.every(e => e.
 tecla('KeyP'); const t0 = sim.t; correr(30);
 check('la pausa congela la búsqueda', sim.t === t0 && !$('pantallaPausa').hidden);
 tecla('KeyP'); correr(1);
-for (let k = 0; k < 3600 && J.estado === 'jugando'; k++) { sim.G.coimaCd = 99; correr(1); }
+for (let k = 0; k < 3600 && J.estado === 'jugando'; k++) { if (!$('pantallaCoima').hidden) clic('btnCoima_nada'); correr(1); }   // sin cooldown de coima: si aparece el diálogo, "No pagar"
 check('termina capturado o zafando, sin excepciones', J.estado === 'fin' || sim.busq.nivel === 0, J.estado + ' ' + sim.busq.nivel);
 if (J.estado === 'fin') {
   correr(2);

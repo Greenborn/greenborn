@@ -3,15 +3,20 @@
 // inyectado, captura sin coima (termina la partida), coima rechazada, coima aceptada (el agente vuelve a su esquina) y cooldown.
 import { N, generarCiudad } from '../js/ciudad.js';
 import {
-  crearSimulacion, stepAgentes, ventaVista, ofertaVista, corridaVista, alertarAgentes, POLI_PAUSA_CAPT,
+  crearSimulacion, stepAgentes, resolverCoima, ventaVista, ofertaVista, corridaVista, alertarAgentes, POLI_PAUSA_CAPT,
 } from '../js/agentes.js';
 import {
-  propuestaCoima, pagarCoima, ofrecerCoima, valorMercaderia, cooldownInicial, bajarCooldown, puedeOfrecer,
-  COIMA_FRAC, COIMA_ACEPTA, COIMA_CD, COIMA_MIN, probAceptar,
+  propuestaCoima, pagarCoima, valorMercaderia, cooldownInicial, bajarCooldown,
+  COIMA_FRAC, COIMA_ACEPTA, COIMA_CD, COIMA_MIN, probAceptar, opcionesCoima, elegirCoima, tirarAceptacion, hayOpcionDePago,
 } from '../js/coima.js';
 import { PRECIOS, PRODUCTO_INICIAL } from '../js/productos.js';
 import { economiaInicial } from '../js/economia.js';
-import { COIMA_MODO, COIMA_CIEGO } from '../js/config.js';
+import { COIMA_CIEGO } from '../js/config.js';
+import { colorCono, COL_CONO_CIEGO } from '../js/render.js';
+import { readFileSync } from 'node:fs';
+import { MOTIVOS_FIN } from '../js/textos.js';
+import { textoCompartir } from '../js/puntaje.js';
+import { cerrarRonda, sinFondos, costoMin } from '../js/economia.js';
 
 let fallos = 0, pasos = 0;
 function check(nombre, cond, extra = '') {
@@ -25,7 +30,6 @@ const rdCon = (unid, dinero = 0, p = P) => ({ lotes: unid > 0 ? { [p]: unid } : 
 
 console.log('1. Constantes (defaults de la 3D)');
 {
-  check('modo por defecto: dinero', COIMA_MODO === 'dinero', COIMA_MODO);
   check('COIMA_FRAC = 0.6', COIMA_FRAC === 0.6);
   check('COIMA_ACEPTA = 0.55', COIMA_ACEPTA === 0.55);
   check('COIMA_CD = 8 s', COIMA_CD === 8);
@@ -46,9 +50,9 @@ console.log('2. Modo dinero: 60 % de la mercadería, limitado a la caja de la ro
   check('pagar en dinero no toca el stock', pago.rd.lotes[P] === unid);
 }
 
-console.log('3. Modo producto: 60 % de las unidades, redondeo hacia arriba, siempre queda 1');
+console.log('3. Mercadería: la mitad del stock (ceil), siempre queda 1');
 {
-  const casos = [[0, null], [1, null], [2, 1], [3, 2], [5, 3], [10, 6], [11, 7]];
+  const casos = [[0, null], [1, null], [2, 1], [3, 2], [4, 2], [5, 3], [10, 5], [11, 6]];
   for (const [up, esperado] of casos) {
     const r = propuestaCoima(rdCon(up), 'producto');
     const got = r ? r.unidades : null;
@@ -58,38 +62,31 @@ console.log('3. Modo producto: 60 % de las unidades, redondeo hacia arriba, siem
       check(`stock ${up}: queda al menos 1 unidad`, pago.rd.lotes[P] >= 1, 'queda=' + pago.rd.lotes[P]);
     }
   }
-  check('modo producto no usa el dinero', propuestaCoima(rdCon(4, 0), 'producto')?.unidades === 3);
+  check('mercadería no usa el dinero', propuestaCoima(rdCon(4, 0), 'producto')?.unidades === 2);
 }
 
-console.log('4. Aceptación determinista con generador inyectado');
+console.log('4. Tirada de aceptación y elección (sin cooldown)');
 {
   const econ = economiaInicial();
   const rd = rdCon(10, 2000);
-  const ac = ofrecerCoima(econ, rd, () => 0.54, 'dinero');
-  check('rand < COIMA_ACEPTA: acepta', ac.aceptada === true);
-  check('aceptada: se descuenta del dinero de la ronda', ac.rd.dinero === 2000 - ac.oferta.monto);
-  const re = ofrecerCoima(econ, rd, () => 0.55, 'dinero');
-  check('rand = COIMA_ACEPTA: rechaza', re.aceptada === false && re.oferta !== null);
-  check('rechazada: la ronda queda igual', re.rd === rd && re.econ === econ);
-  check('rand 0 acepta y 0.999 rechaza', ofrecerCoima(econ, rd, () => 0).aceptada && !ofrecerCoima(econ, rd, () => 0.999).aceptada);
-  const sinNada = ofrecerCoima(econ, rdCon(0, 0), () => 0);
-  check('sin dinero ni producto: no hay oferta (la captura sigue)', sinNada.oferta === null && sinNada.aceptada === false);
-  const modoProd = ofrecerCoima(econ, rdCon(4, 0), () => 0, 'producto');
-  check('modo producto aceptado: descuenta unidades', modoProd.aceptada && modoProd.rd.lotes[P] === 1);
-}
-
-console.log('4b. Mínimo y decaimiento');
-{
-  check('menos de $500 vendidos en la ronda: no hay coima', propuestaCoima(rdCon(10, COIMA_MIN - 1), 'dinero') === null && propuestaCoima(rdCon(10, COIMA_MIN), 'dinero')?.monto === 500);
+  check('rand < COIMA_ACEPTA: acepta', tirarAceptacion(() => 0.54, 0));
+  check('rand = COIMA_ACEPTA: rechaza', !tirarAceptacion(() => 0.55, 0));
+  check('rand 0 acepta y 0.999 rechaza', tirarAceptacion(() => 0, 0) && !tirarAceptacion(() => 0.999, 0));
   check('la aceptación decae x0.6 por coima aceptada', probAceptar(0) === 0.55 && Math.abs(probAceptar(1) - 0.33) < 1e-9);
-  check('con 1 aceptada, rand 0.4 ya rechaza', !ofrecerCoima(economiaInicial(), rdCon(10, 2000), () => 0.4, 'dinero', 1).aceptada);
+  check('con 1 aceptada, rand 0.4 ya rechaza', !tirarAceptacion(() => 0.4, 1));
+  check('menos de $500 vendidos en la ronda: no hay coima en dinero', propuestaCoima(rdCon(10, COIMA_MIN - 1), 'dinero') === null && propuestaCoima(rdCon(10, COIMA_MIN), 'dinero')?.monto === 500);
+  const ac = elegirCoima(econ, rd, 'dinero');
+  check('pagar en dinero: descuenta del dinero de la ronda', ac.resultado === 'pagada' && ac.rd.dinero === 2000 - ac.oferta.monto);
+  check('sin dinero ni producto: ninguna opción de pago', !hayOpcionDePago(rdCon(0, 0)));
+  const mp = elegirCoima(econ, rdCon(4, 0), 'producto');
+  check('mercadería con stock 4: entrega 2 y quedan 2', mp.resultado === 'pagada' && mp.rd.lotes[P] === 2);
+  const s1 = opcionesCoima(rdCon(1, 100000));
+  check('stock 1: mercadería deshabilitada aunque haya dinero', !s1[0].disponible && !!s1[0].motivo);
 }
 
-console.log('5. Cooldown');
+console.log('5. Cooldown: ya no bloquea ofertas (solo estado)');
 {
   check('cooldown inicial = COIMA_CD', cooldownInicial() === 8);
-  check('con cooldown activo no se ofrece', puedeOfrecer(0.1) === false);
-  check('sin cooldown se ofrece', puedeOfrecer(0) === true);
   check('el cooldown baja con dt y no pasa de 0', bajarCooldown(3, 1.5) === 1.5 && bajarCooldown(0.5, 1) === 0);
 }
 
@@ -124,13 +121,13 @@ console.log('6. Captura sin coima: termina la partida (como F2)');
   check('coima rechazada: no entra en cooldown', sim.G.coimaCd === 0);
 }
 
-console.log('7. Coima aceptada: sin captura, el agente vuelve a su esquina, cooldown y sin nueva oferta');
+console.log('7. Coima aceptada: sin captura, el agente vuelve a su esquina, cooldown solo como estado');
 {
   const esq = { x: 30.5, z: 30.5, yaw: 0 };
   let econ = economiaInicial(), rd = rdCon(10, 100000), llamadas = 0;
   const sim = crearSimulacion(ciudadVacia(), {
     esquinas: [esq], rand: () => 0.5,
-    coima: () => { llamadas++; const r = ofrecerCoima(econ, rd, () => 0); econ = r.econ; rd = r.rd; return r.aceptada; },
+    coima: () => { llamadas++; const r = elegirCoima(econ, rd, 'dinero'); econ = r.econ; rd = r.rd; return r.resultado === 'pagada'; },
   });
   const pl = pl0(30.5, 30.9);
   const p = sim.agentes[0];
@@ -154,16 +151,11 @@ console.log('7. Coima aceptada: sin captura, el agente vuelve a su esquina, cool
   Object.assign(p, { x: esq.x, z: esq.z, yaw: 0, estado: 'patrulla', ruta: null, pend: 0 });
   ventaVista(sim, pl);
   check('pasados los 10 s vuelve a verlo', sim.G.ciegoT === 0 && sim.busq.nivel === 1);
-  // Cooldown (forzado, sin ceguera): captura directa, sin ofrecer otra coima.
-  sim.eventos.length = 0; sim.G.coimaCd = 1;
+  // Sin cooldown: aunque coimaCd esté activo, la captura vuelve a ofrecer la coima.
+  sim.eventos.length = 0; sim.G.coimaCd = 5; sim.G.ciegoT = 0;
   enCaptura(sim, p, pl);
   stepAgentes(sim, pl, 0.05);
-  check('en cooldown: captura directa sin nueva oferta', llamadas === 1 && cuentaEv(sim, 'atrapado') === 1);
-  // Pasado el cooldown, vuelve a ofrecer.
-  sim.eventos.length = 0; sim.G.capT = 0; sim.G.capAg = null; sim.G.coimaCd = 0;
-  enCaptura(sim, p, pl);
-  stepAgentes(sim, pl, 0.05);
-  check('sin cooldown: vuelve a ofrecer', llamadas === 2);
+  check('con coimaCd activo igual se ofrece (la coima no tiene cooldown)', llamadas === 2 && cuentaEv(sim, 'atrapado') === 0);
 }
 
 console.log('7b. Correr dentro del cono: persecución inmediata');
@@ -223,6 +215,109 @@ console.log('8. Ciudad generada: la coima no rompe la simulación');
   const pl = pl0(sim.agentes[0].x, sim.agentes[0].z);
   pasarTiempo(sim, pl, 5);
   check('sin errores con patrulla 1 y coima rechazada', sim.agentes.length > 0);
+}
+
+console.log('9. Diálogo de elección (opción B): tirada primero, diálogo solo si el agente acepta');
+{
+  const econ = economiaInicial();
+  const rd = rdCon(10, 100000);
+  const ops = opcionesCoima(rd, 0);
+  check('tres opciones: producto, dinero, nada', ops.map(o => o.id).join() === 'producto,dinero,nada');
+  check('producto muestra 5 unidades (la mitad de 10)', ops[0].disponible && ops[0].propuesta.unidades === 5);
+  check('dinero muestra 60 % del valor', ops[1].disponible && ops[1].propuesta.monto === Math.round(0.6 * 10 * PRECIOS[P]));
+  check('no pagar siempre disponible; ', ops[2].disponible && ops.length === 3);
+  const sd = opcionesCoima(rdCon(10, 100), 0);
+  check('sin dinero suficiente: dinero deshabilitado con motivo', !sd[1].disponible && !!sd[1].motivo && sd[0].disponible);
+  const sp = opcionesCoima(rdCon(0, 100000), 0);
+  check('sin mercadería: producto deshabilitado con motivo', !sp[0].disponible && !!sp[0].motivo);
+  check('sin ninguna opción de pago: hayOpcionDePago false', !hayOpcionDePago(rdCon(0, 0)) && hayOpcionDePago(rd));
+  const e1 = elegirCoima(econ, rd, 'producto');
+  check('elegir mercadería: descuenta unidades', e1.resultado === 'pagada' && e1.rd.lotes[P] === 5);
+  const e2 = elegirCoima(econ, rd, 'dinero');
+  check('elegir dinero: descuenta monto', e2.resultado === 'pagada' && e2.rd.dinero === 100000 - e2.oferta.monto);
+  const e3 = elegirCoima(econ, rd, 'nada');
+  check('no pagar: no descuenta', e3.resultado === 'nada' && e3.rd === rd);
+  check('opción no disponible: no paga', elegirCoima(econ, rdCon(0, 0), 'dinero').resultado === 'no_disponible');
+  check('tirada: acepta con rand < prob y decae', tirarAceptacion(() => 0.5, 0) && !tirarAceptacion(() => 0.5, 1));
+
+  // Integración con agentes.js: 'pendiente' congela y espera resolverCoima.
+  const esq = { x: 30.5, z: 30.5, yaw: 0 };
+  const armar = (esquinas, cb) => crearSimulacion(ciudadVacia(), { esquinas, rand: () => 0.5, coima: cb });
+  // Rechazo de la tirada: main devuelve false, sin diálogo; la captura termina la partida.
+  let dialogos = 0;
+  const cbMain = (acepta) => () => { if (!tirarAceptacion(() => acepta ? 0 : 0.99, 0)) return false; dialogos++; return 'pendiente'; };
+  let sim = armar([esq], cbMain(false)), pl = pl0(30.5, 30.9);
+  enCaptura(sim, sim.agentes[0], pl);
+  stepAgentes(sim, pl, 0.05);
+  check('rechazo: sin diálogo y la captura termina la partida', dialogos === 0 && !sim.G.coimaPend && cuentaEv(sim, 'atrapado') === 1);
+  pasarTiempo(sim, pl, POLI_PAUSA_CAPT + 0.1);
+  check('rechazo: evento capturado', cuentaEv(sim, 'capturado') === 1);
+  // Aceptación: diálogo, simulación congelada, luego "no pagar" termina la partida.
+  sim = armar([esq], cbMain(true)); pl = pl0(30.5, 30.9);
+  enCaptura(sim, sim.agentes[0], pl);
+  stepAgentes(sim, pl, 0.05);
+  check('aceptación: un diálogo y captura en espera', dialogos === 1 && !!sim.G.coimaPend && sim.G.capT === 0 && cuentaEv(sim, 'atrapado') === 0);
+  const t0 = sim.t; pasarTiempo(sim, pl, 2);
+  check('mientras el diálogo está abierto la simulación no avanza', sim.t === t0 && cuentaEv(sim, 'capturado') === 0);
+  resolverCoima(sim, false, pl);
+  check('no pagar: arranca la captura', cuentaEv(sim, 'atrapado') === 1 && sim.G.capT > 0 && !sim.G.coimaPend);
+  pasarTiempo(sim, pl, POLI_PAUSA_CAPT + 0.1);
+  check('no pagar: la partida termina', cuentaEv(sim, 'capturado') === 1);
+  // Pagar: limpia búsqueda, ceguera y cooldown.
+  sim = armar([esq], cbMain(true)); pl = pl0(30.5, 30.9);
+  enCaptura(sim, sim.agentes[0], pl); sim.busq.nivel = 2;
+  stepAgentes(sim, pl, 0.05);
+  resolverCoima(sim, true, pl);
+  check('pagar: sin captura, búsqueda limpia, ceguera y cooldown', sim.busq.nivel === 0 && sim.G.ciegoT === COIMA_CIEGO && sim.G.coimaCd === COIMA_CD && cuentaEv(sim, 'coima') === 1 && sim.G.capT === 0 && sim.agentes[0].estado === 'regreso');
+  // Dos capturas simultáneas: un solo diálogo.
+  dialogos = 0;
+  sim = armar([esq, { x: 31.5, z: 30.5, yaw: 0 }], cbMain(true)); pl = pl0(31, 30.9);
+  for (const p of sim.agentes) { p.estado = 'persecucion'; p.tRuta = 999; p.x = pl.px + (p.idx ? 0.1 : -0.1); p.z = pl.py; }
+  pl.prevPx = pl.px; pl.prevPy = pl.py;
+  stepAgentes(sim, pl, 0.05);
+  check('dos capturas simultáneas: un solo diálogo', dialogos === 1 && !!sim.G.coimaPend, 'dialogos=' + dialogos);
+  stepAgentes(sim, pl, 0.05);
+  check('sigue un solo diálogo en el cuadro siguiente', dialogos === 1);
+  check('resolver sin decisión pendiente no hace nada', (resolverCoima(sim, false, pl), !resolverCoima(sim, false, pl)));
+}
+
+console.log('10. Fin de partida sin coima posible y sin fondos para reponer');
+{
+  const esq = { x: 30.5, z: 30.5, yaw: 0 };
+  const rdVacio = rdCon(0, 0);
+  check('sin dinero ni mercadería no hay coima posible', !hayOpcionDePago(rdVacio));
+  // Callback como el de main.js: sin opción de pago devuelve false (sin tirada ni diálogo).
+  const sim = crearSimulacion(ciudadVacia(), { esquinas: [esq], rand: () => 0.5, coima: () => (hayOpcionDePago(rdVacio) ? 'pendiente' : false) });
+  const pl = pl0(30.5, 30.9);
+  enCaptura(sim, sim.agentes[0], pl);
+  stepAgentes(sim, pl, 0.05);
+  check('captura sin coima posible: sin diálogo, arranca la captura', !sim.G.coimaPend && cuentaEv(sim, 'atrapado') === 1);
+  pasarTiempo(sim, pl, POLI_PAUSA_CAPT + 0.1);
+  check('captura sin coima posible: evento capturado (main llama finPartida)', cuentaEv(sim, 'capturado') === 1);
+  // Sin fondos: la caja no alcanza para el gasto fijo y una unidad.
+  const e0 = economiaInicial();
+  const pobre = { ...e0, caja: costoMin(e0) - 1 };
+  check('caja menor al costo mínimo: sinFondos', sinFondos(pobre) === true || sinFondos({ ...pobre, caja: 0 }) === true);
+  const cr = cerrarRonda({ ...e0, caja: 0 }, rdCon(0, 0));
+  check('cerrar la ronda sin fondos devuelve sin_fondos', cr.estado === 'sin_fondos', cr.estado);
+  check('el motivo sin_fondos tiene el título "Sin fondos para reponer"', MOTIVOS_FIN.sin_fondos[0] === 'Sin fondos para reponer');
+  check('se puede compartir un fin sin fondos con 0 puntos', typeof textoCompartir({ motivo: 'sin_fondos', puntos: 0, medalla: null, producto: null }) === 'string');
+  // Ambos caminos pasan por finPartida() de main.js y la pantalla de fin siempre muestra compartir.
+  const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
+  check("main.js: 'capturado' y las dos salidas 'sin_fondos' llaman finPartida", /finPartida\('capturado'\)/.test(main) && (main.match(/finPartida\('sin_fondos'\)/g) ?? []).length === 2);
+  check('main.js: compartir visible en todo fin', /btnFinShare'\)\.hidden = false/.test(main) && /shareRedes'\)\.hidden = false/.test(main));
+}
+
+console.log('11. Cono verde durante la ceguera por coima');
+{
+  const sim = crearSimulacion(ciudadVacia(), { esquinas: [{ x: 30.5, z: 30.5, yaw: 0 }], rand: () => 0.5 });
+  const normal = '#ffcc00';
+  check('sin ceguera el cono conserva el color del estado', colorCono(normal, sim.G.ciegoT) === normal);
+  sim.G.ciegoT = COIMA_CIEGO;
+  check('con ceguera activa el cono es verde', colorCono(normal, sim.G.ciegoT) === COL_CONO_CIEGO && /^#4cd964$/.test(COL_CONO_CIEGO));
+  const pl = pl0(30.5, 40.5);
+  pasarTiempo(sim, pl, COIMA_CIEGO + 0.5);
+  check('al terminar la ceguera vuelve al color normal', sim.G.ciegoT === 0 && colorCono(normal, sim.G.ciegoT) === normal);
 }
 
 console.log('');

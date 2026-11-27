@@ -13,6 +13,7 @@ const PANTALLAS = {
   opciones: 'pantallaOpciones',
   ayuda: 'pantallaAyuda',
   pausa: 'pantallaPausa',
+  coima: 'pantallaCoima',
   fin: 'pantallaFin',
 };
 
