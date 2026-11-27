@@ -20,6 +20,7 @@
   y el botón "Ver Portfolio" en components/SeccionHeader.vue.
   <SeccionPortfolio />
 -->
+<SeccionDemos />
 <SeccionTecnologias />
 <SeccionComponentes />
 <SeccionContacto />
@@ -41,6 +42,7 @@ const quick_replies = ref([
 ])
 
 import SeccionHeader from './components/SeccionHeader.vue'
+import SeccionDemos from './components/SeccionDemos.vue'
 import SeccionTecnologias from './components/SeccionTecnologias.vue'
 import SeccionComponentes from './components/SeccionComponentes.vue'
 // Oculto temporalmente (ver comentario en el template):
