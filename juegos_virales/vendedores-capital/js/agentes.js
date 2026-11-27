@@ -11,7 +11,7 @@
 import { celdaPeatonal, lineaLibre, obstaculoEn, esquinasAgentes, ladoDe } from './ciudad.js';
 import { crearPlanificador, lineaCaminable } from './rutas.js';
 import {
-  RUTA_NODOS_FRAME, RUTA_UMBRAL_OBJ, RUTA_ATASCO_T, RUTA_ATASCO_D, SEP_RADIO, SEP_FUERZA, INTERCEPT_T_MAX,
+  COIMA_CIEGO, RUTA_NODOS_FRAME, RUTA_UMBRAL_OBJ, RUTA_ATASCO_T, RUTA_ATASCO_D, SEP_RADIO, SEP_FUERZA, INTERCEPT_T_MAX,
 } from './config.js';
 import { puedeOfrecer, bajarCooldown, cooldownInicial } from './coima.js';
 import {
@@ -94,7 +94,7 @@ export function crearSimulacion(city, opts = {}) {
     ultima: null,          // última posición vista del jugador { x, z, heading }
     visto: false,          // algún perseguidor o el helicóptero lo ve ahora
     patrullas: [], heli: null, heliUsado: false,
-    G: { capT: 0, capAg: null, bfs: 0, corria: false, coimaCd: 0 },   // estado global; coimaCd: cooldown de coima
+    G: { capT: 0, capAg: null, bfs: 0, corria: false, coimaCd: 0, ciegoT: 0 },   // estado global; coimaCd: cooldown de coima; ciegoT: s sin ver al jugador
     perseguido: false,     // alguna vez hubo persecución en esta ronda
     escapes: 0,
     eventos: [],           // cola para main.js: { t: 'alerta'|'estrella'|'persecucion'|'patrulla'|'heli'|'heli_fin'|'zafe'|'atrapado'|'capturado'|'coima' }
@@ -253,6 +253,8 @@ function intentaCoima(sim, p) {
   if (!sim.coima(p)) return false;
   sim.G.coimaCd = cooldownInicial();
   limpiarBusqueda(sim);
+  sim.G.ciegoT = COIMA_CIEGO;                                        // durante este tiempo hacen de cuenta que no te ven
+  for (const q of sim.agentes) { q.ve = false; q.ventaT = 0; }
   sim.eventos.push({ t: 'coima', idx: p.idx });
   return true;
 }
@@ -311,6 +313,7 @@ const verUltima = (sim, x, z, heading = 0) => { sim.ultima = { x, z, heading }; 
 // Con estrellas activas no se suma gente: el llamado solo actualiza la última posición vista.
 export function alertarAgentes(sim, x, z) {
   const city = sim.city;
+  if (sim.G.ciegoT > 0) return;                                      // coima reciente: los llamados no tienen efecto
   if (sim.busq.nivel > 0) { verUltima(sim, x, z, sim.ultima?.heading ?? 0); return; }
   const dest = celdaPeatonal(city, x, z, 4);
   if (!dest) return;
@@ -330,6 +333,7 @@ export function alertarAgentes(sim, x, z) {
 // Agentes que ven al jugador ahora: atentos, comprometidos o respondiendo un llamado. El más cercano primero.
 function testigos(sim, pl) {
   const radio = radioVista(sim.ronda), out = [];
+  if (sim.G.ciegoT > 0) return out;
   for (const p of sim.agentes) {
     if (!(p.atento || comprometido(p) || (p.estado === 'alerta' && p.aviso))) continue;
     const dx = pl.px - p.x, dz = pl.py - p.z, d = Math.hypot(dx, dz);
@@ -397,7 +401,7 @@ export function resetAgentes(sim, patrulla, ronda) {
   if (patrulla) sim.patrulla = patrulla;
   if (ronda) sim.ronda = ronda;
   limpiarBusqueda(sim);
-  G.capT = 0; G.capAg = null; G.coimaCd = 0; G.corria = false; sim.perseguido = false; sim.escapes = 0; sim.eventos.length = 0;
+  G.capT = 0; G.capAg = null; G.coimaCd = 0; G.ciegoT = 0; G.corria = false; sim.perseguido = false; sim.escapes = 0; sim.eventos.length = 0;
   sim.t = 0; sim.tPool = 0;
   if (sim.pool) sim.agentes.length = 0;
   for (const p of sim.agentes) {
@@ -480,6 +484,7 @@ export function stepAgentes(sim, pl, dt) {
   const { city, G, agentes } = sim;
   if (!city || !pl) return;
   G.coimaCd = bajarCooldown(G.coimaCd, dt);
+  G.ciegoT = Math.max(0, G.ciegoT - dt);
   if (G.capT > 0) {                                                  // captura: todos quietos, el jugador "se sacude" y luego fin
     G.capT -= dt;
     pl.heading = wrapAng(pl.heading + dt * 9);
@@ -511,7 +516,7 @@ export function stepAgentes(sim, pl, dt) {
     const d = Math.sqrt(d2);
     if (p.ventaT > 0) p.ventaT -= dt;
     p.tVis -= dt;
-    if (p.tVis <= 0) { p.tVis = POLI_VIS_DT; p.ve = agenteVe(city, p, pl, d, dx, dz, radio); }
+    if (p.tVis <= 0) { p.tVis = POLI_VIS_DT; p.ve = G.ciegoT <= 0 && agenteVe(city, p, pl, d, dx, dz, radio); }
     let moved = 0;
     switch (p.estado) {
       case 'patrulla':                                                // patrulla 2: camina por la vereda entre paradas; patrulla 1: quieto en la esquina

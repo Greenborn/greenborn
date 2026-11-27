@@ -23,6 +23,7 @@ import {
   unidadesCompradas, medalla, actualizarRecord, textoCompartir, enlacesCompartir, puntosEscape, registrarCoima,
 } from './puntaje.js';
 import { ofrecerCoima } from './coima.js';
+import { COIMA_CIEGO } from './config.js';
 import { REACCIONES, TEXTOS, MOTIVOS_FIN, MEJORAS_TEXTO } from './textos.js';
 import { NOMBRE_PRODUCTO } from './productos.js';
 import {
@@ -164,8 +165,8 @@ function cobrarCoima() {
     ? '-' + r.oferta.unidades + ' u.' : '-' + pesos(r.oferta.monto);
   bubble(pl.px, pl.py, txt, 'mala');
   toast(r.oferta.modo === 'producto'
-    ? 'Le diste ' + r.oferta.unidades + ' unidades y te dejó ir'
-    : 'Le pagaste ' + pesos(r.oferta.monto) + ' y te dejó ir', 'mal');
+    ? 'Le diste ' + r.oferta.unidades + ' unidades: por ' + COIMA_CIEGO + ' s no te ven'
+    : 'Le pagaste ' + pesos(r.oferta.monto) + ' y por ' + COIMA_CIEGO + ' s no te ven', 'mal');
   pintarStock();
   actualizarHud();
   return true;

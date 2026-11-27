@@ -83,6 +83,7 @@ export const CONTROLES_OPCIONES = ['joystick', 'flechas'];   // controles en pan
 // No hay pantalla para elegir el modo (decisión D3 del plan).
 export const COIMA_MODO = 'dinero', COIMA_FRAC = 0.6, COIMA_ACEPTA = 0.55, COIMA_CD = 8;
 export const COIMA_DECAE = 0.6;       // la aceptación se multiplica por esto con cada coima aceptada en la partida
+export const COIMA_CIEGO = 10;       // s tras una coima aceptada en los que los agentes y las patrullas no te ven
 export const COIMA_MIN = 500;         // modo dinero: sin al menos $500 para pagar no hay coima
 
 // Modelos visuales y marcas en el canvas (render.js, G23, G24, G35). Colores en hex, como el resto de config.js.

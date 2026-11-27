@@ -246,6 +246,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 ## Coima y patrulla (F5)
 
 - **Coima (`coima.js`):** al capturar (un agente o una patrulla), si no hay cooldown, se propone una coima. Paga `COIMA_FRAC` (60 %) del valor de la mercadería, limitado a lo vendido en la ronda; si queda por debajo de `COIMA_MIN` ($500) no hay coima. Probabilidad de aceptación `COIMA_ACEPTA` (55 %) x `COIMA_DECAE` (0.6) por cada coima ya aceptada en la partida. Aceptada: no hay captura, la búsqueda termina para todos (0 estrellas, los agentes vuelven, se van patrullas y helicóptero; no suma puntos ni cuenta como zafada) y hay `COIMA_CD` (8 s) sin nueva oferta. Rechazada o imposible: la captura termina la partida.
+- **Tras aceptar:** 0 estrellas y, durante `COIMA_CIEGO` (10 s, `config.js`), agentes y patrullas no te ven: ventas, carreras y llamados de peatones no suman estrellas.
 - **Modo producto:** entrega el 60 % de las unidades del producto activo (redondeo hacia arriba, siempre queda 1), sin mínimo en pesos. Se activa con `COIMA_MODO` en `config.js`; no hay pantalla para elegirlo.
 - **Patrulla a pie 1 (quietos en la esquina):** opción "Patrulla de agentes" de Opciones; no caminan mientras no haya búsqueda ni llamado. Se aplica en la próxima partida.
 

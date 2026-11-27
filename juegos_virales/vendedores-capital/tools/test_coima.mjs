@@ -3,7 +3,7 @@
 // inyectado, captura sin coima (termina la partida), coima rechazada, coima aceptada (el agente vuelve a su esquina) y cooldown.
 import { N, generarCiudad } from '../js/ciudad.js';
 import {
-  crearSimulacion, stepAgentes, POLI_PAUSA_CAPT,
+  crearSimulacion, stepAgentes, ventaVista, corridaVista, alertarAgentes, POLI_PAUSA_CAPT,
 } from '../js/agentes.js';
 import {
   propuestaCoima, pagarCoima, ofrecerCoima, valorMercaderia, cooldownInicial, bajarCooldown, puedeOfrecer,
@@ -11,7 +11,7 @@ import {
 } from '../js/coima.js';
 import { PRECIOS, PRODUCTO_INICIAL } from '../js/productos.js';
 import { economiaInicial } from '../js/economia.js';
-import { COIMA_MODO } from '../js/config.js';
+import { COIMA_MODO, COIMA_CIEGO } from '../js/config.js';
 
 let fallos = 0, pasos = 0;
 function check(nombre, cond, extra = '') {
@@ -140,7 +140,22 @@ console.log('7. Coima aceptada: sin captura, el agente vuelve a su esquina, cool
   check('coima aceptada: se descuenta el 60 % de la mercadería de la ronda', rd.dinero === 100000 - Math.round(0.6 * 10 * PRECIOS[P]), 'dinero=' + rd.dinero);
   check('coima aceptada: el agente vuelve a patrullar (regreso)', p.estado === 'regreso', p.estado);
   check('coima aceptada: evento coima y cooldown', cuentaEv(sim, 'coima') === 1 && sim.G.coimaCd > 0 && sim.G.coimaCd <= COIMA_CD);
-  // El jugador sigue ahí, pegado al agente, pero en cooldown: captura directa, sin ofrecer otra coima.
+  // Durante COIMA_CIEGO s no lo ven: ni ventas, ni carreras, ni llamados suman estrellas.
+  Object.assign(p, { x: esq.x, z: esq.z, yaw: 0, estado: 'patrulla', atento: true, ruta: null, pend: 0 });
+  ventaVista(sim, pl);
+  pl.corre = true; corridaVista(sim, pl); pl.corre = false;
+  alertarAgentes(sim, pl.px, pl.py);
+  stepAgentes(sim, pl, 0.05);
+  check('ciego: 0 estrellas, no lo ve y no atiende llamados', sim.busq.nivel === 0 && !p.ve && p.estado === 'patrulla', sim.busq.nivel + ' ' + p.estado);
+  pasarTiempo(sim, pl, COIMA_CIEGO - 0.5);
+  ventaVista(sim, pl);
+  check('ciego: sigue sin verlo cerca de los 10 s', sim.busq.nivel === 0);
+  pasarTiempo(sim, pl, 1);
+  Object.assign(p, { x: esq.x, z: esq.z, yaw: 0, estado: 'patrulla', ruta: null, pend: 0 });
+  ventaVista(sim, pl);
+  check('pasados los 10 s vuelve a verlo', sim.G.ciegoT === 0 && sim.busq.nivel === 1);
+  // Cooldown (forzado, sin ceguera): captura directa, sin ofrecer otra coima.
+  sim.eventos.length = 0; sim.G.coimaCd = 1;
   enCaptura(sim, p, pl);
   stepAgentes(sim, pl, 0.05);
   check('en cooldown: captura directa sin nueva oferta', llamadas === 1 && cuentaEv(sim, 'atrapado') === 1);
