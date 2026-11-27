@@ -65,8 +65,9 @@ const mapa = crearMapa(city);               // mapa por mosaicos perezosos (rend
 $('cargando').hidden = true;                // la ciudad ya está lista
 const cvMini = $('minimapa'), cvSel = $('selMapa');
 const SEL_ESPERA_S = 10;                    // segundos antes de empezar en el barrio central si no se elige
-let zonaElegida = false;                    // la zona se elige una vez por partida, al salir de Mercadería la primera vez
+let zonaElegida = false;                    // ya se salió alguna vez en esta partida (la zona se elige en cada ronda)
 let zonaSel = -1;                           // barrio resaltado en la pantalla de selección
+let selHecha = false;                       // evita una segunda elección mientras se cierra la pantalla
 let selTimer = 0;
 let zonaHud = -2;                           // barrio mostrado en el HUD (solo se reescribe al cambiar)
 
@@ -555,14 +556,16 @@ function reponerYSalir(sel) {
   econ = r.econ; rd = r.rd;
   guardarEconomia(econ);
   limpiarSel();
-  // Primera salida de la partida: pantalla de zona (M8) antes de la calle. Después, sale directo.
-  if (!zonaElegida) return irA('seleccion', abrirSeleccion, 'mapa');
-  irA(null, () => empezarRonda(), 'mapa');
+  // Antes de cada ronda: pantalla de zona (M8).
+  irA('seleccion', abrirSeleccion, 'mapa');
 }
 
-// Selección de zona (M8, F7): minimapa de la ciudad y un botón por barrio. Sin elección en SEL_ESPERA_S s, empieza en el centro.
+// Selección de zona (M8, F7): minimapa de la ciudad y un botón por barrio. Sin elección en SEL_ESPERA_S s, la primera vez
+// empieza en el centro y en las rondas siguientes sigue donde estaba.
 function abrirSeleccion() {
   zonaSel = -1;
+  selHecha = false;
+  const porDefecto = zonaElegida ? zonaEn(city, Math.floor(pl.px), Math.floor(pl.py)) : ZONA_INI;
   $('selBotones').replaceChildren(...ZONAS_NOMBRE.map((n, z) => {
     const b = document.createElement('button');
     b.type = 'button'; b.textContent = n; b.dataset.zona = z; b.setAttribute('aria-pressed', 'false');
@@ -571,10 +574,10 @@ function abrirSeleccion() {
   }));
   pintarSeleccion();
   let s = SEL_ESPERA_S;
-  const pintar = () => { $('selEstado').textContent = 'Si no elegís, empezás en ' + ZONAS_NOMBRE[ZONA_INI] + ' en ' + s + ' s.'; };
+  const pintar = () => { $('selEstado').textContent = 'Si no elegís, ' + (zonaElegida ? 'seguís' : 'empezás') + ' en ' + ZONAS_NOMBRE[porDefecto] + ' en ' + s + ' s.'; };
   pintar();
   clearInterval(selTimer);
-  selTimer = setInterval(() => { s--; if (s <= 0) elegirZona(ZONA_INI); else pintar(); }, 1000);
+  selTimer = setInterval(() => { s--; if (s > 0) pintar(); else elegirZona(porDefecto, zonaElegida); }, 1000);
 }
 function pintarSeleccion() {
   dibujarMapaSeleccion(cvSel, city, zonaSel);
@@ -588,13 +591,15 @@ cvSel.addEventListener('click', e => {
   elegirZona(zonaEn(city, i, j));
 });
 // Posiciona al jugador en la celda caminable más cercana al centro del barrio y arranca la ronda.
-function elegirZona(z) {
-  if (!estaVisible('seleccion') || zonaElegida) return;
+// quedarse: no mueve al personaje (venció la espera en una ronda posterior a la primera).
+function elegirZona(z, quedarse = false) {
+  if (!estaVisible('seleccion') || selHecha) return;
+  selHecha = true;
   clearInterval(selTimer);
   zonaSel = z;
   pintarSeleccion();
   const cen = centroZona(z);
-  const c = celdaCaminableMasCerca(city, cen.i, cen.j, 60);
+  const c = quedarse ? null : celdaCaminableMasCerca(city, cen.i, cen.j, 60);
   if (c) {
     pl.px = c.i + .5; pl.py = c.j + .5; pl.prevPx = pl.px; pl.prevPy = pl.py;
     pl.path = []; pl.target = null;

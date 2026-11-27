@@ -1,5 +1,5 @@
 // Pruebas headless del cono de ofrecer (sin DOM ni canvas). Uso: node 2d/tools/test_ofrecer.mjs
-// Alcance base 2.25 y +0.75 por nivel de la mejora Alcance (3.0 y 3.75), semiángulo de 30°, línea de visión que bloquea
+// Alcance base 2.25 y +0.75 por nivel de la mejora Alcance (3.0 y 3.75), semiángulo de 90°, línea de visión que bloquea
 // el objetivo detrás de un edificio, selección del peatón más cercano dentro del cono y pistas de una sola vez.
 import { N } from '../js/ciudad.js';
 import { OFR_RADIO, OFR_RADIO_MAX, OFR_PASO, OFR_MED_ANG } from '../js/config.js';
@@ -50,7 +50,7 @@ check('cada nivel suma 0.75', cerca(radioOfrecer(econAlcance(1)) - radioOfrecer(
 check('el tope no supera 3.75 aunque el nivel sea mayor', cerca(radioOfrecer(econAlcance(9)), 3.75));
 
 console.log('Semiángulo del cono');
-check('semiángulo de 30 grados', cerca(OFR_MED_ANG * 180 / Math.PI, 30, 1e-9), String(OFR_MED_ANG * 180 / Math.PI));
+check('semiángulo de 90 grados', cerca(OFR_MED_ANG * 180 / Math.PI, 90, 1e-9), String(OFR_MED_ANG * 180 / Math.PI));
 
 console.log('Selección del objetivo');
 const R = 2.25;
@@ -60,16 +60,16 @@ const R = 2.25;
   check('peatón al frente dentro del alcance es el objetivo', buscarObjetivoOfrecer([p], ciudad(), jugador(), R, OFR_MED_ANG) === p);
 }
 {
-  // Ángulo 35 grados (fuera de 30) a distancia 2: no entra.
-  const a = 35 * Math.PI / 180;
+  // Ángulo 95 grados (fuera de 90) a distancia 2: no entra.
+  const a = 95 * Math.PI / 180;
   const p = peat(10.5 + 2 * Math.sin(a), 10.5 + 2 * Math.cos(a));
-  check('peatón a 35 grados (fuera del cono de 30) no es objetivo', buscarObjetivoOfrecer([p], ciudad(), jugador(), R, OFR_MED_ANG) === null);
+  check('peatón a 95 grados (fuera del cono de 90) no es objetivo', buscarObjetivoOfrecer([p], ciudad(), jugador(), R, OFR_MED_ANG) === null);
 }
 {
-  // Ángulo 25 grados (dentro de 30) a distancia 2: entra.
-  const a = 25 * Math.PI / 180;
+  // Ángulo 85 grados (dentro de 90) a distancia 2: entra.
+  const a = 85 * Math.PI / 180;
   const p = peat(10.5 + 2 * Math.sin(a), 10.5 + 2 * Math.cos(a));
-  check('peatón a 25 grados (dentro del cono de 30) es objetivo', buscarObjetivoOfrecer([p], ciudad(), jugador(), R, OFR_MED_ANG) === p);
+  check('peatón a 85 grados (dentro del cono de 90) es objetivo', buscarObjetivoOfrecer([p], ciudad(), jugador(), R, OFR_MED_ANG) === p);
 }
 {
   // Distancia 2.5: fuera del alcance base 2.25, pero entra con el nivel 1 (3.0).
@@ -90,7 +90,7 @@ const R = 2.25;
 }
 {
   // El más cercano fuera del cono no gana frente a uno dentro del cono más lejano.
-  const fuera = peat(10.5 + 1.2, 10.5 + 0.4);      // ángulo mayor a 30 grados, muy cerca
+  const fuera = peat(10.5 + 1.2, 10.5 - 0.4);      // ángulo mayor a 90 grados, muy cerca
   const dentro = peat(10.5, 12.5);                 // al frente, más lejos
   check('un peatón fuera del cono, aunque más cerca, no es elegido', buscarObjetivoOfrecer([fuera, dentro], ciudad(), jugador(), R, OFR_MED_ANG) === dentro);
 }

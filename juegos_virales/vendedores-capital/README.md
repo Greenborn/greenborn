@@ -71,7 +71,7 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
 
 - Modo táctil: `body.tactil` se pone cuando el puntero es grueso (o hay táctil sin mouse fino). Sólo ahí se muestran el joystick y los botones Correr y Ofrecer; en escritorio, Shift y E.
 - Tecla F (o clic en el icono de producto del HUD): cambia el producto activo. Sin botón táctil propio; el icono del HUD sirve también en celular.
-- Joystick fijo abajo a la izquierda (zona muerta 18 %; empujarlo al máximo corre). Botones Correr y Ofrecer abajo a la derecha.
+- Joystick abajo a la izquierda (zona muerta 12 %; velocidad plena desde el 55 % del radio; solo camina, para correr está el botón). Botones Correr y Ofrecer abajo a la derecha.
 - Pellizco con dos dedos sobre el mapa para acercar o alejar; los botones + y − siguen disponibles.
 - Botones ⟲ y ⟳ (en la columna de la derecha, debajo del zoom) giran la vista 45 grados a cada lado. Mismo efecto que Q y R.
 - Botón de pantalla completa (⛶) y, en vertical, capa "Girá el teléfono" que pausa la partida hasta volver a apaisado.
@@ -101,7 +101,7 @@ Pantallas de `index.html`, todas con id `pantalla*` y nombre en el router (`pant
 | `mejoras` | `pantallaMejoras` | Cinco mejoras con nivel y costo del siguiente, caja disponible y Volver a la mercadería |
 | `personaje` | `pantallaPersonaje` | Personalizador del vendedor (D1): vista previa pixelart a escala entera, una fila por categoría (color de piel, color y estilo de pelo, color de ropa, accesorio y color de calzado), Al azar, Guardar y Volver. Se entra desde el título, desde la pausa (Cambiar personaje) y desde Mercadería (paso 1) |
 | `opciones` | `pantallaOpciones` | Volumen y Silenciar (guardados, aplicados al audio; ver "Audio (D6)"), distancia de vista (guardada, sin efecto todavía), zoom inicial (aplica al empezar una partida), límite de FPS (30, 45, 60; aplica en el bucle de `main.js`) y Patrulla de agentes (vereda o esquina; aplica al empezar la próxima partida) |
-| `seleccion` | `pantallaSeleccion` | Selección de zona (F7, M8): minimapa de la ciudad completa y un botón por barrio. Aparece la primera vez que se sale de Mercadería en una partida. Sin elección en 10 s, empieza en Microcentro |
+| `seleccion` | `pantallaSeleccion` | Selección de zona (F7, M8): minimapa de la ciudad completa y un botón por barrio. Aparece cada vez que se sale de Mercadería (en cada ronda). Sin elección en 10 s, la primera vez empieza en Microcentro y después sigue donde estaba |
 | `ayuda` | `pantallaAyuda` | Cómo se juega: objetivo, ofrecer, visión y tabla de teclas (incluye Q y R para girar) |
 | `pausa` | `pantallaPausa` | Seguir, Reiniciar, Opciones, Cómo se juega, Cambiar personaje y Salir al menú |
 | `fin` | `pantallaFin` | Motivo ("¡Te atraparon!" o "Sin fondos para reponer"), desglose del puntaje, total, medalla, récord (global y del producto), compartir (botón y menú de redes oculto al inicio), Jugar de nuevo (partida nueva, economía inicial) y Menú (vuelve al título) |
@@ -160,7 +160,7 @@ Pasos para probar el audio en navegador (los hace el humano):
 - **Fase de patrulla:** `POLI_FASE` 2 (vereda) por defecto; la opción 1 (quietos en la esquina) se elige en Opciones (ver "Coima y patrulla (F5)").
 - **Economía:** rondas, reposición, mejoras y precios por producto como en la 3D (ver "Economía por rondas" abajo). Las reacciones de los peatones usan la memoria por ronda y la `DEMANDA` del producto (ver "Peatones, memoria y jornadas" abajo).
 - **Jornadas:** mañana, mediodía y tarde, con la noche deshabilitada como en la 3D. El tramo de cada momento es la duración de la ronda (`DURACION_RONDA` = 120 s) dividida en tres; la 3D usa un ciclo de partida distinto.
-- **Alcance de ofrecer:** base 2.25 celdas y semiángulo de 30° (decisión D8, más que la 3D); la mejora suma 0.75 por nivel (3.0 y 3.75). La línea de visión (G8) aplica al cono: un edificio entre el jugador y el peatón lo bloquea (ver "Indicadores, pistas, modelos y cono (F8)").
+- **Alcance de ofrecer:** base 2.25 celdas y semiángulo de 90° (180° en total); la mejora suma 0.75 por nivel (3.0 y 3.75). La línea de visión (G8) aplica al cono: un edificio entre el jugador y el peatón lo bloquea (ver "Indicadores, pistas, modelos y cono (F8)").
 - **Fin de partida:** por captura o por "Sin fondos" (caja que no alcanza para el gasto fijo y una unidad de algún producto desbloqueado). Puntaje, medallas, récord y compartir como en la 3D (ver "Puntaje, medallas, récord y compartir (F6)" abajo).
 - **Puntos por unidad:** 100 (`PTS_VENTA`), como la 3D. En F0 la 2D usaba 50 (`PTS_UNIDAD`), que se reemplazó.
 - **Bonus de sigilo:** se da al cerrar cada ronda sin estrellas en esa ronda (en la 3D el flag es de la partida).
@@ -199,7 +199,7 @@ Valores iguales a los de la Fase 3 (líneas aprox. 530 a 560 y 2490 a 2800):
 | `COIMA_ACEPTA` / `COIMA_CD` | 0.55 / 8 s (3D: 0.6 / 3 s) | `config.js` |
 | `POLI_VENTA_VENTANA` | 1.5 s | `agentes.js` |
 | `SPEED` / `RUN_SPEED` | 4.5 / 7.5 celdas/s | `config.js` |
-| `OFR_RADIO` / `OFR_MED_ANG` / `OFR_CD` / `OFR_PAUSA` | 2.25 / 30° / 0.6 s / 1.5 s (2D; la 3D usa 1.5 / 24°, D8) | `config.js` |
+| `OFR_RADIO` / `OFR_MED_ANG` / `OFR_CD` / `OFR_PAUSA` | 2.25 / 90° / 0.6 s / 1.5 s (2D; la 3D usa 1.5 / 24°, D8) | `config.js` |
 | `PTS_ESCAPE` / `PTS_BONUS_SIGILO` | 300 / 500 | `config.js` |
 | `AG_COL` (`POLI_COL` en `render.js`) | amarillo / naranja / rojo | `config.js` |
 
@@ -271,7 +271,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 - **Minimapa (G28):** esquina superior derecha, a la izquierda de la columna de botones. Muestra ±30 celdas alrededor del jugador, con el barrio tintado (en el mapa real también los edificios, y el agua en azul), el jugador (triángulo que indica su rumbo en la vista) y los agentes (amarillo, naranja o rojo según el estado). **Arriba del minimapa es arriba de la vista**, que gira con la cámara (Q, R o botones); el texto de la decisión "arriba = hacia donde mira el jugador" no se cumple tal cual, porque en la 2D la cámara no sigue el rumbo: el triángulo muestra el rumbo.
 - **Zona en el HUD (G29):** la línea "Barrio" del panel superior muestra el barrio de la celda del jugador. Se reescribe solo cuando cambia.
 - **Rotación (G30):** Q y R giran la vista 45 grados (una pulsación por tecla, sin repetición). Los botones ⟲ y ⟳ hacen lo mismo en celular. El mapa, los agentes, el cono de ofrecer, las flechas y el minimapa se dibujan con el mismo giro, y la entrada de movimiento se convierte a coordenadas de la ciudad.
-- **Selección de zona (M8, decisión):** la primera vez que se sale de Mercadería en una partida aparece la pantalla de selección, con el mapa de la ciudad completa (sin rotación, barrios atenuados salvo el elegido, nombres en sus centroides en el mapa real) y un botón por barrio. Tocar una zona del mapa o un botón posiciona al jugador en la celda caminable más cercana al centro del barrio (`celdaCaminableMasCerca`) y arranca la ronda. Si no se elige, en 10 s se empieza en el barrio del Obelisco (San Nicolás; Microcentro en la ciudad de respaldo). Las rondas siguientes salen directo, sin pantalla de zona.
+- **Selección de zona (M8, decisión):** cada vez que se sale de Mercadería aparece la pantalla de selección, con el mapa de la ciudad completa (sin rotación, barrios atenuados salvo el elegido, nombres en sus centroides en el mapa real) y un botón por barrio. Tocar una zona del mapa o un botón posiciona al jugador en la celda caminable más cercana al centro del barrio (`celdaCaminableMasCerca`) y arranca la ronda. Si no se elige, en 10 s se empieza en el barrio del Obelisco (San Nicolás; Microcentro en la ciudad de respaldo). Las rondas siguientes salen directo, sin pantalla de zona.
 - **Carga (G32):** al arrancar se descargan los datos del mapa (unos 1,1 MB) con el aviso "Cargando el mapa de la ciudad…" (`#cargando`). Si la descarga o los datos fallan, se genera la ciudad de respaldo y queda un aviso en la consola. No hay barra de progreso.
 - **Diferencias con la 3D:** los barrios no tienen su rectángulo de 200 celdas ni los parámetros de juego de la 3D (peatones, agentes, demanda, elementos): la 2D solo usa el color y el nombre. No hay botón de "ajustar" (`btnFit`) en la cámara. El cambio de zona caminando todavía no existe (la zona se elige solo al empezar la partida).
 
@@ -285,7 +285,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 ## Búsqueda (estrellas), agentes en cada esquina y balance
 
-**Agentes en cada esquina.** Mapa real: uno por cada esquina (`esquinasReales`, unas 695). Ciudad procedural de respaldo: uno por cruce (25). `activarAgentes` solo crea los de las esquinas a menos de `BUSQ_R_ACTIVA` (40 celdas) del jugador, con tope `BUSQ_MAX_ACTIVOS` (24), más los que estén persiguiendo; los lejanos no existen en `sim.agentes`. La procedural los tiene todos activos.
+**Agentes en cada esquina.** Mapa real: uno por cada esquina (`esquinasReales`, unas 695). Ciudad procedural de respaldo: uno por cruce (25). Sobre esa base, `conRefuerzos` suma un 40 % de agentes (`AG_REFUERZO`) en veredas cercanas a algunas esquinas. `activarAgentes` solo crea los de las esquinas a menos de `BUSQ_R_ACTIVA` (40 celdas) del jugador, con tope `BUSQ_MAX_ACTIVOS` (24), más los que estén persiguiendo; los lejanos no existen en `sim.agentes`. La procedural los tiene todos activos.
 
 **Atentos y distraídos.** Todos están en su esquina, pero solo una fracción ve ventas y carreras: 60 % en la ronda 1, +5 % por ronda, tope 100 %. Los distraídos son grises y sin cono; acuden a un llamado y se suman a una persecución.
 
@@ -315,7 +315,8 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 | `POLI_RADIO_PASO` / `POLI_RADIO_TOPE` | 0.25 / 9.5 | `agentes.js` |
 | `POLI_VEL_PERS_PASO` / `POLI_VEL_PERS_TOPE` | 0.05 / 6.0 | `agentes.js` |
 | `BUSQ_CD` / `BUSQ_T_PASO` / `BUSQ_D_PASO` / `BUSQ_PTS_PASO` | 2 s / 0.15 / 0.08 / 0.5 | `busqueda.js` |
-| `BUSQ_R_ACTIVA` / `BUSQ_MAX_ACTIVOS` / `BUSQ_CUBETA` | 40 / 24 / 16 | `busqueda.js` |
+| `BUSQ_R_ACTIVA` / `BUSQ_MAX_ACTIVOS` / `BUSQ_CUBETA` | 40 / 34 / 16 | `busqueda.js` |
+| `AG_REFUERZO` | 0.4 (40 % más policías que esquinas) | `agentes.js` |
 | `VEH_VEL_RECTA` / `VEH_VEL_GIRO` / `VEH_CAPTURA` | 8.5 / 2.5 / 0.7 | `vehiculos.js` |
 | `HELI_VEL` / `HELI_R` / `HELI_T_ESCENA` | 6.2 / 7 / 30 s | `vehiculos.js` |
 | `GASTO_RONDA` / `GASTO_PASO` / `MEJ_INFLA` | 600 / 300 / 0.15 | `config.js` |
@@ -362,7 +363,7 @@ node 2d/tools/test_puntaje.mjs
 
 - `test_peatones.mjs`: transiciones de la memoria (N, I, C, M, P, A y decaimiento M a I), probabilidades que suman 1, DEMANDA y momento en la compra (con muestreo), contagio en radio 3 y su caducidad, reinicio por ronda, reciclado, cantidad de peatones por momento y cambio de momento según el tiempo de la ronda.
 
-- `test_ofrecer.mjs`: alcance base 2.25 y +0.75 por nivel de la mejora Alcance (3.0 y 3.75, con tope), semiángulo de 30°, objetivo más cercano dentro del cono (fuera de cono o detrás no entra, pausa y estado P se saltean), línea de visión que bloquea al peatón detrás de un edificio, y pistas de una sola vez con storage simulado (y con storage que lanza error o trae basura).
+- `test_ofrecer.mjs`: alcance base 2.25 y +0.75 por nivel de la mejora Alcance (3.0 y 3.75, con tope), semiángulo de 90°, objetivo más cercano dentro del cono (fuera de cono o detrás no entra, pausa y estado P se saltean), línea de visión que bloquea al peatón detrás de un edificio, y pistas de una sola vez con storage simulado (y con storage que lanza error o trae basura).
 
 - `test_ciudad.mjs`: misma semilla da la misma ciudad (y otra semilla da otra), `zonaDe` reparte en los 9 barrios de 44 x 44 celdas con la regla fila * 3 + columna, cada barrio tiene celdas caminables y su posición inicial (celda caminable más cercana al centro) cae dentro de su zona, y el giro de la cámara: 8 pasos de 45 grados vuelven al inicio, y `aMundo` invierte `aPantalla` con giro.
 
@@ -393,7 +394,7 @@ Pasos para probar en navegador (los hace el humano, con el servidor que ya levan
 **Qué no está hecho:**
 
 - Distancia de visualización: se guarda pero no cambia la vista.
-- Cambio de zona caminando: la zona se elige solo al empezar la partida.
+- Cambio de zona caminando: la zona se elige al empezar cada ronda.
 - Récord en el título: no se muestra.
 - La línea de visión no recorta el cono de ofrecer en el dibujo.
 - Animación de conteo en la pantalla de fin y `navigator.share`: no portados (ver "Diferencias con la 3D").
@@ -402,7 +403,7 @@ Pasos para probar en navegador (los hace el humano, con el servidor que ya levan
 
 - **D1 (personaje):** aplicada: personalizador pixelart procedural en la pantalla Personaje (ver "Personaje del vendedor (D1)"). Falta la prueba en navegador.
 - **D6 (audio):** aplicada: audio sintetizado como la 3D, con arranque en el primer gesto, silencio y volumen de Opciones (ver "Audio (D6)"). Falta la prueba en navegador.
-- **D8 (alcance de ofrecer):** aplicado con el valor propuesto (base 2.25 celdas, semiángulo 30°, +0.75 por nivel). El plan lo marca "a confirmar", así que falta la confirmación del usuario.
+- **D8 (alcance de ofrecer):** aplicado con el valor propuesto (base 2.25 celdas, semiángulo luego ampliado a 90°, +0.75 por nivel). El plan lo marca "a confirmar", así que falta la confirmación del usuario.
 - **D2, D3, D4, D5, D7:** aplicadas con la recomendación del plan. D3 no tiene pantalla para elegir el modo de coima (queda `COIMA_MODO = 'dinero'`).
 
 **Balance (F10):** no se cambió ningún valor. Simulación sin DOM de la economía (ronda 1 solo con figuritas, vender todo el stock):
@@ -471,7 +472,7 @@ Solo presentación: no cambia ningún valor de juego (velocidades, precios, prob
 
 ## Experiencia móvil
 
-- Joystick flotante: tocar el cuarto inferior izquierdo lo centra en el dedo (opción de joystick fijo). Zona muerta 0.18.
+- Joystick flotante: tocar abajo a la izquierda (mitad izquierda, 65 % inferior) lo centra en el dedo y la base sigue al dedo (opción de joystick fijo). Zona muerta 0.12.
 - Botones en arco abajo a la derecha: Ofrecer (grande), Correr (mantener), Cambiar producto y Pausa; mínimo 48 px, multitoque por pointerId y vibración corta opcional.
 - Apaisado: al tocar Jugar se pide pantalla completa y bloqueo apaisado; en vertical la capa "Girá el teléfono" aparece en menús y partida (en iOS es el plan B).
 - Menús dentro del viewport con `css/movil.css` y `js/viewport.js` (alto visible real con visualViewport y respaldo dvh/svh, safe areas con `viewport-fit=cover`, pie fijo en las tarjetas salvo título y pausa). Áreas táctiles de 44 px o más.

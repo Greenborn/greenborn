@@ -74,13 +74,30 @@ export function distSegPunto(cx, cz, ax, az, bx, bz) {
   return Math.hypot(ax + vx * t - cx, az + vz * t - cz);
 }
 
+export const AG_REFUERZO = 0.4;        // policías extra sobre el uno por esquina (40 % más)
+
+// Agrega los refuerzos repartidos de forma pareja: cada uno en una vereda a unas celdas de su esquina. Determinista.
+export function conRefuerzos(city, base, frac = AG_REFUERZO) {
+  const out = base.slice(), total = Math.round(base.length * frac);
+  for (let k = 0; k < total; k++) {
+    const e = base[Math.floor(k * base.length / total)];
+    let c = null;
+    for (const [dx, dz] of [[4, 0], [0, 4], [-4, 0], [0, -4]]) {
+      const q = celdaPeatonal(city, e.x + dx, e.z + dz, 2);
+      if (q && Math.hypot(q.i + .5 - e.x, q.j + .5 - e.z) >= 2) { c = q; break; }
+    }
+    out.push(c ? { ...e, x: c.i + .5, z: c.j + .5 } : { ...e });
+  }
+  return out;
+}
+
 // Crea la simulación de los agentes. opts.rand: generador aleatorio (inyectable para pruebas); opts.esquinas: puntos de patrulla;
 // opts.patrulla: POLI_FASE (1 esquina, 2 vereda; por defecto 2); opts.ronda: dificultad; opts.escalar: aplicar la fracción de
 // atentos (por defecto sí con las esquinas de la ciudad, no con esquinas dadas); opts.pool: activar por cercanía (por defecto si
 // hay más de 2 x BUSQ_MAX_ACTIVOS esquinas); opts.coima(p): lo llama main.js al capturar (p: agente o patrulla). Devuelve true
 // si se acepta la coima (main.js ya descontó lo pagado); false si se rechaza o no hay nada que pagar.
 export function crearSimulacion(city, opts = {}) {
-  const esquinas = opts.esquinas ?? esquinasAgentes(city);
+  const esquinas = opts.esquinas ?? conRefuerzos(city, esquinasAgentes(city));
   const sim = {
     city, rand: opts.rand ?? Math.random,
     patrulla: opts.patrulla ?? POLI_FASE,

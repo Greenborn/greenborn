@@ -9,7 +9,7 @@
   --t-B: clamp(64px, 20vmin, 84px);
   --t-S: clamp(48px, 14vmin, 58px);
   --t-M: 12px;
-  --t-joy: clamp(110px, 34vmin, 150px);
+  --t-joy: clamp(128px, 40vmin, 172px);
 }
 
 /* ---------- Sin scroll horizontal nunca ---------- */

@@ -7,10 +7,10 @@
 export const SPEED = 4.5, RUN_SPEED = 7.5;
 
 // Venta (ofrecer). Origen 3D: OFR_RADIO, OFR_MED_ANG, OFR_CD, OFR_PAUSA.
-// Cono de ofrecer ampliado respecto de la 3D (decisión D8 del plan): base 2.25 celdas y semiángulo 30°.
+// Cono de ofrecer ampliado respecto de la 3D (decisión D8 del plan): base 2.25 celdas y semiángulo 90°.
 export const OFR_RADIO = 2.25;                      // alcance base para ofrecer (celdas); la mejora lo sube (ver economia.js radioOfrecer)
 export const OFR_RADIO_MAX = 3.75, OFR_PASO = 0.75; // tope del alcance (base + 2 niveles) y aumento por nivel de la mejora Alcance
-export const OFR_MED_ANG = 30 * Math.PI / 180;      // semiángulo del cono de ofrecer (60° en total)
+export const OFR_MED_ANG = 90 * Math.PI / 180;      // semiángulo del cono de ofrecer (180° en total)
 export const OFR_CD = 0.6;                          // segundos entre ofrecimientos
 export const OFR_PAUSA = 1.5;                       // segundos que se detiene el peatón atendido
 

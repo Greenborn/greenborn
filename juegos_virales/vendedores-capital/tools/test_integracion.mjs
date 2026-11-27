@@ -137,8 +137,8 @@ const real = await cargarCiudadReal({ leerJson: async u => JSON.parse(await read
   activarAgentes(sim, pl);
   const lejos = a => Math.hypot(a.esquinaBase.x - pl.px, a.esquinaBase.z - pl.py);
   check('solo los cercanos, con tope', sim.agentes.length > 0 && sim.agentes.length <= BUSQ_MAX_ACTIVOS && sim.agentes.every(a => lejos(a) <= BUSQ_R_ACTIVA), String(sim.agentes.length));
-  const esperadas = todas.filter(e => Math.hypot(e.x - pl.px, e.z - pl.py) <= BUSQ_R_ACTIVA).length;
-  check('todas las esquinas cercanas tienen su agente', sim.agentes.length === Math.min(esperadas, BUSQ_MAX_ACTIVOS), sim.agentes.length + ' de ' + esperadas);
+  const esperadas = sim.esquinas.filter(e => Math.hypot(e.x - pl.px, e.z - pl.py) <= BUSQ_R_ACTIVA).length;
+  check('todos los puntos cercanos (esquinas y refuerzos) tienen su agente', sim.agentes.length === Math.min(esperadas, BUSQ_MAX_ACTIVOS), sim.agentes.length + ' de ' + esperadas);
   const d = celdaCaminableMasCerca(real, 100, 100, 30); Object.assign(pl, { px: d.i + .5, py: d.j + .5, prevPx: d.i + .5, prevPy: d.j + .5 });
   paso(sim, pl, 1);
   check('al moverse lejos se sueltan los de antes y aparecen los nuevos', sim.agentes.length > 0 && sim.agentes.every(a => lejos(a) <= BUSQ_R_ACTIVA + 5), String(sim.agentes.length));
@@ -185,7 +185,7 @@ console.log('8. Mapa real: 5 estrellas, patrullas por calles y rendimiento');
 console.log('9. Ciudad procedural de respaldo');
 {
   const sim = crearSimulacion(generarCiudad(), { rand: rnd });
-  check('un agente por cruce (25), todos activos', sim.agentes.length === 25 && !sim.pool, String(sim.agentes.length));
+  check('un agente por cruce (25) más 40 % de refuerzos, todos activos', sim.agentes.length === 35 && !sim.pool, String(sim.agentes.length));
   const a = sim.agentes[0], pl = jug(a.x, a.z + 0.9);
   sim.busq.nivel = 5; sim.ultima = { x: pl.px, z: pl.py, heading: 0 };
   paso(sim, pl, 0.05);

@@ -3,32 +3,32 @@
 // para zoom, botones de giro). Un toque o clic en el mapa (sin pellizco) avisa con onToque (caminar, G22).
 // Expone un estado que main.js lee cada frame: vector de movimiento, correr y "ofrecer" de un solo disparo.
 // Joystick y flechas no se usan a la vez: el primero que se toca gana hasta que se suelta (el otro se ignora).
-// Táctil (mejora móvil): joystick flotante (el toque en el cuarto inferior izquierdo lo centra ahí) o fijo (Ajustes),
+// Táctil (mejora móvil): joystick flotante (el toque abajo a la izquierda lo centra ahí) o fijo (Ajustes),
 // botones Ofrecer, Correr (mantener), Cambiar producto y Pausa, con multitoque real por pointerId: cada dedo queda
 // asignado a un control y ni el pellizco ni el toque para caminar lo ven. Feedback con la clase .on y vibración corta.
 import { zoomPor, girarPor } from './camara.js';
 import { prefsMovil, vibrar } from './viewport.js';
 
 const TECLAS = { KeyW: [0, -1], ArrowUp: [0, -1], KeyS: [0, 1], ArrowDown: [0, 1], KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0] };
-const JOY_DZ = 0.18;   // zona muerta del joystick (fracción del radio)
+const JOY_DZ = 0.12;   // zona muerta del joystick (fracción del radio)
+const JOY_PLENO = 0.55;   // desde esta fracción del radio se camina a velocidad plena (el joystick nunca corre)
 const TAP_PX = 12;     // movimiento máximo (px) para que un toque cuente como toque y no como arrastre
 const TAP_MS = 500;    // duración máxima de un toque (ms)
-export const JOY_ZONA = { ancho: 0.5, alto: 0.5 };   // zona de captura del joystick flotante: mitad izquierda x mitad inferior
-const JOY_CORRER = 0.95;   // magnitud del joystick a partir de la cual se corre
+export const JOY_ZONA = { ancho: 0.5, alto: 0.65 };   // zona de captura del joystick flotante: mitad izquierda x 65 % inferior
 
 // ---------- Lógica pura (se prueba en Node: tools/test_movil.mjs) ----------
 // Vector del joystick a partir del desplazamiento del dedo (px) y el radio R (px). Aplica la zona muerta y reescala
-// para que la salida vaya de 0 (borde de la zona muerta) a 1 (borde). Devuelve también el desplazamiento del knob.
-export function vectorJoystick(ox, oy, R, dz = JOY_DZ) {
+// para que la salida vaya de 0 (borde de la zona muerta) a 1 (desde `pleno`). Devuelve también el desplazamiento del knob.
+export function vectorJoystick(ox, oy, R, dz = JOY_DZ, pleno = JOY_PLENO) {
   let dx = ox / R, dy = oy / R;
   let m = Math.hypot(dx, dy);
   if (!Number.isFinite(m)) return { vx: 0, vy: 0, kx: 0, ky: 0, m: 0 };
   if (m > 1) { dx /= m; dy /= m; m = 1; }
-  const k = m < dz ? 0 : (m - dz) / (1 - dz);
+  const k = m < dz ? 0 : Math.min(1, (m - dz) / (pleno - dz));
   const s = m > 0 ? k / m : 0;
   return { vx: dx * s, vy: dy * s, kx: dx * R, ky: dy * R, m: k };
 }
-// ¿El toque (x, y) cae en la zona de captura del joystick flotante? (cuarto inferior izquierdo de la pantalla)
+// ¿El toque (x, y) cae en la zona de captura del joystick flotante? (abajo a la izquierda)
 export function enZonaJoystick(x, y, ancho, alto, zona = JOY_ZONA) {
   return x >= 0 && y <= alto && x < ancho * zona.ancho && y > alto * (1 - zona.alto);
 }
@@ -75,6 +75,14 @@ export function crearControles({ canvas, cam, onInicio, onToque, onCambiar, onPa
 
   // Joystick: centro (cx, cy) y radio útil R en px. Flotante: aparece donde toca el dedo; fijo: centro del elemento #joy.
   function joyMover(e) {
+    // Flotante: si el dedo se pasa del radio, la base lo sigue, así cambiar de dirección pide poco recorrido.
+    const ox = e.clientX - joy.cx, oy = e.clientY - joy.cy, d = Math.hypot(ox, oy);
+    if (d > joy.R && joyEl.classList.contains('flotando')) {
+      const c = centroFlotante(e.clientX - ox / d * joy.R, e.clientY - oy / d * joy.R, joy.R / 0.7, innerWidth, innerHeight);
+      joy.cx = c.x; joy.cy = c.y;
+      joyEl.style.setProperty('--joy-x', c.x + 'px');
+      joyEl.style.setProperty('--joy-y', c.y + 'px');
+    }
     const v = vectorJoystick(e.clientX - joy.cx, e.clientY - joy.cy, joy.R);   // dy positivo = hacia abajo
     if (joyKnob) joyKnob.style.transform = `translate(${v.kx.toFixed(1)}px, ${v.ky.toFixed(1)}px)`;
     joy.vx = v.vx; joy.vy = v.vy;
@@ -105,7 +113,7 @@ export function crearControles({ canvas, cam, onInicio, onToque, onCambiar, onPa
     if (joyKnob) joyKnob.style.transform = '';
     if (joyEl) joyEl.classList.remove('on', 'flotando');
   }
-  // Joystick flotante: el toque en el cuarto inferior izquierdo del mapa lo centra ahí. Se registra antes que el
+  // Joystick flotante: el toque abajo a la izquierda del mapa lo centra ahí. Se registra antes que el
   // pellizco y el toque para caminar, que ignoran a los dedos ya asignados.
   if (joyEl) {
     canvas.addEventListener('pointerdown', e => {
@@ -261,7 +269,7 @@ export function crearControles({ canvas, cam, onInicio, onToque, onCambiar, onPa
     const c = Math.cos(cam.rot), s = Math.sin(cam.rot);
     [dx, dy] = [dx * c + dy * s, -dx * s + dy * c];
     st.dx = dx; st.dy = dy;
-    st.corre = teclas.has('Shift') || (btnCorrer?.dataset.on === '1') || (joy.id !== -1 && Math.hypot(joy.vx, joy.vy) >= JOY_CORRER);
+    st.corre = teclas.has('Shift') || (btnCorrer?.dataset.on === '1');   // el joystick solo camina
     const ofrecer = st.ofrecer; st.ofrecer = false;
     return { dx, dy, corre: st.corre, ofrecer };
   }
