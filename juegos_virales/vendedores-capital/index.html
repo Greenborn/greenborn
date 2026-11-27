@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Vendedores Capital 2D</title>
+<meta name="theme-color" content="#16171c">
+<link rel="stylesheet" href="css/juego2d.css">
+<link rel="stylesheet" href="css/movil.css">
+</head>
+<body>
+<!-- Celular en vertical: tapa todo y pausa la partida hasta volver a apaisado (js/movil.js y main.js) -->
+<div id="capaGirar" role="alertdialog" aria-modal="true" aria-labelledby="capaGirarT" aria-describedby="capaGirarD" aria-hidden="true">
+  <div class="girar-caja">
+    <div class="girar-tel" aria-hidden="true"><i></i></div>
+    <h2 id="capaGirarT">¡Girá el teléfono!</h2>
+    <p id="capaGirarD">Poné el celu apaisado y seguimos.</p>
+    <small>Si estabas vendiendo, la partida te espera en pausa.</small>
+  </div>
+</div>
+
+<div id="fundido" aria-hidden="true"></div>
+<!-- Carga de la ciudad (F7, G32): main.js carga el mapa real (datos/caba_recorte.*) y oculta este aviso al terminar -->
+<div id="cargando" role="status" aria-live="polite">Cargando el mapa de la ciudad…</div>
+<nav id="pasos" aria-label="Pasos" hidden>
+  <span data-paso="personaje">1 Personaje</span><span data-paso="venta">2 Mercadería</span><span data-paso="mapa">3 ¡A vender!</span>
+</nav>
+
+<canvas id="juego"></canvas>
+<canvas id="minimapa" width="150" height="150" aria-label="Minimapa: arriba es hacia donde mira la vista"></canvas>
+
+<div id="hud">
+  <div class="hud-panel">
+    <div><span>Ronda</span> <b id="hudRonda">-</b> <span>·</span> <b id="hudJornada">-</b></div>
+    <div><span>Mercadería</span> <button id="hudIcono" class="ico-prod" type="button" aria-label="Cambiar de producto (F)"></button> <b id="hudStockN">x0</b> <span id="hudStock" class="barra-seg" aria-hidden="true"></span></div>
+    <div><span>Barrio</span> <b id="hudZona">-</b></div>
+    <div><span>Dinero</span> <b id="hudDinero">-</b></div>
+    <div><span>Energía</span> <b id="hudEnergia">-</b> <span id="hudEnergiaBar" class="barra-energia" aria-hidden="true"><i></i></span></div>
+    <div><span>Puntos</span> <b id="hudPuntos">-</b></div>
+  </div>
+  <div id="hudAlerta" class="hud-alerta verde" role="status" hidden><span class="luz"></span><span class="luz"></span><span class="luz"></span><em id="hudAlertaTxt">Tranquilo</em><span id="hudEstrellas" class="estrellas-hud" role="img" aria-label="Búsqueda: 0 de 5 estrellas"><i>★</i><i>★</i><i>★</i><i>★</i><i>★</i></span></div>
+  <div id="pista" class="pista" role="status" aria-live="polite"></div>
+  <div class="zoom-botones">
+    <button id="btnZoomMas" type="button" aria-label="Acercar">+</button>
+    <button id="btnZoomMenos" type="button" aria-label="Alejar">−</button>
+    <button id="btnRotL" type="button" aria-label="Girar la vista a la izquierda (Q)" title="Girar a la izquierda (Q)">⟲</button>
+    <button id="btnRotR" type="button" aria-label="Girar la vista a la derecha (R)" title="Girar a la derecha (R)">⟳</button>
+    <button id="btnPantalla" type="button" class="btn-pc" data-pantalla-completa aria-pressed="false" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+  </div>
+  <div id="joy" aria-label="Joystick: arriba avanza, abajo retrocede, izquierda y derecha giran"><div id="joyKnob"></div></div>
+  <!-- Pad de flechas (Opciones: Controles en pantalla = flechas). Solo en táctil y con la clase body.ctl-flechas. Reemplaza al joystick en esa opción. -->
+  <div id="dpad" role="group" aria-label="Flechas de movimiento">
+    <button type="button" class="dp dp-arriba" data-dir="0,-1" aria-label="Avanzar">▲</button>
+    <button type="button" class="dp dp-izq" data-dir="-1,0" aria-label="Izquierda">◀</button>
+    <button type="button" class="dp dp-der" data-dir="1,0" aria-label="Derecha">▶</button>
+    <button type="button" class="dp dp-abajo" data-dir="0,1" aria-label="Retroceder">▼</button>
+  </div>
+  <button id="btnCorrer" class="touch-btn touch-correr" type="button">Correr</button>
+  <button id="btnOfrecer" class="touch-btn touch-ofrecer" type="button">Ofrecer (E)</button>
+  <button id="btnCambiar" class="touch-btn touch-cambiar" type="button" aria-label="Cambiar de producto (F)">⇄</button>
+  <button id="btnPausaT" class="touch-btn touch-pausa" type="button" aria-label="Pausa">II</button>
+  <div id="toasts"></div>
+</div>
+
+<!-- ============ TÍTULO ============ -->
+<div id="pantallaTitulo" class="overlay">
+  <div class="tarjeta">
+    <aside class="disclaimer" role="note">
+      <p><strong>Aviso:</strong> este juego es una parodia que busca sensibilizar sobre la realidad que atraviesan muchas personas que viven de la venta callejera. No busca denostar ni atacar a nadie: no apunta contra personas, instituciones ni agentes, sino a exponer una situación con el objetivo de lograr una mejora en la misma.</p>
+      <p><strong>Ojo:</strong> los precios y las situaciones que se muestran están exagerados con fines del juego. Son referencias aproximadas y no reflejan necesariamente la realidad.</p>
+    </aside>
+    <h1>Vendedores Capital 2D</h1>
+    <p class="sub">Vista cenital · Vendé todo sin que te detengan</p>
+    <div class="menu-col">
+      <button id="btnJugar" class="boton" type="button">▶ Jugar</button>
+      <button id="btnTituloPersonaje" class="boton-sec" type="button">Personaje</button>
+      <button id="btnTituloAyuda" class="boton-sec" type="button">Cómo se juega</button>
+      <button id="btnTituloOpc" class="boton-sec" type="button">Opciones</button>
+      <button class="boton-sec" type="button" data-pantalla-completa aria-pressed="false">Pantalla completa</button>
+    </div>
+    <p class="nota atribucion-mapa">Mapa: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, ODbL</p>
+  </div>
+</div>
+
+<!-- ============ PERSONAJE (D1): personalizador pixelart (personaje.js); los controles se arman en main.js ============ -->
+<div id="pantallaPersonaje" class="overlay" hidden>
+  <div class="tarjeta tarjeta-ancha">
+    <h2>Personaje</h2>
+    <p class="sub">Así te ve la gente en la calle. Los cambios se guardan con Guardar; Volver descarta los que no guardaste.</p>
+    <div class="pers-layout">
+      <div class="pers-vista">
+        <canvas id="persLienzo" width="144" height="192" aria-label="Vista previa de tu vendedor"></canvas>
+        <button id="btnPersAlAzar" class="boton-sec" type="button">Al azar</button>
+      </div>
+      <div class="pers-controles" id="persControles"></div>
+    </div>
+    <p class="nota" id="persEstado" role="status" aria-live="polite"></p>
+    <div class="menu-col">
+      <button id="btnPersGuardar" class="boton" type="button">Guardar</button>
+      <button id="btnPersonajeVolver" class="boton-sec" type="button">Volver</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MERCADERÍA (F2): reposición por rondas ============ -->
+<div id="pantallaMercaderia" class="overlay" hidden>
+  <div class="tarjeta tarjeta-ancha">
+    <h2 id="mercTitulo">¿Qué vas a vender?</h2>
+    <p class="sub" id="mercAyuda"></p>
+    <div class="repo-info">
+      <div class="stat"><span>Ronda</span><b id="repoRonda">1</b></div>
+      <div class="stat"><span>Disponible</span><b id="repoDisp">$0</b></div>
+      <div class="stat"><span>Ganancia última ronda</span><b id="repoUltG">$0</b></div>
+      <div class="stat"><span>Tope de stock</span><b id="repoTope">30</b></div>
+      <div class="stat"><span>Gasto fijo al reponer</span><b id="repoGasto">$0</b></div>
+      <div class="stat"><span>Costo total con gasto fijo</span><b id="repoTotal">$0</b></div>
+    </div>
+    <div class="prod-grid" id="prodGrid"></div>
+    <p class="nota" id="repoAviso"></p>
+    <div class="menu-col">
+      <button id="btnReponer" class="boton" type="button" disabled>Reponer y salir a la calle</button>
+      <button id="btnVentaVolver" class="boton-sec" type="button">← Volver al personaje</button>
+      <button id="btnIrMejoras" class="boton-sec" type="button">Mejoras del vendedor →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SELECCIÓN DE ZONA (M8, F7): después de Mercadería, antes de salir a la calle ============ -->
+<div id="pantallaSeleccion" class="overlay" role="dialog" aria-modal="true" aria-labelledby="selTitulo" hidden>
+  <div class="tarjeta tarjeta-ancha">
+    <h2 id="selTitulo">¿Dónde empezás a vender?</h2>
+    <p class="sub">Tocá una zona del mapa o un barrio. Si no elegís, empezás en el barrio del Obelisco.</p>
+    <canvas id="selMapa" width="240" height="240" aria-label="Mapa de la ciudad: tocá una zona"></canvas>
+    <div class="sel-botones" id="selBotones"></div>
+    <p class="nota" id="selEstado"></p>
+    <p class="nota atribucion-mapa">Mapa: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, ODbL</p>
+  </div>
+</div>
+
+<!-- ============ MEJORAS (F2) ============ -->
+<div id="pantallaMejoras" class="overlay" hidden>
+  <div class="tarjeta">
+    <h2>Mejoras del vendedor</h2>
+    <p class="sub">Se conservan entre rondas; se reinician al empezar una partida nueva. Caja disponible: <b id="mejCaja">$0</b></p>
+    <p class="nota" id="mejInfla"></p>
+    <div class="mej-grid" id="mejGrid"></div>
+    <div class="menu-col">
+      <button id="btnMejVolver" class="boton-sec" type="button">← Volver a la mercadería</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OPCIONES ============ -->
+<div id="pantallaOpciones" class="overlay" role="dialog" aria-label="Opciones" hidden>
+  <div class="tarjeta">
+    <h2>Opciones</h2>
+    <label class="opc">Volumen <input type="range" id="optVolumen" min="0" max="1" step="0.05"></label>
+    <button id="btnSilenciar" class="boton-sec" type="button" aria-pressed="false">Silenciar</button>
+    <p class="nota">El audio arranca con el primer toque o tecla (lo exigen los navegadores). Volumen y silencio se guardan.</p>
+    <label class="opc">Distancia de visualización
+      <select id="optDistancia"><option value="corta">Corta</option><option value="media">Media</option><option value="larga">Larga</option></select>
+    </label>
+    <label class="opc">Zoom inicial
+      <select id="optZoom"><option value="cerca">Cerca</option><option value="medio">Medio</option><option value="lejos">Lejos</option></select>
+    </label>
+    <label class="opc">Límite de FPS
+      <select id="optFps"><option value="30">30</option><option value="45">45</option><option value="60">60</option></select>
+    </label>
+    <h3>Patrulla de agentes</h3>
+    <label class="opc">Patrulla
+      <select id="optPatrulla"><option value="vereda">Vereda (caminan)</option><option value="esquina">Esquina (quietos)</option></select>
+    </label>
+    <p class="nota">Se aplica al empezar la próxima partida.</p>
+    <h3>Táctil</h3>
+    <label class="opc">Controles en pantalla
+      <select id="optControles"><option value="joystick">Joystick</option><option value="flechas">Flechas</option></select>
+    </label>
+    <p class="nota">Joystick o flechas abajo a la izquierda. Tocá el mapa para caminar hasta ese punto.</p>
+    <label class="opc" id="filaJoystick">Tipo de joystick
+      <select id="optJoystick"><option value="flotante">Flotante (donde tocás)</option><option value="fijo">Fijo</option></select>
+    </label>
+    <label class="opc">Vibración al tocar <input type="checkbox" id="optVibrar"></label>
+    <label class="opc">Calidad gráfica
+      <select id="optCalidad"><option value="normal">Normal</option><option value="baja">Baja (más fluido)</option></select>
+    </label>
+    <div class="menu-col">
+      <button id="btnOptCerrar" class="boton" type="button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CÓMO SE JUEGA ============ -->
+<div id="pantallaAyuda" class="overlay" role="dialog" aria-label="Cómo se juega" hidden>
+  <div class="tarjeta">
+    <h2>Cómo se juega</h2>
+    <p><b>Objetivo:</b> vendé todo tu stock sin que te detengan. Si te detienen, perdés la mercadería.</p>
+    <p><b>Economía:</b> cada reposición paga un gasto fijo ($600, y $300 más por ronda) además de la mercadería (50 % del precio). Las mejoras suben 15 % del precio base por ronda.</p>
+    <p><b>Ofrecer:</b> acercate a un peatón y apretá <kbd>E</kbd> o el botón <b>Ofrecer</b>. Hay que estar mirando hacia él. Puede comprar, ignorarte, insultarte o avisar a alguien.</p>
+    <p><b>Visión:</b> hay un agente en cada esquina. Los que tienen cono en el suelo están atentos (amarillo = patrulla, naranja = alerta, rojo = persecución); los grises están distraídos, pero acuden si alguien avisa o si te buscan. Cada ronda hay más atentos, ven más lejos y corren más. Los edificios tapan la vista.</p>
+    <p><b>Estrellas (hasta 5):</b> sumás una si te ven vender (o te insultan) y otra si te ven empezar a correr. ★ 1 agente te persigue; ★★ 2; ★★★ 4 y una patrulla; ★★★★ 4 y dos patrullas; ★★★★★ además un helicóptero (hasta 30 s).</p>
+    <p><b>Zafar:</b> perdelos de vista y alejate: van a donde te vieron por última vez. Con más estrellas cuesta más y vale más puntos. Las patrullas solo andan por la calle; del círculo del helicóptero se sale corriendo.</p>
+    <p><b>Energía:</b> cada arranque de carrera cuesta energía y se recupera recién 1 s después de dejar de correr.</p>
+    <p><b>Coima:</b> si te alcanzan puede aceptarse (60 % del valor de tu mercadería, mínimo $500 de lo vendido en la ronda). Cada vez la aceptan menos. Si la aceptan, volvés a cero estrellas.</p>
+    <p><b>Bonus:</b> de sigilo en cada ronda sin estrellas, y de tiempo si vendés rápido.</p>
+    <table class="teclas">
+      <tr><td><kbd>W A S D</kbd> / flechas</td><td>Mover</td></tr>
+      <tr><td><kbd>Shift</kbd></td><td>Correr</td></tr>
+      <tr><td><kbd>E</kbd></td><td>Ofrecer</td></tr>
+      <tr><td><kbd>F</kbd> o clic en el icono del HUD</td><td>Cambiar de producto (con stock)</td></tr>
+      <tr><td>Rueda / <kbd>+</kbd> <kbd>−</kbd></td><td>Zoom</td></tr>
+      <tr><td><kbd>Q</kbd> <kbd>R</kbd> o ⟲ ⟳</td><td>Girar la vista 45°</td></tr>
+      <tr><td><kbd>Esc</kbd> o <kbd>P</kbd></td><td>Pausa</td></tr>
+      <tr><td>Clic o toque en el mapa</td><td>Caminar hasta ese punto (se cancela al mover)</td></tr>
+      <tr><td>Táctil</td><td>Joystick (o flechas, en Opciones), Ofrecer, Correr (mantener), ⇄ cambiar producto y II pausa</td></tr>
+    </table>
+    <div class="menu-col">
+      <button id="btnAyudaCerrar" class="boton" type="button">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAUSA ============ -->
+<div id="pantallaPausa" class="overlay" role="dialog" aria-label="Pausa" hidden>
+  <div class="tarjeta">
+    <h2>Pausa</h2>
+    <div class="menu-col">
+      <button id="btnPausaSeguir" class="boton" type="button">Seguir</button>
+      <button id="btnPausaReiniciar" class="boton-sec" type="button">Reiniciar</button>
+      <button id="btnPausaOpc" class="boton-sec" type="button">Opciones</button>
+      <button id="btnPausaAyuda" class="boton-sec" type="button">Cómo se juega</button>
+      <button id="btnPausaPers" class="boton-sec" type="button">Cambiar personaje</button>
+      <button id="btnPausaMenu" class="boton-sec" type="button">Salir al menú</button>
+    </div>
+  </div>
+</div>
+
+<div id="pantallaFin" class="overlay" hidden>
+  <div class="tarjeta fin-tarjeta">
+    <h2 id="finTitulo">Fin de la partida</h2>
+    <p class="nota" id="finMotivo"></p>
+    <dl class="resumen" id="finDesglose"></dl>
+    <p class="fin-total"><span>Puntaje total</span> <b id="finPuntaje">-</b></p>
+    <p class="fin-medalla" id="finMedalla" hidden></p>
+    <p class="fin-record" id="finRecord"></p>
+    <p class="nota" id="finRecordProd"></p>
+    <button id="btnFinShare" class="boton-sec" type="button" hidden>📤 Compartir resultado</button>
+    <div id="shareRedes" class="share-redes" hidden>
+      <a data-red="whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+      <a data-red="x" target="_blank" rel="noopener">X</a>
+      <a data-red="facebook" target="_blank" rel="noopener">Facebook</a>
+      <a data-red="telegram" target="_blank" rel="noopener">Telegram</a>
+      <button data-red="copiar" type="button">Copiar</button>
+    </div>
+    <div class="menu-col">
+      <button id="btnFinJugar" class="boton" type="button">Jugar de nuevo</button>
+      <button id="btnFinMenu" class="boton-sec" type="button">Menú</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

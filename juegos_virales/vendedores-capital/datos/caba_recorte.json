@@ -1,0 +1,116 @@
+{
+ "formato": "vendedores-capital-2d-ciudad-real/1",
+ "binario": "caba_recorte.bin",
+ "planos": [
+  "tipo (bits 0-3: 0 road, 1 side, 2 bld, 3 park, 4 water) | arbol (bit 4)",
+  "zona (índice en barrios)",
+  "pisos (building:levels, 0 = sin dato)"
+ ],
+ "tipos": [
+  "road",
+  "side",
+  "bld",
+  "park",
+  "water"
+ ],
+ "N": 600,
+ "celdaM": 5,
+ "ladoM": 3000,
+ "centro": {
+  "lat": -34.6037,
+  "lon": -58.3816,
+  "nota": "Obelisco, centro del recorte (celda N/2, N/2)"
+ },
+ "recorte": {
+  "sur": -34.617175,
+  "oeste": -58.397971,
+  "norte": -34.590225,
+  "este": -58.365229
+ },
+ "proyeccion": "equirrectangular local centrada en el recorte; i crece al este, j crece al sur (norte arriba)",
+ "fechaDescarga": "2026-11-27",
+ "fuente": "OpenStreetMap (Overpass API)",
+ "licencia": "ODbL 1.0",
+ "atribucion": "© colaboradores de OpenStreetMap, ODbL",
+ "barrios": [
+  {
+   "id": 0,
+   "nombre": "Balvanera",
+   "celdas": 41933,
+   "centro": {
+    "i": 54,
+    "j": 412
+   }
+  },
+  {
+   "id": 1,
+   "nombre": "Monserrat",
+   "celdas": 84487,
+   "centro": {
+    "i": 340,
+    "j": 495
+   }
+  },
+  {
+   "id": 2,
+   "nombre": "San Nicolás",
+   "celdas": 91457,
+   "centro": {
+    "i": 319,
+    "j": 299
+   }
+  },
+  {
+   "id": 3,
+   "nombre": "San Telmo",
+   "celdas": 5250,
+   "centro": {
+    "i": 483,
+    "j": 586
+   }
+  },
+  {
+   "id": 4,
+   "nombre": "Recoleta",
+   "celdas": 41038,
+   "centro": {
+    "i": 97,
+    "j": 105
+   }
+  },
+  {
+   "id": 5,
+   "nombre": "Retiro",
+   "celdas": 76528,
+   "centro": {
+    "i": 393,
+    "j": 94
+   }
+  },
+  {
+   "id": 6,
+   "nombre": "Puerto Madero",
+   "celdas": 19307,
+   "centro": {
+    "i": 575,
+    "j": 356
+   }
+  }
+ ],
+ "porcentajes": {
+  "road": 18.25,
+  "side": 16.26,
+  "bld": 56.43,
+  "park": 6.2,
+  "water": 2.86
+ },
+ "conteo": {
+  "calles": 1414,
+  "edificios": 5242,
+  "parques": 341,
+  "arboles": 815,
+  "agua": 14,
+  "patiosCerrados": 646,
+  "manzanasRellenas": 743
+ }
+}

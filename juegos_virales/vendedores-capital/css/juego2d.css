@@ -1,0 +1,332 @@
+/* Estilos de la versión 2D cenital. Independiente de ../css. */
+:root { --fondo: #16171c; --texto: #f2f2f5; --panel: rgba(20, 21, 28, .82); --acento: #ffd33b; --mal: #e03030; --bien: #3fbf6a; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --panel: rgba(20, 21, 28, .88); } }
+:root[data-theme="dark"] { --panel: rgba(20, 21, 28, .88); }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; height: 100dvh; background: var(--fondo); color: var(--texto); font-family: system-ui, sans-serif; overflow: hidden; }
+/* Sin zoom del navegador por doble toque (el viewport no alcanza en iOS): los gestos quedan para el juego. */
+html { touch-action: manipulation; }
+canvas#juego { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; display: block; touch-action: none; user-select: none; }
+
+#hud { position: fixed; inset: 0; pointer-events: none; }
+.hud-panel { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: calc(12px + env(safe-area-inset-left, 0px)); background: var(--panel); padding: 8px 12px; border-radius: 10px; font-size: 14px; line-height: 1.5; }
+.hud-panel span { opacity: .7; margin-right: 6px; }
+.hud-panel b { font-variant-numeric: tabular-nums; }
+.hud-panel .ico-prod { pointer-events: auto; display: inline-grid; place-items: center; width: 26px; height: 26px; margin: 0 4px 0 0; padding: 0; border: 0; border-radius: 6px; background: rgba(255, 255, 255, .14); color: inherit; font-size: 16px; line-height: 1; cursor: pointer; vertical-align: middle; opacity: 1; }
+.hud-panel .ico-prod:empty::before { content: '-'; opacity: .6; }
+.hud-panel .barra-seg { display: inline-flex; flex-wrap: wrap; gap: 1px; max-width: 200px; vertical-align: middle; margin: 0; opacity: 1; }
+.barra-seg i { width: 4px; height: 12px; border-radius: 2px; background: rgba(255, 255, 255, .18); }
+.barra-seg i.on { background: var(--bien); }
+/* Indicador de alerta (G24): tres luces verde, amarilla y roja; la encendida es el nivel actual de los agentes. */
+.hud-alerta { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; background: var(--panel); color: var(--texto); font-weight: 700; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+.hud-alerta .luz { width: 12px; height: 12px; border-radius: 50%; background: #3a3d48; opacity: .35; }
+.hud-alerta.verde .luz:nth-child(1) { background: var(--bien); opacity: 1; }
+.hud-alerta.amarillo .luz:nth-child(2) { background: var(--acento); opacity: 1; }
+.hud-alerta.rojo .luz:nth-child(3) { background: var(--mal); opacity: 1; }
+.hud-alerta em { font-style: normal; }
+/* Pista de tutorial (G25): una sola vez por pista; se muestra y se oculta con .on. */
+.pista { position: absolute; left: 50%; top: calc(64px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); max-width: min(92vw, 420px); background: var(--panel); border-left: 4px solid var(--acento); padding: 8px 14px; border-radius: 8px; font-size: 14px; text-align: center; opacity: 0; transition: opacity .25s; pointer-events: none; }
+.pista.on { opacity: 1; }
+.zoom-botones { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 6px; pointer-events: auto; }
+.zoom-botones button, .touch-btn, #joy { pointer-events: auto; }
+.zoom-botones button { width: 40px; height: 40px; border: 0; border-radius: 8px; background: var(--panel); color: var(--texto); font-size: 22px; }
+/* Controles táctiles: sólo en body.tactil (lo pone js/movil.js). En escritorio no se muestran. */
+.touch-btn { display: none; position: absolute; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: 999px; background: var(--panel); color: var(--texto); padding: 14px 18px; font-size: 15px; touch-action: manipulation; }
+.touch-ofrecer { right: calc(24px + env(safe-area-inset-right, 0px)); background: #1f7a4a; }
+.touch-correr { right: calc(150px + env(safe-area-inset-right, 0px)); }
+/* Pad de flechas (Opciones: Controles en pantalla = flechas): ocupa la esquina del joystick, así que lo reemplaza. */
+#dpad { display: none; position: absolute; left: calc(12px + env(safe-area-inset-left, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: clamp(132px, 38vmin, 176px); aspect-ratio: 1; grid-template: repeat(3, 1fr) / repeat(3, 1fr); gap: 4px; pointer-events: none; }
+.dp { pointer-events: auto; display: grid; place-items: center; min-width: 44px; min-height: 44px; border: 0; border-radius: 12px; background: var(--panel); color: var(--texto); font-size: 18px; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.dp.on { background: var(--acento); color: #111; }
+.dp-arriba { grid-area: 1 / 2; } .dp-izq { grid-area: 2 / 1; } .dp-der { grid-area: 2 / 3; } .dp-abajo { grid-area: 3 / 2; }
+#joy { display: none; position: absolute; left: calc(16px + env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: clamp(104px, 30vmin, 160px); aspect-ratio: 1; box-sizing: border-box; border-radius: 50%; background: var(--panel); border: 2px solid rgba(255, 255, 255, .18); touch-action: none; }
+#joyKnob { position: absolute; left: 50%; top: 50%; width: 42%; height: 42%; margin: -21% 0 0 -21%; box-sizing: border-box; border-radius: 50%; background: var(--acento); opacity: .85; }
+body.tactil #joy, body.tactil .touch-btn { display: block; }
+body.tactil.ctl-flechas #dpad { display: grid; }
+body.tactil.ctl-flechas #joy { display: none; }
+body.tactil .touch-btn { min-height: 44px; }
+/* Áreas táctiles mínimas de 44 px: botones de zoom y giro, pantalla completa, icono de producto del HUD. */
+body.tactil .zoom-botones button { width: 44px; height: 44px; }
+body.tactil .hud-panel .ico-prod { width: 44px; height: 44px; }
+body.tactil .touch-ofrecer { bottom: calc(28px + clamp(64px, 20vmin, 88px) + env(safe-area-inset-bottom, 0px)); width: clamp(64px, 20vmin, 88px); aspect-ratio: 1; border-radius: 50%; padding: 0; font-size: 14px; }
+body.tactil .touch-correr { right: calc(28px + clamp(64px, 20vmin, 88px) + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+body.tactil .touch-ofrecer { right: calc(16px + env(safe-area-inset-right, 0px)); }
+#toasts { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.toast { background: var(--panel); padding: 8px 14px; border-radius: 8px; font-size: 15px; white-space: nowrap; animation: aparece .2s ease-out; }
+.toast.bien { border-left: 4px solid var(--bien); }
+.toast.mal { border-left: 4px solid var(--mal); }
+@keyframes aparece { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .45); padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.overlay[hidden], #hudAlerta[hidden] { display: none; }
+.tarjeta { background: #1e2028; color: var(--texto); border-radius: 14px; padding: 24px; max-width: 420px; width: 100%; max-height: 100%; overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
+.tarjeta h1 { font-size: 22px; margin: 0 0 8px; }
+.tarjeta h2 { font-size: 20px; margin: 0 0 12px; }
+.tarjeta p { margin: 0 0 12px; line-height: 1.4; }
+.ayuda { margin: 0 0 16px; padding-left: 18px; line-height: 1.6; font-size: 14px; }
+.resumen { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0 0 16px; }
+.resumen dt { opacity: .75; }
+.resumen dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.boton { width: 100%; min-height: 44px; padding: 12px; border: 0; border-radius: 10px; background: var(--acento); color: #111; font-size: 16px; font-weight: 700; }
+/* Botones secundarios de los menús (estilo de la 3D: fondo oscuro, borde visible). */
+.boton-sec { width: 100%; min-height: 44px; padding: 11px; border: 2px solid #3a3a44; border-radius: 10px; background: #2a2b34; color: var(--texto); font-size: 15px; font-weight: 600; }
+.tarjeta .sub { opacity: .75; font-size: 14px; }
+.menu-col { display: grid; gap: 8px; margin-top: 4px; }
+.tarjeta .menu-col .boton { margin-top: 0; }
+.disclaimer { margin: 0 0 14px; padding: 10px 12px; background: rgba(0, 0, 0, .45); border: 2px solid #000; border-radius: 8px; font-size: 12px; line-height: 1.4; text-align: left; }
+.disclaimer p { margin: 0; }
+.disclaimer p + p { margin-top: 4px; }
+.tarjeta .nota { font-size: 12px; opacity: .7; margin: -6px 0 10px; }
+.opc { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0; font-size: 14px; }
+.opc input[type=range] { width: 55%; accent-color: var(--acento); }
+.opc select { min-width: 120px; min-height: 44px; padding: 6px; border-radius: 6px; background: #2a2b34; color: var(--texto); border: 1px solid #3a3a44; }
+kbd { border: 2px solid #000; border-radius: 4px; background: #3a3a44; padding: 0 5px; font: inherit; font-size: 12px; }
+.teclas { width: 100%; font-size: 13px; border-collapse: collapse; margin: 6px 0 14px; }
+.teclas td { padding: 4px; border-bottom: 1px solid #2c2e38; vertical-align: top; }
+/* Capas de pantalla: el título y las pantallas de menú van sobre el juego; opciones y ayuda sobre la pausa. */
+.overlay { z-index: 60; }
+#pantallaOpciones, #pantallaAyuda { z-index: 80; }
+/* Fundido corto entre pantallas (js/pantallas.js irA). */
+#fundido { position: fixed; inset: 0; z-index: 90; background: #000; opacity: 0; pointer-events: none; transition: opacity .22s; }
+#fundido.on { opacity: 1; pointer-events: auto; }
+/* Nav de pasos: arriba al centro, debajo de la alerta. Solo presentación hasta F2. */
+#pasos { position: fixed; top: calc(52px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 50; display: flex; gap: 6px; pointer-events: none; white-space: nowrap; }
+#pasos[hidden] { display: none; }
+#pasos span { padding: 4px 10px; border: 2px solid #000; border-radius: 6px; background: #3a3a44; color: #b8b8c2; font-size: 12px; }
+#pasos span.on { background: var(--acento); color: #1b1006; }
+
+/* Capa "Girá el teléfono": sólo en táctil y en vertical (body.movil-vertical lo pone js/movil.js) */
+#capaGirar { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; text-align: center; background: var(--fondo); padding: 20px; }
+body.movil-vertical #capaGirar { display: flex; }
+body.movil-vertical { overflow: hidden; }
+.girar-caja { max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.girar-caja h2 { margin: 0; font-size: 22px; color: var(--acento); }
+.girar-caja p { margin: 0; font-size: 15px; }
+.girar-caja small { opacity: .7; font-size: 13px; }
+.girar-tel { position: relative; width: 58px; height: 98px; margin: 14px 0 18px; border: 3px solid #000; border-radius: 8px; background: var(--acento); animation: girar 2.4s ease-in-out infinite; }
+.girar-tel i { position: absolute; left: 6px; right: 6px; top: 8px; bottom: 18px; border: 3px solid #000; border-radius: 2px; background: #7aa0b8; }
+@keyframes girar { 0%, 25% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+@media (prefers-reduced-motion: reduce) { .girar-tel { animation: none; transform: rotate(-90deg); } }
+
+@media (max-width: 600px) {
+  .hud-panel { font-size: 13px; }
+  .tarjeta { padding: 18px; }
+}
+/* Celular en apaisado (alto corto): tarjetas compactas y HUD sin tapar el juego. */
+@media (max-height: 500px) {
+  .tarjeta { padding: 14px 18px; }
+  .tarjeta h1 { font-size: 18px; margin-bottom: 4px; }
+  .tarjeta p { margin-bottom: 8px; font-size: 14px; }
+  .ayuda { margin-bottom: 10px; font-size: 13px; line-height: 1.4; columns: 2; column-gap: 18px; }
+  .ayuda li { break-inside: avoid; }
+  .resumen { margin-bottom: 10px; }
+  .hud-panel { font-size: 12px; padding: 6px 10px; }
+  .zoom-botones button { width: 36px; height: 36px; font-size: 20px; }
+  body.tactil .touch-btn { padding: 10px 14px; font-size: 13px; }
+  body.tactil .touch-ofrecer { width: clamp(56px, 22vmin, 72px); }
+  #joy { width: clamp(88px, 36vmin, 120px); }
+  #toasts { bottom: 70px; }
+  #pasos { display: none; }
+  .disclaimer { font-size: 11px; padding: 6px 10px; margin-bottom: 8px; }
+  .teclas { font-size: 12px; }
+}
+/* Pantallas muy angostas (celular vertical chico). */
+@media (max-width: 360px) {
+  .touch-correr { right: calc(12px + clamp(56px, 22vmin, 72px) + env(safe-area-inset-right, 0px)); }
+  .touch-ofrecer { right: calc(12px + env(safe-area-inset-right, 0px)); }
+  .tarjeta h1 { font-size: 19px; }
+  .boton { font-size: 15px; }
+}
+
+/* Mercadería y Mejoras (F2): panel de reposición, tarjetas por producto, contadores y mejoras. */
+.tarjeta-ancha { max-width: 640px; }
+.repo-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 0 0 14px; }
+.repo-info .stat { background: #2a2b34; border-radius: 8px; padding: 6px 8px; }
+.repo-info .stat span { display: block; font-size: 12px; opacity: .75; }
+.repo-info .stat b { font-size: 16px; font-variant-numeric: tabular-nums; }
+.prod-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.prod { background: #2a2b34; border: 2px solid #3a3a44; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.prod.bloq { opacity: .45; }
+.prod .pn { display: block; font-weight: 700; font-size: 16px; }
+.prod .pd { display: block; font-size: 13px; opacity: .85; }
+.prod .estrellas { font-style: normal; color: var(--acento); letter-spacing: 1px; }
+.prod .prod-bloq { display: block; font-size: 12px; opacity: .8; min-height: 1em; }
+.stp { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.stp button { width: 44px; height: 44px; border: 0; border-radius: 10px; background: var(--acento); color: #111; font-size: 20px; font-weight: 700; }
+.stp button:disabled { background: #3a3a44; color: #777; }
+.stp .n { min-width: 2ch; text-align: center; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.menu-col .boton:disabled { opacity: .45; }
+.mej-grid { display: grid; gap: 8px; margin-bottom: 12px; }
+.mej { width: 100%; min-height: 44px; text-align: left; padding: 10px 12px; border-radius: 10px; border: 2px solid #3a3a44; background: #2a2b34; color: var(--texto); }
+.mej:disabled { opacity: .5; }
+.mej .mej-t { display: block; font-weight: 700; font-size: 15px; }
+.mej .mej-d { display: block; font-size: 12px; opacity: .75; margin-top: 2px; }
+
+/* Pantalla de fin (F6, M12): total, medalla, récord y compartir. */
+.fin-total { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; border-top: 1px solid #3a3a44; padding-top: 8px; }
+.fin-total b { font-size: 24px; font-variant-numeric: tabular-nums; }
+.fin-medalla { font-size: 18px; font-weight: 700; margin: 6px 0; }
+.fin-medalla.oro { color: #ffd54a; }
+.fin-medalla.plata { color: #d7dde6; }
+.fin-medalla.bronce { color: #e0a06a; }
+.fin-record { font-weight: 700; }
+.fin-record.nuevo { color: var(--acento); }
+.share-redes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; }
+.share-redes a, .share-redes button { display: block; min-height: 44px; text-align: center; padding: 9px; border-radius: 10px; background: #2a2b34; border: 2px solid #3a3a44; color: var(--texto); text-decoration: none; font-size: 14px; font-weight: 600; }
+.fin-tarjeta .boton, .fin-tarjeta .boton-sec { margin-top: 8px; }
+
+/* Ciudad (F7): minimapa en la esquina superior derecha, a la izquierda de la columna de botones; carga inicial;
+   selección de zona (M8) y botones de giro. */
+#minimapa { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(62px + env(safe-area-inset-right, 0px)); width: clamp(96px, 22vmin, 150px); height: clamp(96px, 22vmin, 150px); border-radius: 10px; border: 2px solid rgba(0, 0, 0, .8); background: #1e1f25; pointer-events: none; z-index: 20; }
+#cargando { position: fixed; inset: 0; z-index: 250; display: flex; align-items: center; justify-content: center; background: var(--fondo); color: var(--texto); font-size: 16px; }
+#cargando[hidden] { display: none; }
+#selMapa { display: block; width: min(240px, 60vmin); height: auto; margin: 0 auto 12px; border-radius: 8px; border: 2px solid #000; image-rendering: pixelated; }
+.sel-botones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+.sel-botones button { min-height: 44px; padding: 8px 4px; border: 2px solid #3a3a44; border-radius: 8px; background: #2a2b34; color: var(--texto); font-size: 13px; font-weight: 600; }
+.sel-botones button[aria-pressed="true"] { border-color: var(--acento); background: #3d3a22; }
+.sel-botones button:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+
+/* Táctil (F9): pantallas nuevas en vertical y apaisado de poca altura. Las tarjetas hacen scroll dentro de la pantalla;
+   los menús de la partida (pausa, opciones, ayuda) no tapan el joystick ni CORRER / OFRECER en apaisado. */
+body.tactil .tarjeta { -webkit-overflow-scrolling: touch; }
+@media (orientation: portrait) and (max-width: 600px) {
+  .overlay { align-items: stretch; padding: calc(8px + env(safe-area-inset-top, 0px)) 8px calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .tarjeta { max-width: none; width: 100%; padding: 16px; }
+  .tarjeta-ancha { max-width: none; }
+  .repo-info { grid-template-columns: repeat(2, 1fr); }
+  .prod-grid { grid-template-columns: 1fr; }
+  #selMapa { width: min(220px, 70vw); }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Pantallas de menú más angostas y centradas a la izquierda: en apaisado queda libre la derecha para CORRER y OFRECER. */
+  .overlay { justify-content: flex-start; padding-left: calc(12px + env(safe-area-inset-left, 0px)); }
+  #pantallaPausa .tarjeta, #pantallaOpciones .tarjeta, #pantallaAyuda .tarjeta, #pantallaFin .tarjeta { max-width: min(380px, 62vw); }
+  #pantallaMercaderia .tarjeta, #pantallaMejoras .tarjeta, #pantallaSeleccion .tarjeta { max-width: min(560px, 80vw); }
+  .menu-col { gap: 6px; }
+  .boton, .boton-sec { padding: 8px; font-size: 14px; }
+  .opc { margin: 6px 0; }
+  #selMapa { width: min(150px, 40vmin); margin-bottom: 8px; }
+  .repo-info { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+  .prod .pd { font-size: 12px; }
+  body.tactil.ctl-flechas #dpad { width: clamp(112px, 44vmin, 150px); }
+}
+
+/* Personaje (D1): vista previa pixelart y controles de categoría */
+.pers-layout { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; margin-bottom: 8px; }
+.pers-vista { display: grid; gap: 8px; justify-items: center; }
+#persLienzo { width: 144px; max-width: 100%; height: auto; image-rendering: pixelated; background: #2a2b34; border-radius: 10px; }
+.pers-controles { display: grid; gap: 10px; }
+.pers-cat { display: grid; gap: 6px; }
+.pers-cat > span { font-size: 13px; color: var(--texto); opacity: .85; }
+.pers-fila { display: flex; flex-wrap: wrap; gap: 6px; }
+.pers-sw { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #3a3a44; background: var(--sw); padding: 0; }
+.pers-op { min-height: 44px; padding: 8px 12px; border: 2px solid #3a3a44; border-radius: 8px; background: #2a2b34; color: var(--texto); font-size: 14px; font-weight: 600; }
+.pers-sw[aria-pressed="true"], .pers-op[aria-pressed="true"] { border-color: var(--acento); }
+.pers-op[aria-pressed="true"] { background: #3d3a22; }
+.pers-sw:focus-visible, .pers-op:focus-visible, #btnPersAlAzar:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+#btnPersAlAzar { width: auto; padding: 8px 14px; }
+@media (max-width: 600px) { .pers-layout { grid-template-columns: 1fr; justify-items: center; } .pers-controles { width: 100%; } }
+
+/* ===================== Mejora visual (línea de la 3D: bordes negros, relieve duro, acentos amarillo y naranja) =====================
+   Va al final para pisar los estilos de arriba sin reescribirlos. Solo presentación. Contraste AA: texto claro (#f2f2f5) sobre
+   fondos oscuros (#1e2028 / #2a2b34) y texto oscuro (#111) sobre amarillo (#ffd33b). */
+:root { --acc: #ff7a3d; --tarjeta: #1e2028; --tarjeta2: #2a2b34; --borde: #000; --relieve: 0 4px 0 #000; --radio: 12px;
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif; color-scheme: dark; }
+html, body { font-family: var(--fuente); -webkit-font-smoothing: antialiased; }
+body { background: radial-gradient(120% 90% at 50% 0%, #22242d 0%, var(--fondo) 70%); }
+
+/* Tarjetas: borde negro, sombra dura y una franja de acento arriba. */
+.tarjeta { background: linear-gradient(180deg, #23252f 0%, var(--tarjeta) 120px); border: 3px solid var(--borde); border-radius: var(--radio);
+  box-shadow: 0 6px 0 #000, 0 18px 40px rgba(0, 0, 0, .45); position: relative; animation: tarjeta-entra .22s ease-out; }
+.tarjeta::before { content: ''; position: absolute; left: 14px; right: 14px; top: 0; height: 4px; border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--acento), var(--acc)); }
+.tarjeta h1 { font-size: 26px; font-weight: 900; letter-spacing: -.01em; color: var(--acento); text-shadow: 0 3px 0 #000; }
+.tarjeta h2 { font-weight: 800; letter-spacing: -.01em; }
+.tarjeta h3 { font-size: 15px; font-weight: 800; margin: 14px 0 4px; color: var(--acento); }
+@keyframes tarjeta-entra { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+
+/* Botones con relieve: hover más claro, active hundido, foco visible. */
+.boton, .boton-sec, .stp button, .mej, .sel-botones button, .pers-op, .share-redes a, .share-redes button, .zoom-botones button, .touch-btn, .dp {
+  border: 3px solid var(--borde); box-shadow: var(--relieve); cursor: pointer; font-family: inherit;
+  transition: transform .06s ease, box-shadow .06s ease, background-color .12s ease, filter .12s ease; }
+.boton { background: linear-gradient(180deg, #ffe066 0%, var(--acento) 100%); color: #111; font-weight: 900; letter-spacing: .01em; }
+.boton-sec, .mej, .sel-botones button, .pers-op, .share-redes a, .share-redes button { background: linear-gradient(180deg, #33343f 0%, var(--tarjeta2) 100%); border-color: var(--borde); }
+.boton:hover:not(:disabled), .boton-sec:hover:not(:disabled), .stp button:hover:not(:disabled), .mej:hover:not(:disabled),
+.sel-botones button:hover, .pers-op:hover, .share-redes a:hover, .share-redes button:hover, .zoom-botones button:hover { filter: brightness(1.12); }
+.boton:active:not(:disabled), .boton-sec:active:not(:disabled), .stp button:active:not(:disabled), .mej:active:not(:disabled),
+.sel-botones button:active, .pers-op:active, .share-redes a:active, .share-redes button:active, .zoom-botones button:active, .touch-btn:active, .dp:active {
+  transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+.boton:disabled, .boton-sec:disabled, .mej:disabled { cursor: not-allowed; box-shadow: 0 2px 0 #000; }
+:where(button, a, select, input, canvas, [tabindex]):focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+.boton:focus-visible { outline-color: #fff; }
+.pers-sw { border-color: #000; box-shadow: 0 3px 0 #000; }
+.pers-sw[aria-pressed="true"] { border-color: var(--acento); box-shadow: 0 0 0 3px #000, 0 3px 0 #000; }
+.opc select, .opc input[type=range] { font-family: inherit; }
+.opc select { border: 2px solid #000; font-weight: 600; }
+kbd { box-shadow: 0 2px 0 #000; font-weight: 700; }
+
+/* Productos (Mercadería): ilustración SVG copiada en 2d/assets/ilustraciones. */
+.prod { border: 3px solid #000; box-shadow: 0 4px 0 #000; background: linear-gradient(180deg, #30313b, var(--tarjeta2)); }
+.prod .prod-info { display: grid; grid-template-columns: 40px 1fr; column-gap: 10px; align-items: center; }
+.prod .prod-ico { grid-row: span 3; width: 40px; height: 40px; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .6)); }
+.prod .pn, .prod .pd, .prod .prod-bloq { grid-column: 2; }
+.stp button { background: linear-gradient(180deg, #ffe066, var(--acento)); }
+.repo-info .stat { border: 2px solid #000; background: #262731; }
+.repo-info .stat b { font-weight: 800; }
+
+/* HUD: paneles con borde, números marcados, barras con degradé. */
+.hud-panel, .hud-alerta, .pista, .toast { border: 2px solid rgba(0, 0, 0, .85); box-shadow: 0 3px 0 rgba(0, 0, 0, .7); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.hud-panel { line-height: 1.6; }
+.hud-panel span { opacity: .78; font-weight: 600; }
+.hud-panel b { font-weight: 800; }
+#hudDinero { color: #8de0a6; }
+#hudPuntos { color: var(--acento); }
+.hud-panel .ico-prod { background: rgba(255, 255, 255, .16); border: 2px solid #000; }
+.hud-panel .ico-prod img { width: 20px; height: 20px; display: block; pointer-events: none; }
+body.tactil .hud-panel .ico-prod img { width: 30px; height: 30px; }
+.barra-seg i { background: rgba(255, 255, 255, .14); }
+.barra-seg i.on { background: linear-gradient(180deg, #8de0a6 0%, var(--bien) 55%, #258a4a 100%); }
+.barra-energia { display: inline-block; vertical-align: middle; width: 80px; height: 10px; margin: 0 !important; opacity: 1 !important; border-radius: 5px;
+  background: rgba(255, 255, 255, .14); border: 1px solid #000; overflow: hidden; }
+.barra-energia i { display: block; height: 100%; width: var(--e, 100%); border-radius: 4px;
+  background: linear-gradient(90deg, #e03030 0%, #ffb23b 35%, #ffd33b 60%, #3fbf6a 100%); background-size: 80px 100%; transition: width .15s linear; }
+.barra-energia.agotado i { background: #7a2a2a; animation: parpadeo 0.8s steps(2) infinite; }
+@keyframes parpadeo { 50% { opacity: .4; } }
+.hud-alerta.rojo { background: rgba(110, 16, 16, .9); animation: latido .7s ease-in-out infinite; }
+.hud-alerta.amarillo { background: rgba(90, 64, 10, .9); }
+.hud-alerta .luz { box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .35); }
+.hud-alerta.verde .luz:nth-child(1), .hud-alerta.amarillo .luz:nth-child(2), .hud-alerta.rojo .luz:nth-child(3) { box-shadow: 0 0 8px currentColor, inset 0 -2px 0 rgba(0, 0, 0, .3); }
+.hud-alerta.verde .luz:nth-child(1) { color: var(--bien); } .hud-alerta.amarillo .luz:nth-child(2) { color: var(--acento); } .hud-alerta.rojo .luz:nth-child(3) { color: var(--mal); }
+@keyframes latido { 50% { transform: translateX(-50%) scale(1.05); } }
+.toast { font-weight: 700; }
+.zoom-botones button { background: linear-gradient(180deg, #2c2e38, #1c1d24); font-weight: 800; }
+#minimapa { border: 3px solid #000; box-shadow: 0 3px 0 rgba(0, 0, 0, .7); }
+.touch-btn { font-weight: 800; }
+.touch-ofrecer { background: linear-gradient(180deg, #2ea866, #1f7a4a); }
+#joy { border: 3px solid rgba(0, 0, 0, .8); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .12); }
+#joyKnob { border: 3px solid #000; box-shadow: 0 3px 0 #000; background: radial-gradient(circle at 35% 30%, #ffe680, var(--acento)); }
+.dp.on { background: linear-gradient(180deg, #ffe066, var(--acento)); }
+#pasos span { font-weight: 700; box-shadow: 0 2px 0 #000; }
+.disclaimer { border-width: 2px; }
+.fin-total b { font-weight: 900; color: var(--acento); }
+.fin-medalla { text-shadow: 0 2px 0 #000; }
+#cargando { font-weight: 700; letter-spacing: .02em; }
+
+/* Movimiento reducido: sin animaciones ni transiciones (las del HUD y tarjetas incluidas). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  .girar-tel { transform: rotate(-90deg); }
+}
+
+/* Atribución del mapa (OpenStreetMap, ODbL): visible en el título y en la selección de zona */
+.atribucion-mapa { margin: 10px 0 0; font-size: 11px; }
+.atribucion-mapa a { color: inherit; }
+
+/* Estrellas de búsqueda (0 a 5), dentro de la píldora de alerta: heredan su posición en escritorio y en móvil. */
+.estrellas-hud { display: inline-flex; gap: 2px; font-size: 18px; line-height: 1; }
+.estrellas-hud i { font-style: normal; color: #4a4d59; text-shadow: 0 1px 0 #000; }
+.estrellas-hud i.on { color: #ffd33b; }
+.estrellas-hud.sube i.on { animation: estrella-sube .3s steps(2, jump-none) infinite; }
+@keyframes estrella-sube { 50% { color: #fff; opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .estrellas-hud.sube i.on { animation: none; } }

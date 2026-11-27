@@ -1,0 +1,47 @@
+{
+  "_descripcion": "Propuesta de balance de la 2D (etapa A; APLICADA en la etapa B, ver README: agentes por ronda se aplica como fracción de agentes atentos). Las métricas de abajo son las de la etapa A. Medido con node 2d/tools/simular_balance.mjs --corridas 100 (semillas 1000..1099). 'actual' = valores de hoy; 'propuesta' = PROPUESTA del simulador. Las cifras del modelo de ventas y persecución son relativas (comparan antes y después), no tiempos reales de partida.",
+  "calibracion": {
+    "agentes_js_real": "1 agente detrás en calle recta: corriendo a 7.5 zafa a los 8.4-9.5 s; con pulso de Shift (6.0 de media) no zafa en 18 s; caminando lo capturan en 2.5-4.6 s. Velocidad efectiva del agente 5.5 en recta (EF_AG 1.0; el modelo usa 0.95 por las esquinas). El modelo 1D da 9.5 s para el mismo caso."
+  },
+  "metricas": {
+    "actual": {
+      "prudente": { "rondas": 12, "caja": [8700, 21300, 52500, 130500, 179324], "todas_mejoras_ronda": 5, "captura_por_ronda_pct": [0, 0, 0, 0, 0, 0, 0, 0], "pct_zafa": 99, "puntos": 59078, "medallas": "100% oro" },
+      "agresivo": { "rondas": 12, "captura_por_ronda_pct": [0, 0, 0, 0, 0, 0, 0, 0], "energia_por_ronda": 901, "puntos": 64794, "medallas": "100% oro (correr siempre no tiene costo)" },
+      "coimero": { "rondas": 1.03, "coimas_aceptadas": 0.64, "medallas": "17% oro con una sola ronda (umbral 1500 = 15 ventas)" },
+      "mejoras_asap": { "rondas": 12, "todas_mejoras_ronda": 5 },
+      "pulsador": { "rondas": 12, "pct_zafa": 99, "nota": "el pulso de Shift gasta casi nada: igual que prudente" }
+    },
+    "propuesta": {
+      "prudente": { "rondas": 10.2, "caja": [7375, 12445, 22213, 40228, 75288, 124634], "todas_mejoras_ronda": 9.2, "pct_completa_mejoras": 69, "captura_por_ronda_pct": [0, 0, 3, 1, 5, 9, 8, 3], "pct_zafa": 97, "estrellas_max_media": 3.53, "puntos": 44672, "medallas": { "oro": 68, "plata": 8, "bronce": 21, "ninguna": 3 } },
+      "agresivo": { "rondas": 7.19, "captura_por_ronda_pct": [2, 0, 4, 3, 7, 6, 47, 45], "pct_zafa": 83, "estrellas_max_media": 4.42, "energia_por_ronda": 1037, "puntos": 14321, "medallas": { "oro": 0, "plata": 3, "bronce": 90, "ninguna": 7 } },
+      "coimero": { "rondas": 1.08, "coimas_aceptadas": 0.39, "medallas": "99% sin medalla" },
+      "mejoras_asap": { "rondas": 10.87, "todas_mejoras_ronda": 10, "pct_completa_mejoras": 83, "medallas": { "oro": 78, "plata": 7, "bronce": 12, "ninguna": 3 } },
+      "pulsador": { "rondas": 1.43, "pct_zafa": 2, "nota": "el pulso ya no rinde: cada arranque cuesta energía, recuperar tiene demora y cada arranque a la vista suma estrella" }
+    }
+  },
+  "cambios": [
+    { "archivo": "config.js", "clave": "COSTO_FRAC", "actual": 0.4, "propuesto": 0.5, "motivo": "margen de 150 % multiplicaba la caja x2.5 por ronda", "efecto": "caja ronda 5: 179324 -> 75288; crecimiento x1.7-1.9 hasta que el tope de stock lo vuelve lineal. CAPITAL_INI pasa de 3480 a 4350 (fórmula sin cambios)" },
+    { "archivo": "economia.js", "clave": "MEJORAS factores (x BASE_MEJ)", "actual": { "carrito": [0.9, 1.5], "alcance": [0.5, 1.0], "velocidad": [0.75, 0.75], "resistencia": [0.5, 0.5, 0.5], "proveedores": [0.25, 0.5] }, "propuesto": { "carrito": [1.5, 3], "alcance": [1, 2], "velocidad": [1.2, 2.2], "resistencia": [0.8, 1.4, 2], "proveedores": [0.6, 1.4] }, "motivo": "todas las mejoras en la ronda 5 y gratis después", "efecto": "todas las mejoras en ronda 9-10 (prudente 9.2, asap 10)" },
+    { "archivo": "economia.js", "clave": "MEJ_INFLA (nuevo)", "actual": 0, "propuesto": 0.15, "motivo": "el costo fijo se vuelve irrelevante cuando la caja crece", "efecto": "costo x (1 + 0.15 x (ronda - 1)); con 0.35 nadie completaba las mejoras" },
+    { "archivo": "economia.js", "clave": "GASTO_RONDA / GASTO_PASO (nuevo, gasto fijo al reponer)", "actual": [0, 0], "propuesto": [600, 300], "motivo": "que reponer siga siendo una decisión frente a comprar mejoras", "efecto": "aparece 'sin fondos' en partidas que gastan de más (agresivo 12 %)" },
+    { "archivo": "config.js", "clave": "REC_CAMINA", "actual": 10, "propuesto": 8, "motivo": "correr casi gratis (pulso 0.5/0.5 s: costo neto 1/s)", "efecto": "ver pulsador" },
+    { "archivo": "config.js + main.js", "clave": "REC_DEMORA (nuevo)", "actual": 0, "propuesto": 1, "motivo": "exploit de alternar Shift: no se recupera hasta 1 s sin correr", "efecto": "pulsador: rondas 12 -> 1.4" },
+    { "archivo": "config.js + main.js", "clave": "CONS_ARRANQUE (nuevo)", "actual": 0, "propuesto": 4, "motivo": "cada arranque de carrera cuesta energía (cierra el pulso)", "efecto": "idem" },
+    { "archivo": "agentes.js", "clave": "agentes por ronda: AG_FRAC_INI / AG_FRAC_PASO (nuevo)", "actual": "todas las esquinas siempre", "propuesto": "60 % de las esquinas en ronda 1, +5 % por ronda, tope 100 %", "motivo": "dificultad creciente en vez de plana", "efecto": "captura prudente 0-3 % en rondas 1-4 y 5-9 % en 5-8" },
+    { "archivo": "agentes.js", "clave": "POLI_RADIO_PASO / POLI_RADIO_TOPE (nuevo)", "actual": "8 fijo", "propuesto": "8 + 0.25 por ronda, tope 9.5", "motivo": "agentes un poco más atentos con las rondas" },
+    { "archivo": "agentes.js", "clave": "POLI_VEL_PERS_PASO / TOPE (nuevo)", "actual": "5.5 fijo", "propuesto": "5.5 + 0.05 por ronda, tope 6.0", "motivo": "persecución más dura de a poco; con +0.1 y base 5.8 el prudente moría en la ronda 3" },
+    { "archivo": "agentes.js", "clave": "POLI_T_PERDER / POLI_DIST_SAFAR", "actual": [5, 12], "propuesto": [5, 12], "motivo": "se mantienen como base; escalan por estrellas (busqueda.js)" },
+    { "archivo": "ciudad.js / busqueda.js", "clave": "agentes en cada cruce", "actual": 12, "propuesto": 25, "motivo": "pedido del usuario; activación por cercanía (BUSQ_R_ACTIVA 40, tope 24)" },
+    { "archivo": "textos.js", "clave": "REACCIONES", "actual": { "ignorar": 30, "comprar1": 20, "comprar2": 8, "insultar": 14, "cortes": 20, "llamado": 8 }, "propuesto": "sin cambios", "motivo": "con 18/7 y llamado 8 más el doble de agentes la venta caía a 4.8 u/min y las rondas pasaban de 4 min; la dificultad ya sube por agentes y estrellas" },
+    { "archivo": "config.js + coima.js", "clave": "COIMA_ACEPTA / COIMA_FRAC / COIMA_CD", "actual": [0.6, 0.5, 3], "propuesto": [0.55, 0.6, 8], "motivo": "salida casi gratis con cooldown corto" },
+    { "archivo": "config.js + coima.js", "clave": "COIMA_DECAE / COIMA_MIN (nuevos)", "actual": [1, 0], "propuesto": [0.6, 500], "motivo": "la aceptación baja x0.6 por coima aceptada en la partida; sin $500 de ventas no hay coima", "efecto": "coimero: 0.39 aceptadas por partida, 99 % sin medalla; una coima aceptada además deja el nivel de búsqueda en 0" },
+    { "archivo": "config.js + puntaje.js", "clave": "T_BONUS_POR_U", "actual": 10, "propuesto": 6, "motivo": "bonus de tiempo plano" },
+    { "archivo": "puntaje.js", "clave": "BONUS_TIEMPO_ESCALA (nuevo)", "actual": 0, "propuesto": 0.25, "motivo": "el bonus de tiempo pesaba cada vez menos frente a las ventas", "efecto": "bonus de tiempo prudente por ronda 80/388/422/464 (antes 176/320/254/217)" },
+    { "archivo": "puntaje.js", "clave": "SIGILO_POR_RONDA (nuevo)", "actual": "una vez por partida", "propuesto": "por ronda sin persecución", "motivo": "tras la primera persecución el bonus desaparecía para siempre" },
+    { "archivo": "config.js", "clave": "MEDALLA_MIN", "actual": { "bronce": 500, "plata": 1000, "oro": 1500 }, "propuesto": { "bronce": 8000, "plata": 20000, "oro": 40000 }, "motivo": "oro con 15 ventas; ahora bronce cerca de 6 rondas, oro con unas 10 rondas jugando bien", "efecto": "prudente 68 % oro, agresivo 90 % bronce, coimero sin medalla" },
+    { "archivo": "busqueda.js", "clave": "estrellas", "propuesto": "BUSQ_CD 2 s, BUSQ_T_PASO 0.15, BUSQ_D_PASO 0.08, puntos por zafar x(1 + 0.5 x (nivel - 1))", "motivo": "pedido del usuario; con x nivel el puntaje se iba a farmear persecuciones" },
+    { "archivo": "vehiculos.js", "clave": "patrulla y helicóptero", "propuesto": "VEH_VEL_RECTA 8.5, VEH_VEL_GIRO 2.5, HELI_VEL 6.2, HELI_R 7, HELI_T_ESCENA 30 s", "motivo": "sin tiempo en escena, a 5 estrellas caminando nunca se zafaba (rondas trabadas a 420 s en el simulador)" }
+  ],
+  "sin_cambio": ["OFR_RADIO 2.25, OFR_MED_ANG 30°, OFR_PASO 0.75 (D8)", "RUN_SPEED 7.5, RUN_PASO_NIVEL 0.5, tope 8.5", "CONS_CORRER 12", "STOCK_*", "PRECIOS, DEMANDA, JORNADA", "MEM_*"],
+  "dependen_del_mapa": ["N_AG / esquinas (25 en la procedural)", "AREA_CAMINABLE 7380", "BUSQ_R_ACTIVA 40, BUSQ_MAX_ACTIVOS 24, BUSQ_CUBETA 16", "POLI_SIM 40", "PEATONES_N 40, PEAT_LEJOS 30", "parámetros del modelo POOL_BASE, ROTACION, REUBICAR_T, LLAMADO_ENCUENTRA, PATRULLA_EF"]
+}

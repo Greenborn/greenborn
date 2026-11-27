@@ -1,0 +1,197 @@
+/* Experiencia móvil de la 2D: se carga DESPUÉS de juego2d.css y solo agrega o pisa reglas.
+   Alto visible real: dvh/svh con respaldo a --alto-visible (js/viewport.js, con visualViewport).
+   Resoluciones objetivo en apaisado: 568x320 (mínimo) a 1280x720. En vertical táctil se ve la capa "Girá el teléfono". */
+:root {
+  --sa-t: env(safe-area-inset-top, 0px); --sa-r: env(safe-area-inset-right, 0px);
+  --sa-b: env(safe-area-inset-bottom, 0px); --sa-l: env(safe-area-inset-left, 0px);
+  --ui-escala: 1;
+  /* Controles táctiles: B = Ofrecer (grande), S = botones chicos, M = margen al borde. */
+  --t-B: clamp(64px, 20vmin, 84px);
+  --t-S: clamp(48px, 14vmin, 58px);
+  --t-M: 12px;
+  --t-joy: clamp(110px, 34vmin, 150px);
+}
+
+/* ---------- Sin scroll horizontal nunca ---------- */
+html, body { max-width: 100%; overflow-x: hidden; }
+body { height: 100vh; height: 100dvh; height: var(--alto-visible, 100dvh); }
+canvas#juego { height: var(--alto-visible, 100dvh); }
+
+/* ---------- Pantallas de menú: siempre dentro del viewport ---------- */
+.overlay {
+  height: 100vh; height: 100dvh; height: var(--alto-visible, 100dvh);
+  padding: calc(8px + var(--sa-t)) calc(8px + var(--sa-r)) calc(8px + var(--sa-b)) calc(8px + var(--sa-l));
+  overflow: hidden;
+}
+.tarjeta {
+  width: 100%;
+  max-width: min(420px, 100%);
+  max-height: calc(100vh - 16px - var(--sa-t) - var(--sa-b));
+  max-height: calc(100svh - 16px - var(--sa-t) - var(--sa-b));
+  max-height: calc(var(--alto-visible, 100svh) - 16px - var(--sa-t) - var(--sa-b));
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  padding: clamp(12px, 3.2vmin, 24px) clamp(14px, 3.6vmin, 24px);
+  min-width: 0;
+}
+.tarjeta-ancha { max-width: min(640px, 100%); }
+.tarjeta * { min-width: 0; overflow-wrap: anywhere; }
+.tarjeta h1 { font-size: clamp(18px, calc(5vmin * var(--ui-escala)), 24px); }
+.tarjeta h2 { font-size: clamp(17px, calc(4.6vmin * var(--ui-escala)), 22px); }
+.tarjeta p, .opc { font-size: clamp(13px, 3.6vmin, 15px); }
+.tarjeta .sub { font-size: clamp(12px, 3.4vmin, 14px); }
+.tarjeta .nota, .disclaimer, kbd { font-size: max(12px, 0.75rem); }
+.boton { font-size: clamp(14px, 3.8vmin, 16px); padding: clamp(8px, 2.2vmin, 12px); min-height: 48px; }
+.boton-sec { font-size: clamp(13px, 3.6vmin, 15px); padding: clamp(7px, 2vmin, 11px); min-height: 48px; }
+.opc select, .stp button, .sel-botones button, .pers-op, .share-redes a, .share-redes button, .mej { min-height: 48px; }
+.opc { flex-wrap: wrap; }
+.opc select { max-width: 100%; }
+.opc input[type=range] { min-width: 120px; flex: 1 1 140px; }
+.opc input[type=checkbox] { width: 24px; height: 24px; accent-color: var(--acento); }
+.teclas { table-layout: fixed; }
+#selMapa { max-width: 100%; }
+#persLienzo { max-height: calc(var(--alto-visible, 100svh) * .45); width: auto; }
+
+/* Pie fijo dentro de la tarjeta: los botones principales siempre a la vista aunque el contenido haga scroll. */
+.tarjeta > .menu-col:last-child, .tarjeta > .pie-tarjeta {
+  position: sticky; bottom: calc(-1 * clamp(12px, 3.2vmin, 24px));
+  margin: 8px calc(-1 * clamp(14px, 3.6vmin, 24px)) calc(-1 * clamp(12px, 3.2vmin, 24px));
+  padding: 8px clamp(14px, 3.6vmin, 24px) clamp(12px, 3.2vmin, 24px);
+  background: #1e2028; box-shadow: 0 -8px 12px -6px rgba(0, 0, 0, .5); z-index: 1;
+}
+/* La pantalla de título tiene un solo bloque de botones: no hace falta pie fijo, pero se compacta. */
+#pantallaTitulo .tarjeta > .menu-col:last-child { box-shadow: none; }
+
+/* Apilamiento: el HUD (10) y el minimapa (20) quedan por debajo de los menús (60/80). En táctil, además, los controles
+   se ocultan mientras haya un menú abierto para que no se vean a través del fondo translúcido. */
+#hud { z-index: 10; }
+body.tactil:has(.overlay:not([hidden])) :is(#joy, #dpad, .touch-btn, .zoom-botones, #pista) { visibility: hidden; }
+.opc[hidden] { display: none; }
+/* Con flechas elegidas no hay joystick: su tipo no se muestra. */
+body.ctl-flechas #filaJoystick { display: none; }
+.fin-tarjeta .menu-col .boton-sec { margin-top: 0; }
+#pantallaOpciones .tarjeta .nota { margin-top: 6px; }
+
+/* ---------- Capa "Girá el teléfono": entra entera en 360x640 y 412x915 ---------- */
+#capaGirar { padding: calc(16px + var(--sa-t)) calc(16px + var(--sa-r)) calc(16px + var(--sa-b)) calc(16px + var(--sa-l)); overflow: hidden; height: var(--alto-visible, 100dvh); }
+.girar-caja { max-width: min(320px, 100%); }
+.girar-caja h2 { font-size: clamp(18px, 6vw, 24px); }
+.girar-caja p { font-size: clamp(14px, 4.2vw, 16px); }
+.girar-caja small { font-size: max(12px, 3.4vw); }
+body.movil-vertical #hud, body.movil-vertical #minimapa { visibility: hidden; }
+
+/* ---------- Controles táctiles ---------- */
+/* Joystick: en reposo se muestra semitransparente abajo a la izquierda; al tocar el cuarto inferior izquierdo se centra
+   en el dedo (.flotando). Con body.joy-fijo queda siempre en su lugar. */
+body.tactil #joy {
+  width: var(--t-joy); height: var(--t-joy);
+  left: calc(var(--t-M) + var(--sa-l)); bottom: calc(var(--t-M) + var(--sa-b));
+  opacity: .55; transition: opacity .12s;
+}
+body.tactil #joy.on { opacity: 1; border-color: rgba(255, 211, 59, .7); }
+body.tactil.joy-fijo #joy { opacity: .9; }
+body.tactil #joy.flotando { left: var(--joy-x); top: var(--joy-y); bottom: auto; transform: translate(-50%, -50%); transition: none; }
+#joyKnob { will-change: transform; }
+
+/* Botones de acción en arco abajo a la derecha, alrededor de Ofrecer. */
+body.tactil .touch-btn {
+  display: grid; place-items: center; position: absolute; padding: 0; min-width: 48px; min-height: 48px;
+  width: var(--t-S); height: var(--t-S); border-radius: 50%; font-size: 12px; font-weight: 700; line-height: 1.1;
+  text-align: center; border: 2px solid rgba(255, 255, 255, .22); user-select: none; -webkit-user-select: none;
+  touch-action: none; transition: transform .06s, background-color .06s;
+}
+body.tactil .touch-btn.on, body.tactil .touch-btn[data-on="1"] { transform: scale(.92); background: var(--acento); color: #111; border-color: #000; }
+body.tactil .touch-ofrecer {
+  width: var(--t-B); height: var(--t-B); font-size: 13px; background: #1f7a4a;
+  right: calc(var(--t-M) + var(--sa-r)); bottom: calc(var(--t-M) + var(--sa-b));
+}
+body.tactil .touch-correr { right: calc(var(--t-M) + var(--t-B) + 12px + var(--sa-r)); bottom: calc(var(--t-M) + var(--sa-b)); }
+body.tactil .touch-cambiar { right: calc(var(--t-M) + var(--t-B) + 6px + var(--sa-r)); bottom: calc(var(--t-M) + var(--t-B) + 6px + var(--sa-b)); font-size: 18px; }
+body.tactil .touch-pausa { right: calc(var(--t-M) + (var(--t-B) - var(--t-S)) / 2 + var(--sa-r)); bottom: calc(var(--t-M) + var(--t-B) + 22px + var(--sa-b)); font-size: 18px; }
+/* Botones nuevos (Cambiar, Pausa): ocultos fuera de táctil. */
+.touch-cambiar, .touch-pausa { display: none; }
+
+/* Pad de flechas: 48 px mínimos por flecha. */
+body.tactil .dp { min-width: 48px; min-height: 48px; }
+body.tactil.ctl-flechas #dpad { width: clamp(150px, 44vmin, 180px); left: calc(var(--t-M) + var(--sa-l)); bottom: calc(var(--t-M) + var(--sa-b)); }
+body.tactil .dp.on { transform: scale(.94); }
+
+/* Zoom, giro y pantalla completa: 48 px, columna arriba a la derecha. */
+body.tactil .zoom-botones { right: calc(var(--t-M) + var(--sa-r)); top: calc(var(--t-M) + var(--sa-t)); gap: 6px; }
+body.tactil .zoom-botones button { width: 48px; height: 48px; font-size: 20px; }
+body.tactil #minimapa { right: calc(var(--t-M) + 48px + 8px + var(--sa-r)); top: calc(var(--t-M) + var(--sa-t)); }
+
+/* HUD: textos de 12 px o más, sin tapar el centro. */
+body.tactil .hud-panel { font-size: max(12px, calc(13px * var(--ui-escala))); line-height: 1.35; padding: 6px 10px; max-width: min(46vw, 300px); left: calc(var(--t-M) + var(--sa-l)); top: calc(var(--t-M) + var(--sa-t)); }
+body.tactil .hud-panel .barra-seg { max-width: 120px; }
+body.tactil .hud-panel .ico-prod { width: 36px; height: 36px; }
+body.tactil .hud-alerta { font-size: 12px; padding: 4px 10px; }
+body.tactil .pista { font-size: max(12px, 13px); max-width: min(56vw, 420px); }
+body.tactil #toasts { bottom: calc(var(--t-M) + var(--sa-b) + 8px); max-width: calc(100vw - 2 * var(--t-joy) - 48px); }
+body.tactil .toast { font-size: 13px; white-space: normal; text-align: center; }
+
+/* Sin efectos caros en táctil; con calidad baja, tampoco sombras ni animaciones. */
+body.tactil *, body.tactil *::before, body.tactil *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+body.calidad-baja *, body.calidad-baja *::before, body.calidad-baja *::after { box-shadow: none !important; text-shadow: none !important; filter: none !important; animation-duration: 0s !important; transition-duration: 0s !important; }
+
+/* ---------- Apaisado bajo (celulares: alto <= 500 px) ---------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  .overlay { justify-content: center; padding-left: calc(8px + var(--sa-l)); }
+  .tarjeta { max-width: min(560px, 100%); }
+  .tarjeta-ancha { max-width: min(820px, 100%); }
+  #pantallaPausa .tarjeta, #pantallaOpciones .tarjeta, #pantallaAyuda .tarjeta, #pantallaFin .tarjeta { max-width: min(520px, 100%); }
+  #pantallaMercaderia .tarjeta, #pantallaMejoras .tarjeta, #pantallaSeleccion .tarjeta, #pantallaPersonaje .tarjeta { max-width: min(820px, 100%); }
+  .tarjeta h1, .tarjeta h2 { margin-bottom: 6px; }
+  .tarjeta p { margin-bottom: 6px; }
+  .disclaimer { margin-bottom: 6px; }
+  .boton, .boton-sec { min-height: 44px; padding: 6px 8px; }
+  /* Botones de menú en 2 columnas para que el título y la pausa entren sin scroll. */
+  #pantallaTitulo .menu-col, #pantallaPausa .menu-col { grid-template-columns: 1fr 1fr; }
+  #pantallaTitulo .menu-col .boton, #pantallaPausa .menu-col .boton { grid-column: 1 / -1; }
+  .repo-info { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-bottom: 8px; }
+  .repo-info .stat { padding: 4px 6px; }
+  .repo-info .stat b { font-size: 14px; }
+  .prod-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .prod { padding: 6px 8px; gap: 4px; }
+  .mej-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .tarjeta > .menu-col:last-child { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .pers-layout { grid-template-columns: auto minmax(0, 1fr); gap: 10px; }
+  .pers-controles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  #persLienzo { max-height: calc(var(--alto-visible, 100svh) * .38); }
+  /* Selección de zona: mapa a la izquierda, barrios a la derecha. */
+  #pantallaSeleccion .tarjeta { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; align-content: start; }
+  #pantallaSeleccion .tarjeta > h2, #pantallaSeleccion .tarjeta > .sub, #pantallaSeleccion .tarjeta > .nota { grid-column: 1 / -1; }
+  /* El mapa lleva los nombres de barrio dibujados (canvas de 240 px): se muestra lo más grande que permite el alto. */
+  #pantallaSeleccion #selMapa { width: clamp(180px, calc(var(--alto-visible, 100svh) - 100px), 42vw); margin: 0; }
+  .sel-botones { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); align-content: start; }
+  /* Fin: el desglose en dos columnas. */
+  #pantallaFin .resumen { grid-template-columns: repeat(2, minmax(0, 1fr) auto); }
+  .opc { margin: 4px 0; }
+  .teclas td { padding: 2px 4px; }
+
+  /* HUD en apaisado bajo: zoom en fila arriba a la derecha y minimapa debajo, para dejar libre el arco de acciones. */
+  body.tactil .zoom-botones { flex-direction: row; gap: 4px; }
+  body.tactil #minimapa { right: calc(var(--t-M) + var(--sa-r)); top: calc(var(--t-M) + 48px + 6px + var(--sa-t)); width: clamp(64px, 22vmin, 96px); height: clamp(64px, 22vmin, 96px); }
+  body.tactil .hud-panel { display: grid; grid-template-columns: auto auto; column-gap: 10px; font-size: 12px; max-width: min(42vw, 300px); }
+  body.tactil .hud-panel .barra-seg { display: none; }
+  body.tactil .hud-panel .ico-prod { width: 30px; height: 30px; }
+  /* Arriba no entran panel, alerta y botones: la alerta va abajo al centro (entre joystick y acciones) y los avisos encima. */
+  body.tactil .hud-alerta { top: auto; bottom: calc(var(--t-M) + var(--sa-b)); }
+  body.tactil #toasts { bottom: calc(var(--t-M) + var(--sa-b) + 40px); }
+  body.tactil .pista { top: auto; bottom: calc(var(--t-M) + var(--sa-b) + 84px); max-width: min(40vw, 360px); }
+}
+/* Muy bajo (568x320 y 640x360): todavía más compacto. */
+@media (orientation: landscape) and (max-height: 380px) {
+  .disclaimer { font-size: 12px; line-height: 1.3; padding: 4px 8px; }
+  .tarjeta .sub { margin-bottom: 4px; }
+  .prod .pd { display: none; }
+  .repo-info .stat span { font-size: 12px; }
+  body.tactil .hud-panel { line-height: 1.25; padding: 4px 8px; }
+}
+/* Apaisado ancho pero no tan bajo (854x480, 960x540): grillas de 3 columnas en mercadería. */
+@media (orientation: landscape) and (min-height: 401px) and (max-height: 600px) {
+  .prod-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Estrellas en táctil: en pantallas angostas la píldora (abajo al centro) deja el texto y conserva luces y estrellas. */
+body.tactil .estrellas-hud { font-size: 15px; }
+@media (max-width: 760px) { body.tactil .hud-alerta em { display: none; } }
