@@ -78,7 +78,7 @@ console.log('3. Llamado de peatón');
   paso(sim, pl, 0.3);
   check('si uno que acude lo ve: 1 sola estrella y 1 perseguidor', sim.busq.nivel === 1 && nComp(sim) === 1, sim.busq.nivel + ' / ' + nComp(sim));
   paso(sim, pl, 0.1);
-  check('los demás vuelven a su esquina', !sim.agentes.some(a => a.aviso));
+  check('los demás vuelven a su esquina, salvo el enviado al lugar', sim.agentes.filter(a => a.aviso).every(a => a.acude) && sim.agentes.filter(a => a.aviso).length <= 1);
 }
 
 console.log('4. Zafar y reinicios');
@@ -186,10 +186,21 @@ console.log('8. Mapa real: 5 estrellas, patrullas por calles y rendimiento');
   check('paso medio < 3 ms y máximo < 25 ms', suma / n < 3 && maxMs < 25);
 }
 
+console.log('8b. Policías fijos');
+{
+  const sim = crearSimulacion(real, { rand: rnd });
+  const fijos = sim.esquinas.filter(e => e.fijo), resto = sim.esquinas.length - fijos.length;
+  check('25 % más de policías, fijos', fijos.length === Math.round(resto * 0.25), fijos.length + ' / ' + resto);
+  check('los fijos están en vereda', fijos.every(e => real.C[Math.floor(e.z) * real.N + Math.floor(e.x)].t === 'side'));
+  const s2 = crearSimulacion(generarCiudad(), { rand: rnd }), pl = jug(-500, -500);
+  paso(s2, pl, 30);
+  check('los fijos no se mueven de su lugar', s2.agentes.filter(a => a.fijo).every(a => a.x === a.esquinaBase.x && a.z === a.esquinaBase.z));
+}
+
 console.log('9. Ciudad procedural de respaldo');
 {
   const sim = crearSimulacion(generarCiudad(), { rand: rnd });
-  check('un agente por cruce (25) más 40 % de refuerzos, todos activos', sim.agentes.length === 35 && !sim.pool, String(sim.agentes.length));
+  check('25 cruces + 40 % de refuerzos + 25 % de fijos, todos activos', sim.agentes.length === 44 && sim.agentes.filter(a => a.fijo).length === 9 && !sim.pool, String(sim.agentes.length));
   const a = sim.agentes[0], pl = jug(a.x, a.z + 0.9);
   sim.busq.nivel = 5; sim.ultima = { x: pl.px, z: pl.py, heading: 0 };
   paso(sim, pl, 0.05);

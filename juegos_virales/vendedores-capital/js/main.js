@@ -4,7 +4,7 @@ import { generarCiudad, obstaculoEn, celdaPeatonal, celdaCaminableMasCerca, zona
 import { cargarCiudadReal } from './ciudad_real.js';   // mapa real de CABA (OpenStreetMap)
 import { ZONA_CENTRO, centroideBarrio, perfilesDe } from './barrios.js';
 import { dibujarMinimapa, dibujarMapaSeleccion } from './minimapa.js';
-import { crearSimulacion, stepAgentes, ventaVista, alertarAgentes, resetAgentes, activarAgentes } from './agentes.js';
+import { crearSimulacion, stepAgentes, ofertaVista, alertarAgentes, resetAgentes, activarAgentes } from './agentes.js';
 import { hudEstrellas } from './busqueda.js';
 import { stepEnergia } from './energia.js';
 import { crearCamara, seguir, zoomPor, aMundo } from './camara.js';
@@ -16,7 +16,7 @@ import { dprLimitado, prefsMovil } from './viewport.js';   // tope del devicePix
 import './movil.js';   // modo táctil, pantalla completa y capa "Girá el teléfono" (avisa con 'movil:vertical')
 import {
   SPEED, OFR_MED_ANG, OFR_CD, OFR_PAUSA,
-  ZOOM_OPCIONES, ENERGIA_MAX, PEAT_RECICLO_T, PATRULLA_OPCIONES,
+  ZOOM_OPCIONES, ENERGIA_MAX, PEAT_RECICLO_T,
 } from './config.js';
 import {
   crearPartida, registrarVenta, registrarEscape, marcarPerseguido, cerrarRondaPuntos, puntosTotal, desgloseFin,
@@ -136,9 +136,8 @@ function ciudadSpawn() {
 function nuevaPartida() {
   const s = ciudadSpawn();
   pl = { px: s.x, py: s.y, heading: 0, spd: 0, corre: false, prevPx: s.x, prevPy: s.y, path: [], target: null, energia: ENERGIA_MAX, agotado: false };
-  const patrulla = PATRULLA_OPCIONES[ajustes.patrulla];   // patrulla elegida en Opciones (se aplica al empezar la partida)
-  if (!sim) sim = crearSimulacion(city, { patrulla, coima: cobrarCoima });
-  else resetAgentes(sim, patrulla, econ.ronda);
+  if (!sim) sim = crearSimulacion(city, { coima: cobrarCoima });
+  else resetAgentes(sim, undefined, econ.ronda);
   sim.ronda = econ.ronda;
   activarAgentes(sim, pl);
   peds = [];
@@ -201,6 +200,7 @@ function ofrecer() {
   if (!p) { if (finPend <= 0) toast('Sin mercadería', 'mal'); return; }
   const best = buscarObjetivoOfrecer(peds, city, pl, radioOfrecer(econ), OFR_MED_ANG);   // peatones.js: cono, alcance y línea de visión
   if (!best) return;
+  ofertaVista(sim, pl);                          // basta con ofrecer a la vista de un agente, se venda o no
   const id = reaccionPara(best, { producto: p, dem: jornadaPorId(jornadaId).dem, tiempo });
   best.pausa = OFR_PAUSA;
   let unidades = 0, ingreso = 0;
@@ -218,7 +218,6 @@ function ofrecer() {
       pista('venta', 'Cada venta suma puntos y dinero. Lo que gastás en mercadería se recupera al cerrar la ronda.');
       bubble(best.x, best.z, pick(TEXTOS.compra), 'venta');
       bubble(pl.px, pl.py, '+' + pesos(ingreso), 'venta', 1.4);
-      ventaVista(sim, pl);
       if (stockTotal(rd) === 0) { finPend = 2.5; toast('Mercadería agotada', 'bien'); }
       break;
     }
@@ -226,7 +225,6 @@ function ofrecer() {
       bubble(best.x, best.z, pick(TEXTOS.insultar), 'mala');
       audio.sfx('rechazo');
       contagiarInsulto(peds, best, tiempo);   // los vecinos cercanos se contagian (peatones.js)
-      ventaVista(sim, pl);
       break;
     case 'cortes':
       bubble(best.x, best.z, pick(TEXTOS.cortes), '');
@@ -357,7 +355,10 @@ function finPartida(motivo) {
   $('finRecordProd').textContent = producto ? 'Mejor con ' + NOMBRE_PRODUCTO[producto] + ': ' + fmtPuntos(rec.producto) : '';
   ultimoFin = { motivo, puntos: total, medalla: m, producto };
   $('btnFinShare').hidden = total <= 0;
-  $('shareRedes').hidden = true;
+  $('shareRedes').hidden = total <= 0;
+  const L = enlacesCompartir(textoCompartir(ultimoFin), urlJuego());
+  for (const a of $('shareRedes').querySelectorAll('a[data-red]')) a.href = L[a.dataset.red];
+  $('btnFinShare').textContent = TXT_COMPARTIR;
   pasoNav(null);
   mostrar('fin');
   $('hudAlerta').hidden = true;
@@ -383,16 +384,18 @@ async function copiarTexto(texto) {
 // Enlace que se comparte: la página actual, sin datos del usuario.
 const urlJuego = () => location.origin + location.pathname;
 
-$('btnFinShare').addEventListener('click', () => {
+// "Compartir resultado": menú nativo del dispositivo si existe; si no (o si falla), copia el texto con el enlace.
+const TXT_COMPARTIR = '📤 Compartir resultado';
+$('btnFinShare').addEventListener('click', async e => {
   if (!ultimoFin) return;
-  const texto = textoCompartir(ultimoFin), L = enlacesCompartir(texto, urlJuego()), box = $('shareRedes');
-  for (const a of box.querySelectorAll('a[data-red]')) a.href = L[a.dataset.red];
-  box.hidden = !box.hidden;
-});
-$('shareRedes').querySelector('[data-red=copiar]').addEventListener('click', async e => {
-  const ok = await copiarTexto(textoCompartir(ultimoFin ?? {}) + ' ' + urlJuego());
-  e.currentTarget.textContent = ok ? '¡Copiado!' : 'No se pudo copiar';
-  setTimeout(() => { e.currentTarget.textContent = 'Copiar'; }, 1800);
+  const boton = e.currentTarget, texto = textoCompartir(ultimoFin), url = urlJuego();
+  if (typeof navigator.share === 'function') {
+    try { await navigator.share({ title: 'Vendedores Capital', text: texto, url }); return; }
+    catch (err) { if (err?.name === 'AbortError') return; /* cerrado por el usuario; otro error: se copia */ }
+  }
+  const ok = await copiarTexto(texto + ' ' + url);
+  boton.textContent = ok ? '¡Resultado copiado! Pegalo donde quieras' : 'No se pudo copiar';
+  setTimeout(() => { boton.textContent = TXT_COMPARTIR; }, 2500);
 });
 $('btnFinJugar').addEventListener('click', jugar);
 $('btnFinMenu').addEventListener('click', irAlTitulo);
@@ -784,7 +787,6 @@ function pintarOpciones() {
   $('optDistancia').value = ajustes.distancia;
   $('optZoom').value = ajustes.zoom;
   $('optFps').value = String(ajustes.fps);
-  $('optPatrulla').value = ajustes.patrulla;
   $('optControles').value = ajustes.controles;
 }
 // Controles en pantalla (táctil): joystick (por defecto) o pad de flechas. Clase en body; el CSS decide qué se muestra.
@@ -802,7 +804,6 @@ $('btnSilenciar').addEventListener('click', () => { guardarAjuste('silencio', !a
 $('optDistancia').addEventListener('change', e => guardarAjuste('distancia', e.target.value));
 $('optZoom').addEventListener('change', e => guardarAjuste('zoom', e.target.value));
 $('optFps').addEventListener('change', e => guardarAjuste('fps', Number(e.target.value)));
-$('optPatrulla').addEventListener('change', e => guardarAjuste('patrulla', e.target.value));   // se aplica en la próxima partida
 
 // Celular en vertical: la partida queda en pausa hasta volver a apaisado (sólo si la pausó el giro).
 let pausado = false, pausaGiro = false;

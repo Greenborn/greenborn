@@ -173,6 +173,9 @@ body.movil-vertical { overflow: hidden; }
 .fin-record { font-weight: 700; }
 .fin-record.nuevo { color: var(--acento); }
 .share-redes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; }
+.share-redes[hidden] { display: none; }
+.share-redes a { display: flex !important; align-items: center; justify-content: center; gap: 8px; }
+.share-redes svg { flex: none; }
 .share-redes a, .share-redes button { display: block; min-height: 44px; text-align: center; padding: 9px; border-radius: 10px; background: #2a2b34; border: 2px solid #3a3a44; color: var(--texto); text-decoration: none; font-size: 14px; font-weight: 600; }
 .fin-tarjeta .boton, .fin-tarjeta .boton-sec { margin-top: 8px; }
 

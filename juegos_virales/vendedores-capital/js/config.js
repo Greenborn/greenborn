@@ -73,8 +73,6 @@ export const ZOOM_OPCIONES = { cerca: 40, medio: 28, lejos: 16 };
 export const DISTANCIA_OPCIONES = ['corta', 'media', 'larga'];
 // fps: límite de cuadros por segundo del bucle de main.js.
 export const FPS_OPCIONES = [30, 45, 60];
-// patrulla: cómo se mueven los agentes de control. El valor es POLI_FASE de la 3D: 2 = caminan por la vereda (default), 1 = quietos en su esquina.
-export const PATRULLA_OPCIONES = { vereda: 2, esquina: 1 };
 export const CONTROLES_OPCIONES = ['joystick', 'flechas'];   // controles en pantalla en táctil: joystick (defecto) o pad de flechas
 
 // Coima al capturar (coima.js). Origen 3D: COIMA_MODO, COIMA_FRAC, COIMA_ACEPTA, COIMA_CD (defaults de la 3D).

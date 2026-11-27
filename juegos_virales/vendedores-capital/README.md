@@ -100,7 +100,7 @@ Pantallas de `index.html`, todas con id `pantalla*` y nombre en el router (`pant
 | `mercaderia` | `pantallaMercaderia` | "¿Qué vas a vender?", panel de reposición (Ronda, Disponible, Ganancia última ronda, Tope de stock, Costo total), una tarjeta por producto con precio, estrellas y contadores − / + (los bloqueados se ven apagados con "Ronda N"), Reponer y salir a la calle, Volver al personaje y Mejoras del vendedor |
 | `mejoras` | `pantallaMejoras` | Cinco mejoras con nivel y costo del siguiente, caja disponible y Volver a la mercadería |
 | `personaje` | `pantallaPersonaje` | Personalizador del vendedor (D1): vista previa pixelart a escala entera, una fila por categoría (color de piel, color y estilo de pelo, color de ropa, accesorio y color de calzado), Al azar, Guardar y Volver. Se entra desde el título, desde la pausa (Cambiar personaje) y desde Mercadería (paso 1) |
-| `opciones` | `pantallaOpciones` | Volumen y Silenciar (guardados, aplicados al audio; ver "Audio (D6)"), distancia de vista (guardada, sin efecto todavía), zoom inicial (aplica al empezar una partida), límite de FPS (30, 45, 60; aplica en el bucle de `main.js`) y Patrulla de agentes (vereda o esquina; aplica al empezar la próxima partida) |
+| `opciones` | `pantallaOpciones` | Volumen y Silenciar (guardados, aplicados al audio; ver "Audio (D6)"), distancia de vista (guardada, sin efecto todavía), zoom inicial (aplica al empezar una partida), límite de FPS (30, 45, 60; aplica en el bucle de `main.js`) |
 | `seleccion` | `pantallaSeleccion` | Selección de zona (F7, M8): minimapa de la ciudad completa y un botón por barrio. Aparece cada vez que se sale de Mercadería (en cada ronda). Sin elección en 10 s, la primera vez empieza en Microcentro y después sigue donde estaba |
 | `ayuda` | `pantallaAyuda` | Cómo se juega: objetivo, ofrecer, visión y tabla de teclas (incluye Q y R para girar) |
 | `pausa` | `pantallaPausa` | Seguir, Reiniciar, Opciones, Cómo se juega, Cambiar personaje y Salir al menú |
@@ -157,7 +157,7 @@ Pasos para probar el audio en navegador (los hace el humano):
 - **Cámara:** ortogonal cenital, siempre centrada en el jugador (con suavizado), con zoom por rueda o botones y rotación de la vista en pasos de 45 grados (Q y R, o los botones ⟲ ⟳). El zoom inicial se elige en Opciones. A diferencia de la 3D, la vista no sigue el rumbo del jugador: la entrada de movimiento es en pantalla (W avanza hacia arriba de la vista, sea cual sea el giro).
 - **Campo de visión:** se dibuja como sector (90°) en el suelo. Quien persigue ve a 360° hasta `POLI_RADIO_PERS` (dibujado como círculo).
 - **Coima:** portada de la 3D con balance propio (ver "Coima y patrulla (F5)" abajo). Si no hay coima posible o el agente la rechaza, la captura termina la partida (`capturado`) y se pierde toda la mercadería, como antes.
-- **Fase de patrulla:** `POLI_FASE` 2 (vereda) por defecto; la opción 1 (quietos en la esquina) se elige en Opciones (ver "Coima y patrulla (F5)").
+- **Fase de patrulla:** `POLI_FASE` 2 (vereda) por defecto; los agentes siempre caminan; no hay opción para dejarlos quietos.
 - **Economía:** rondas, reposición, mejoras y precios por producto como en la 3D (ver "Economía por rondas" abajo). Las reacciones de los peatones usan la memoria por ronda y la `DEMANDA` del producto (ver "Peatones, memoria y jornadas" abajo).
 - **Jornadas:** mañana, mediodía y tarde, con la noche deshabilitada como en la 3D. El tramo de cada momento es la duración de la ronda (`DURACION_RONDA` = 120 s) dividida en tres; la 3D usa un ciclo de partida distinto.
 - **Alcance de ofrecer:** base 2.25 celdas y semiángulo de 90° (180° en total); la mejora suma 0.75 por nivel (3.0 y 3.75). La línea de visión (G8) aplica al cono: un edificio entre el jugador y el peatón lo bloquea (ver "Indicadores, pistas, modelos y cono (F8)").
@@ -194,7 +194,7 @@ Valores iguales a los de la Fase 3 (líneas aprox. 530 a 560 y 2490 a 2800):
 | `POLI_DIRECTO` / `POLI_INTERCEPT` | 3 / [ (0,0), (7,0), (4,4), (4,-4) ] | `agentes.js` |
 | `POLI_VEL_PAT` / `POLI_PAT_R` / `POLI_PAT_PAUSA` | 1.5 / 10 / 3 | `agentes.js` |
 | `POLI_SIM` | 40 celdas | `agentes.js` |
-| `POLI_FASE` | 2 (vereda); 1 = esquina | `agentes.js`, `config.js` (`PATRULLA_OPCIONES`) |
+| `POLI_FASE` | 2 (vereda); 1 = esquina | `agentes.js` |
 | `COIMA_MODO` / `COIMA_FRAC` | 'dinero' / 0.6 (3D: 0.5) | `config.js` |
 | `COIMA_ACEPTA` / `COIMA_CD` | 0.55 / 8 s (3D: 0.6 / 3 s) | `config.js` |
 | `POLI_VENTA_VENTANA` | 1.5 s | `agentes.js` |
@@ -249,9 +249,8 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 ## Coima y patrulla (F5)
 
 - **Coima (`coima.js`):** al capturar (un agente o una patrulla), si no hay cooldown, se propone una coima. Paga `COIMA_FRAC` (60 %) del valor de la mercadería, limitado a lo vendido en la ronda; si queda por debajo de `COIMA_MIN` ($500) no hay coima. Probabilidad de aceptación `COIMA_ACEPTA` (55 %) x `COIMA_DECAE` (0.6) por cada coima ya aceptada en la partida. Aceptada: no hay captura, la búsqueda termina para todos (0 estrellas, los agentes vuelven, se van patrullas y helicóptero; no suma puntos ni cuenta como zafada) y hay `COIMA_CD` (8 s) sin nueva oferta. Rechazada o imposible: la captura termina la partida.
-- **Tras aceptar:** 0 estrellas y, durante `COIMA_CIEGO` (10 s, `config.js`), agentes y patrullas no te ven: ventas, carreras y llamados de peatones no suman estrellas.
+- **Tras aceptar:** 0 estrellas y, durante `COIMA_CIEGO` (10 s, `config.js`), agentes y patrullas no te ven: ventas, carreras y llamados de peatones no suman estrellas (el agente llamado igual va al lugar).
 - **Modo producto:** entrega el 60 % de las unidades del producto activo (redondeo hacia arriba, siempre queda 1), sin mínimo en pesos. Se activa con `COIMA_MODO` en `config.js`; no hay pantalla para elegirlo.
-- **Patrulla a pie 1 (quietos en la esquina):** opción "Patrulla de agentes" de Opciones; no caminan mientras no haya búsqueda ni llamado. Se aplica en la próxima partida.
 
 ## Puntaje, medallas, récord y compartir (F6)
 
@@ -261,8 +260,8 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 - **Puntaje en el HUD:** suma venta + escapes + bonus de sigilo + bonus de tiempo. El desglose de la pantalla de fin usa las mismas cuentas, así que su total coincide con el HUD.
 - **Medallas (G19):** bronce desde 8000, plata desde 20000 y oro desde 40000 (`MEDALLA_MIN`). Debajo de 8000 no hay medalla.
 - **Récord (G20):** dos récords en `localStorage`, con claves propias de la 2D: `2d_record` (global) y `2d_record_<producto>` (por producto, con el último producto vendido en la partida). Se actualizan solo al terminar la partida (captura o sin fondos), y solo si el puntaje es mayor que 0 y supera el récord guardado.
-- **Compartir (G21, decisión D5):** la pantalla de fin tiene un botón "Compartir resultado" que abre el menú con WhatsApp, X, Facebook, Telegram y Copiar. El texto tiene el motivo, el producto, el puntaje y la medalla, sin nombre ni otros datos personales. Los enlaces se arman solo en el cliente; el único envío es el enlace que el jugador abre. "Copiar" usa `navigator.clipboard` y, si no está disponible, un campo temporal con `execCommand`.
-- **Diferencias con la 3D:** el botón de compartir no usa la API nativa `navigator.share` (solo abre el menú de redes); no hay animación de conteo ni de filas en la pantalla de fin; el récord no se muestra todavía en el título.
+- **Compartir (G21, decisión D5):** la pantalla de fin muestra WhatsApp, X, Facebook y Telegram, cada uno con su icono, y un botón "Compartir resultado" que abre el menú nativo (`navigator.share`) o, si no existe, copia el texto con el enlace. El texto tiene el motivo, el producto, el puntaje y la medalla, sin nombre ni otros datos personales. Los enlaces se arman solo en el cliente; el único envío es el enlace que el jugador abre. "Copiar" usa `navigator.clipboard` y, si no está disponible, un campo temporal con `execCommand`.
+- **Diferencias con la 3D:** no hay animación de conteo ni de filas en la pantalla de fin; el récord no se muestra todavía en el título.
 
 ## Ciudad por barrios, minimapa y cámara (F7)
 
@@ -285,13 +284,13 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 ## Búsqueda (estrellas), agentes en cada esquina y balance
 
-**Agentes en cada esquina.** Mapa real: uno por cada esquina (`esquinasReales`, unas 695). Ciudad procedural de respaldo: uno por cruce (25). Sobre esa base, `conRefuerzos` suma un 40 % de agentes (`AG_REFUERZO`) en veredas cercanas a algunas esquinas. `activarAgentes` solo crea los de las esquinas a menos de `BUSQ_R_ACTIVA` (40 celdas) del jugador, con tope `BUSQ_MAX_ACTIVOS` (24), más los que estén persiguiendo; los lejanos no existen en `sim.agentes`. La procedural los tiene todos activos.
+**Agentes en cada esquina.** Mapa real: uno por cada esquina (`esquinasReales`, unas 695). Ciudad procedural de respaldo: uno por cruce (25). Sobre esa base, `conRefuerzos` suma un 40 % de agentes (`AG_REFUERZO`) en veredas cercanas a algunas esquinas. Además, `conFijos` suma un 25 % (`AG_FIJOS`) de policías fijos, parados en esquinas o en lugares al azar de la vereda (semilla fija); persiguen y acuden como el resto y vuelven a su lugar. `activarAgentes` solo crea los de las esquinas a menos de `BUSQ_R_ACTIVA` (40 celdas) del jugador, con tope `BUSQ_MAX_ACTIVOS` (24), más los que estén persiguiendo; los lejanos no existen en `sim.agentes`. La procedural los tiene todos activos.
 
 **Atentos y distraídos.** Todos están en su esquina, pero solo una fracción ve ventas y carreras: 60 % en la ronda 1, +5 % por ronda, tope 100 %. Los distraídos son grises y sin cono; acuden a un llamado y se suman a una persecución.
 
-**Estrellas (0 a 5).** +1 por vender (o recibir un insulto) a la vista de un agente y +1 por empezar a correr (flanco) a la vista de un agente que todavía no estaba alertado (correr ante uno ya alertado no suma); cooldown de 2 s por motivo.
+**Estrellas (0 a 5).** +1 por ofrecer a la vista de un agente, se concrete o no la venta (`ofertaVista`, que además pone a perseguir a todos los que lo ven) y +1 por empezar a correr (flanco) a la vista de un agente que todavía no estaba alertado (correr ante uno ya alertado no suma); cooldown de 2 s por motivo.
 
-**Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), haya o no estrellas, salvo durante la ceguera por coima.
+**Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), haya o no estrellas, incluso durante la ceguera por coima. Ese agente no se desvía ni se cancela (correr u ofrecer frente a él, zafar o pagar coima) hasta llegar al lugar; recién ahí actúa si ve al jugador, o vuelve a su esquina.
 
 **Correr en un cono.** Si un agente atento (o en alerta) ve al jugador corriendo, pasa a persecución en el acto (`vioCorrer`), aunque la respuesta del nivel ya esté cubierta (tope `POLI_MAX_PERS`). Correr solo suma estrella si alerta a un agente que todavía no estaba alertado (ni en `alerta` ni en `persecucion`).
 
@@ -304,7 +303,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 | 5 | 4 | 2 | sí | 8 s / 15.8 | 900 |
 
 - **Cantidad exacta:** "a pie" cuenta persiguiendo y en alerta visual ("!"). No hay propagación entre agentes: un director completa el número con los testigos y luego los más cercanos a la última posición vista (activando esquinas lejanas si faltan).
-- **Llamado de un peatón:** siempre va al menos el agente libre más cercano. Sin estrellas, además van todos los que estén a 15 celdas (no cuentan como perseguidores); el primero que ve al jugador suma una estrella (motivo venta) y los demás vuelven, salvo el más cercano. Con estrellas va uno solo, que persigue si ve al jugador, y se actualiza la última posición vista.
+- **Llamado de un peatón:** siempre va al menos el agente libre más cercano. Sin estrellas, además van todos los que estén a 15 celdas (no cuentan como perseguidores); el primero que ve al jugador suma una estrella (motivo venta) y los demás vuelven, salvo el más cercano. Con estrellas va uno solo y se actualiza la última posición vista.
 - **Última posición vista:** mientras un perseguidor, una patrulla o el helicóptero lo ve, todos conocen su posición. Si no, los agentes van al último punto y buscan a 8 celdas; las patrullas van a la calle más cercana a ese punto; el helicóptero vuela hacia allí.
 - **Patrullas (`vehiculos.js`):** solo por la red principal de calles, con el A* de `rutas.js` (mismo presupuesto de nodos por frame que los agentes). 8.5 celdas/s en recta, 2.5 al girar; capturan si el jugador está en la calle a menos de 0.7. La segunda corta más adelante. Ven a 10 celdas con línea de visión.
 - **Helicóptero:** 6.2 celdas/s, círculo de visión de 7, no captura; a los 30 s se retira y no vuelve hasta la próxima búsqueda.
@@ -319,7 +318,8 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 | `POLI_RADIO_PASO` / `POLI_RADIO_TOPE` | 0.25 / 9.5 | `agentes.js` |
 | `POLI_VEL_PERS_PASO` / `POLI_VEL_PERS_TOPE` | 0.05 / 6.0 | `agentes.js` |
 | `BUSQ_CD` / `BUSQ_T_PASO` / `BUSQ_D_PASO` / `BUSQ_PTS_PASO` | 2 s / 0.15 / 0.08 / 0.5 | `busqueda.js` |
-| `BUSQ_R_ACTIVA` / `BUSQ_MAX_ACTIVOS` / `BUSQ_CUBETA` | 40 / 34 / 16 | `busqueda.js` |
+| `BUSQ_R_ACTIVA` / `BUSQ_MAX_ACTIVOS` / `BUSQ_CUBETA` | 40 / 43 / 16 | `busqueda.js` |
+| `AG_FIJOS` | 0.25 (25 % más policías, fijos) | `agentes.js` |
 | `AG_REFUERZO` | 0.4 (40 % más policías que esquinas) | `agentes.js` |
 | `VEH_VEL_RECTA` / `VEH_VEL_GIRO` / `VEH_CAPTURA` | 8.5 / 2.5 / 0.7 | `vehiculos.js` |
 | `HELI_VEL` / `HELI_R` / `HELI_T_ESCENA` | 6.2 / 7 / 30 s | `vehiculos.js` |
@@ -401,7 +401,7 @@ Pasos para probar en navegador (los hace el humano, con el servidor que ya levan
 - Cambio de zona caminando: la zona se elige al empezar cada ronda.
 - Récord en el título: no se muestra.
 - La línea de visión no recorta el cono de ofrecer en el dibujo.
-- Animación de conteo en la pantalla de fin y `navigator.share`: no portados (ver "Diferencias con la 3D").
+- Animación de conteo en la pantalla de fin: no portada (ver "Diferencias con la 3D").
 
 **Decisiones pendientes** (sección "Decisiones que necesito del usuario" del plan):
 

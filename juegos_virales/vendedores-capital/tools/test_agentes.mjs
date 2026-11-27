@@ -2,7 +2,7 @@
 // Estados, FOV (cono de 90°), línea de visión, alerta por correr, persecución, safar y captura.
 import { N, generarCiudad, walkable } from '../js/ciudad.js';
 import {
-  crearSimulacion, stepAgentes, ventaVista, corridaVista, alertarAgentes, resetAgentes,
+  crearSimulacion, stepAgentes, ventaVista, corridaVista, alertarAgentes, resetAgentes, limpiarBusqueda,
   POLI_T_PERDER, POLI_T_ALERTA, POLI_PAUSA_CAPT, POLI_BFS_FRAME, POLI_FASE,
 } from '../js/agentes.js';
 
@@ -139,6 +139,18 @@ console.log('7b. Llamado: siempre acude al menos un agente');
   s2.busq.nivel = 1; s2.agentes[1].estado = 'persecucion';
   alertarAgentes(s2, 40.5, 30.5);
   check('con estrellas también va un agente libre', s2.agentes[0].estado === 'alerta' && s2.agentes[0].acude);
+}
+
+console.log('7c. Quien acude llega siempre');
+{
+  const sim = crearSimulacion(ciudadVacia(), { esquinas: [ag(30.5, 30.5, 0)], rand: () => 0.5, patrulla: 1 });
+  const p = sim.agentes[0]; p.atento = true;
+  sim.busq.nivel = 1; alertarAgentes(sim, 60.5, 30.5);
+  const pl = { px: 30.5, py: 34.5, heading: 0, corre: true, prevPx: 30.5, prevPy: 34.5 };
+  corridaVista(sim, pl); limpiarBusqueda(sim); sim.G.ciegoT = 3;
+  let min = Infinity;
+  for (let t = 0; t < 14; t += 0.05) { stepAgentes(sim, pl, 0.05); if (p.acude) min = Math.min(min, Math.hypot(p.x - 60.5, p.z - 30.5)); }
+  check('ni correr frente a él, ni zafar, ni la coima lo desvían: llega al lugar', min <= 2 && !p.acude, min.toFixed(2) + ' ' + p.estado);
 }
 
 console.log('7. Llamado de un peaton (alertarAgentes)');

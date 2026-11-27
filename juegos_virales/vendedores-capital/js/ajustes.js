@@ -1,11 +1,11 @@
-// Ajustes del jugador (volumen, silencio, distancia de vista, zoom inicial, límite de FPS, patrulla de agentes y controles en pantalla).
+// Ajustes del jugador (volumen, silencio, distancia de vista, zoom inicial, límite de FPS y controles en pantalla).
 // Se guardan en localStorage con la clave "2d_ajustes". Sin DOM: main.js los lee y los aplica.
 // Todo acceso a localStorage va en try/catch: en ventanas privadas o con datos bloqueados se usan los defaults.
-import { ZOOM_OPCIONES, DISTANCIA_OPCIONES, FPS_OPCIONES, PATRULLA_OPCIONES, CONTROLES_OPCIONES } from './config.js';
+import { ZOOM_OPCIONES, DISTANCIA_OPCIONES, FPS_OPCIONES, CONTROLES_OPCIONES } from './config.js';
 
 const CLAVE = '2d_ajustes';
 
-export const AJUSTES_DEFECTO = { volumen: 0.8, silencio: false, distancia: 'media', zoom: 'medio', fps: 60, patrulla: 'vereda', controles: 'joystick' };
+export const AJUSTES_DEFECTO = { volumen: 0.8, silencio: false, distancia: 'media', zoom: 'medio', fps: 60, controles: 'joystick' };
 
 // Devuelve un objeto nuevo con los ajustes guardados, validados contra las opciones conocidas.
 export function cargarAjustes() {
@@ -17,7 +17,6 @@ export function cargarAjustes() {
     if (DISTANCIA_OPCIONES.includes(g.distancia)) a.distancia = g.distancia;
     if (ZOOM_OPCIONES[g.zoom] !== undefined) a.zoom = g.zoom;
     if (FPS_OPCIONES.includes(g.fps)) a.fps = g.fps;
-    if (Object.keys(PATRULLA_OPCIONES).includes(g.patrulla)) a.patrulla = g.patrulla;
     if (CONTROLES_OPCIONES.includes(g.controles)) a.controles = g.controles;
   } catch (e) {}
   return a;

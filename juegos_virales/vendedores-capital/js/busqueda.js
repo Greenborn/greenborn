@@ -33,7 +33,7 @@ export const BUSQ_RESPUESTA = [
 // Zafar: tiempo base (POLI_T_PERDER) y distancia base (POLI_DIST_SAFAR) escalados por nivel: x (1 + paso x (nivel - 1)).
 export const BUSQ_T_PASO = 0.15, BUSQ_D_PASO = 0.08;
 // Activación por cercanía de los agentes de esquina (celdas). Reajustar con el mapa real.
-export const BUSQ_R_ACTIVA = 40, BUSQ_MAX_ACTIVOS = 34, BUSQ_CUBETA = 16;
+export const BUSQ_R_ACTIVA = 40, BUSQ_MAX_ACTIVOS = 43, BUSQ_CUBETA = 16;
 
 export const MOTIVOS = ['venta', 'corrida'];
 

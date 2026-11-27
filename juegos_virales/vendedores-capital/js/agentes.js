@@ -33,6 +33,7 @@ export const POLI_BFS_FRAME = 3;        // tope de pedidos de ruta de persecuci�
 export const POLI_MAX_PERS = 12;        // perseguidores simultáneos máximos (el resto espera en alerta)
 export const POLI_R_PROP = 12;          // sin uso en el juego (la propagación la reemplazan las estrellas); queda para el simulador
 export const POLI_R_AVISO = 15;         // radio del llamado de un peatón
+export const POLI_ACUDE_LLEGA = 2, POLI_ACUDE_REINTENTOS = 5;   // quien acude: distancia que cuenta como llegar y pedidos de ruta extra
 export const POLI_T_AVISO = 15;         // tiempo máximo yendo a un aviso antes de volver
 export const POLI_T_PERDER = 5, POLI_DIST_SAFAR = 12;   // sin ser visto T s y a más de X celdas de todos: zafó
 export const POLI_CAPTURA = 0.5, POLI_PAUSA_CAPT = 0.9; // distancia de captura y pausa antes de la pantalla final
@@ -41,7 +42,7 @@ export const POLI_INTERCEPT = [{ adel: 0, lado: 0 }, { adel: 7, lado: 0 }, { ade
 export const POLI_VEL_PAT = 1.5, POLI_PAT_R = 10, POLI_PAT_PAUSA = 3;   // patrulla por la vereda: paso, radio desde la esquina, pausa máxima
 export const POLI_SIM = 40;             // los agentes en patrulla a más de esto del jugador no se simulan
 export const POLI_VENTA_VENTANA = 1.5;  // s desde que un agente vio una venta: mientras dure, puede pasar a persecución
-export const POLI_FASE = 2;             // patrulla por defecto: 2 = camina por la vereda; 1 = quieto en su esquina (ver config.js PATRULLA_OPCIONES)
+export const POLI_FASE = 2;             // patrulla por defecto: 2 = camina por la vereda; 1 = quieto en su esquina (1 solo se usa en las pruebas)
 
 // Dificultad por ronda. Todas las esquinas tienen agente; AG_FRAC_* dice qué fracción está atenta (ve ventas y carreras).
 // Los demás están distraídos (sin cono), pero acuden a un llamado y se suman a una persecución.
@@ -91,13 +92,33 @@ export function conRefuerzos(city, base, frac = AG_REFUERZO) {
   return out;
 }
 
+export const AG_FIJOS = 0.25;          // policías fijos extra, sobre los que patrullan (25 % más)
+
+// Agrega los policías fijos (fijo: true, nunca patrullan): alternan entre una esquina y un lugar al azar de la vereda.
+// El azar usa una semilla fija: el mapa queda igual en cada partida.
+export function conFijos(city, lista, esquinas, frac = AG_FIJOS) {
+  let s = 987654321;
+  const azar = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const n = ladoDe(city), out = lista.slice(), total = Math.round(lista.length * frac);
+  for (let k = 0; k < total; k++) {
+    let e = null;
+    for (let t = 0; k % 2 && t < 200 && !e; t++) {
+      const i = Math.floor(azar() * n), j = Math.floor(azar() * n), c = city.C[j * n + i];
+      if (c.t === 'side' && !c.deco) e = { x: i + .5, z: j + .5, yaw: azar() * TAU - Math.PI };
+    }
+    e ??= esquinas[Math.floor(azar() * esquinas.length)];
+    out.push({ ...e, fijo: true });
+  }
+  return out;
+}
+
 // Crea la simulación de los agentes. opts.rand: generador aleatorio (inyectable para pruebas); opts.esquinas: puntos de patrulla;
 // opts.patrulla: POLI_FASE (1 esquina, 2 vereda; por defecto 2); opts.ronda: dificultad; opts.escalar: aplicar la fracción de
 // atentos (por defecto sí con las esquinas de la ciudad, no con esquinas dadas); opts.pool: activar por cercanía (por defecto si
 // hay más de 2 x BUSQ_MAX_ACTIVOS esquinas); opts.coima(p): lo llama main.js al capturar (p: agente o patrulla). Devuelve true
 // si se acepta la coima (main.js ya descontó lo pagado); false si se rechaza o no hay nada que pagar.
 export function crearSimulacion(city, opts = {}) {
-  const esquinas = opts.esquinas ?? conRefuerzos(city, esquinasAgentes(city));
+  const esquinas = opts.esquinas ?? conFijos(city, conRefuerzos(city, esquinasAgentes(city)), esquinasAgentes(city));
   const sim = {
     city, rand: opts.rand ?? Math.random,
     patrulla: opts.patrulla ?? POLI_FASE,
@@ -154,8 +175,9 @@ function nuevoAgente(sim, idx, e) {
   return {
     idx, x: e.x, z: e.z, yaw: e.yaw,
     esquinaBase: { x: e.x, z: e.z, yaw: e.yaw },
+    fijo: !!e.fijo,        // policía fijo: no patrulla, queda parado en su lugar
     estado: 'patrulla',    // 'patrulla' | 'alerta' | 'persecucion' | 'regreso'
-    aviso: false, tAlerta: 0, tAviso: 0, objetivo: null,
+    aviso: false, acude: false, tAlerta: 0, tAviso: 0, objetivo: null, reintentos: 0,
     ruta: null, k: 0, tRuta: 0, pend: 0, obj: null,   // pend: pedido de ruta en curso (0 = ninguno); obj: destino de la última ruta
     refX: e.x, refZ: e.z, tAtasco: 0, atascado: false,
     tVis: sim.rand() * POLI_VIS_DT, ve: false, ventaT: 0,
@@ -229,14 +251,14 @@ function agenteAlerta(p) {
 
 // Entra en persecución (solo lo decide el nivel de búsqueda: no se propaga a otros agentes).
 function agentePersigue(sim, p) {
-  p.estado = 'persecucion'; p.aviso = false; p.tRuta = 0; p.ruta = null; p.k = 0; p.pend = 0; p.obj = null; p.buscando = false; p.tVis = 0;
+  p.estado = 'persecucion'; p.aviso = false; p.acude = false; p.tRuta = 0; p.ruta = null; p.k = 0; p.pend = 0; p.obj = null; p.buscando = false; p.tVis = 0;
   sim.perseguido = true;
   sim.eventos.push({ t: 'persecucion', idx: p.idx });
 }
 
 // Vuelve a su esquina por A* peatonal (encolado; si no hay camino, camina directo en el último tramo).
 export function agenteRegresa(sim, p) {
-  p.estado = 'regreso'; p.aviso = false; p.ruta = null; p.k = 0;
+  p.estado = 'regreso'; p.aviso = false; p.acude = false; p.ruta = null; p.k = 0;
   const b = p.esquinaBase;
   pedirRuta(sim, p, { i: Math.floor(b.x), j: Math.floor(b.z) }, 2, r => { if (p.estado === 'regreso') ponerRuta(sim, p, r); });
 }
@@ -260,7 +282,7 @@ export function limpiarBusqueda(sim) {
   sim.busq = crearBusqueda();
   sim.patrullas.length = 0; sim.heli = null; sim.heliUsado = false; sim.visto = false; sim.ultima = null;
   sim.rutasCalle?.vaciar();
-  for (const p of sim.agentes) if (p.estado === 'persecucion' || p.estado === 'alerta') agenteRegresa(sim, p);
+  for (const p of sim.agentes) if ((p.estado === 'persecucion' || p.estado === 'alerta') && !p.acude) agenteRegresa(sim, p);   // quien acude a un llamado sigue
 }
 
 // Coima al capturar (agente o patrulla): sin cooldown y con callback, pregunta a main.js. Aceptada: no hay captura y la
@@ -325,19 +347,18 @@ function atascado(p, dt) {
 
 const verUltima = (sim, x, z, heading = 0) => { sim.ultima = { x, z, heading }; };
 
-// Llamado de un peatón: siempre va al menos un agente libre hasta (x, z), el más cercano (acude = true: no se cancela por
-// otros avistamientos). Sin búsqueda activa, además acuden todos los que estén a menos de POLI_R_AVISO; pasan a alerta yendo
+// Llamado de un peatón: siempre va al menos un agente libre hasta (x, z), el más cercano. Ese agente (acude = true) llega sí o
+// sí: no se desvía ni se cancela (avistamientos, zafar, coima) hasta estar en el lugar. Sin búsqueda activa, además acuden todos los que estén a menos de POLI_R_AVISO; pasan a alerta yendo
 // hacia allí (no cuentan como perseguidores) y el primero que ve al jugador suma una estrella (motivo venta).
-// Con estrellas activas va solo ese agente, el llamado actualiza la última posición vista y, si ve al jugador, lo persigue.
+// Con estrellas activas va solo ese agente y el llamado actualiza la última posición vista.
 export function alertarAgentes(sim, x, z) {
   const city = sim.city;
-  if (sim.G.ciegoT > 0) return;                                      // coima reciente: los llamados no tienen efecto
   const hayBusqueda = sim.busq.nivel > 0;
   if (hayBusqueda) verUltima(sim, x, z, sim.ultima?.heading ?? 0);
   const dest = celdaPeatonal(city, x, z, 4);
   if (!dest) return;
   const dist = p => Math.hypot(p.x - x, p.z - z);
-  const libre = p => (p.estado === 'patrulla' || p.estado === 'regreso' || (p.estado === 'alerta' && p.aviso)) && !!celdaPeatonal(city, p.x, p.z, 3);
+  const libre = p => !p.acude && (p.estado === 'patrulla' || p.estado === 'regreso' || (p.estado === 'alerta' && p.aviso)) && !!celdaPeatonal(city, p.x, p.z, 3);
   const libres = sim.agentes.filter(libre).sort((a, b) => dist(a) - dist(b));
   if (!libres.length && sim.pool) {                                  // ninguno activo libre: se activa la esquina libre más cercana
     const hay = new Set(sim.agentes.map(p => p.idx));
@@ -350,11 +371,11 @@ export function alertarAgentes(sim, x, z) {
   }
   libres.forEach((p, k) => {
     if (k > 0 && (hayBusqueda || dist(p) > POLI_R_AVISO)) return;
-    p.estado = 'alerta'; p.aviso = true; p.acude = k === 0; p.objetivo = { x, z }; p.ruta = null; p.k = 0;
+    p.estado = 'alerta'; p.aviso = true; p.acude = k === 0; p.reintentos = 0; p.objetivo = { x, z }; p.ruta = null; p.k = 0;
     p.tAviso = Math.max(POLI_T_AVISO, 2 * dist(p) / POLI_VEL_ALERTA);   // tiempo suficiente para llegar aunque esté lejos
     pedirRuta(sim, p, dest, 1, r => {                                // ruta encolada; sin camino, vuelve a su esquina
       if (!(p.estado === 'alerta' && p.aviso)) return;
-      if (r) ponerRuta(sim, p, r); else agenteRegresa(sim, p);
+      if (r) ponerRuta(sim, p, r); else if (!p.acude) agenteRegresa(sim, p);
     });
     sim.eventos.push({ t: 'alerta', idx: p.idx });
   });
@@ -381,12 +402,12 @@ function completarRespuesta(sim, preferidos = [], conAlerta = false) {
   for (const p of sim.agentes) if (comprometido(p)) falta--;
   for (const p of preferidos) {
     if (falta <= 0) return;
-    if (comprometido(p)) continue;
+    if (comprometido(p) || p.acude) continue;
     if (conAlerta) { agenteAlerta(p); sim.perseguido = true; } else agentePersigue(sim, p);
     falta--;
   }
   if (falta <= 0) return;
-  const u = sim.ultima, libres = sim.agentes.filter(p => !comprometido(p));
+  const u = sim.ultima, libres = sim.agentes.filter(p => !comprometido(p) && !p.acude);
   if (sim.pool && libres.length < falta) {                          // faltan cerca: se activan esquinas más lejanas
     const hay = new Set(sim.agentes.map(p => p.idx));
     for (const i of esquinasCerca(sim.indice, u.x, u.z, RECLUTA_R, sim.agentes.length + falta)) {
@@ -416,6 +437,16 @@ export function ventaVista(sim, pl) {
   if (!vistos.length) return;
   for (const p of vistos) p.ventaT = POLI_VENTA_VENTANA;
   avistamiento(sim, pl, vistos, 'venta');
+}
+
+// Ofrecer a la vista (se concrete o no la venta): cuenta como venta vista y todo agente que lo ve queda persiguiendo.
+export function ofertaVista(sim, pl) {
+  if (!sim.city || !pl) return;
+  const vistos = testigos(sim, pl);
+  if (!vistos.length) return;
+  ventaVista(sim, pl);
+  let n = sim.agentes.filter(p => p.estado === 'persecucion').length;
+  for (const p of vistos) if (n < POLI_MAX_PERS && p.estado !== 'persecucion' && !p.acude) { agentePersigue(sim, p); n++; }
 }
 
 // Ya alertado: persiguiendo, en "!" o acudiendo a un llamado.
@@ -448,7 +479,7 @@ export function resetAgentes(sim, patrulla, ronda) {
   if (sim.pool) sim.agentes.length = 0;
   for (const p of sim.agentes) {
     const b = p.esquinaBase;
-    Object.assign(p, { x: b.x, z: b.z, yaw: b.yaw, estado: 'patrulla', ruta: null, k: 0, aviso: false, ve: false, ventaT: 0, fuerza: 0, tAlerta: 0, tPat: 0.5,
+    Object.assign(p, { x: b.x, z: b.z, yaw: b.yaw, estado: 'patrulla', ruta: null, k: 0, aviso: false, acude: false, ve: false, ventaT: 0, fuerza: 0, tAlerta: 0, tPat: 0.5,
       pend: 0, obj: null, refX: b.x, refZ: b.z, tAtasco: 0, atascado: false, buscando: false, atento: esAtento(sim, p.idx) });
   }
   sim.rutas.vaciar(); sim.vel.x = sim.vel.z = 0;
@@ -559,18 +590,18 @@ export function stepAgentes(sim, pl, dt) {
     if (p.ventaT > 0) p.ventaT -= dt;
     p.tVis -= dt;
     if (p.tVis <= 0) { p.tVis = POLI_VIS_DT; p.ve = G.ciegoT <= 0 && agenteVe(city, p, pl, d, dx, dz, radio); }
-    if (pl.corre && p.ve && p.estado !== 'persecucion' && G.ciegoT <= 0 && (p.atento || p.estado === 'alerta')) vioCorrer(sim, p, pl);
+    if (pl.corre && p.ve && p.estado !== 'persecucion' && !p.acude && G.ciegoT <= 0 && (p.atento || p.estado === 'alerta')) vioCorrer(sim, p, pl);
     let moved = 0;
     switch (p.estado) {
       case 'patrulla':                                                // patrulla 2: camina por la vereda entre paradas; patrulla 1: quieto en la esquina
-        if (sim.patrulla !== 1 && p.ruta && p.k < p.ruta.length) {
+        if (sim.patrulla !== 1 && !p.fijo && p.ruta && p.k < p.ruta.length) {
           moved = agenteSigueRuta(city, p, POLI_VEL_PAT, dt);
           if (atascado(p, dt)) { p.ruta = null; p.tPat = 0; }        // trabado: elige otra parada
         }
         else {                                                        // barre la cabeza (en ambas patrullas)
           p.fase += dt * POLI_BARRIDO_VEL;
           giraAgente(p, p.esquinaBase.yaw + POLI_BARRIDO * Math.sin(p.fase), dt, 6);
-          if (sim.patrulla !== 1) {
+          if (sim.patrulla !== 1 && !p.fijo) {
             p.tPat -= dt;
             if (p.tPat <= 0) { agenteNuevaRuta(sim, p); p.tPat = POLI_PAT_PAUSA * (0.3 + 0.7 * sim.rand()); }
           }
@@ -578,12 +609,19 @@ export function stepAgentes(sim, pl, dt) {
         break;
       case 'alerta':
         if (p.aviso) {                                                // yendo a un llamado: todavía no persigue
-          if (p.ve && p.acude && sim.busq.nivel > 0) { verUltima(sim, pl.px, pl.py, pl.heading); agentePersigue(sim, p); break; }
-          if (p.ve) { avistamiento(sim, pl, [p], 'venta'); if (!p.aviso) break; }
+          if (p.ve && !p.acude) { avistamiento(sim, pl, [p], 'venta'); if (!p.aviso) break; }
           moved = agenteSigueRuta(city, p, POLI_VEL_ALERTA, dt);
-          p.tAviso -= dt;
-          if (atascado(p, dt)) { const o = p.objetivo; pedirRuta(sim, p, celdaPeatonal(city, o.x, o.z, 4), 1, r => { if (p.estado === 'alerta' && p.aviso) ponerRuta(sim, p, r); }); }
-          if ((!p.pend && (!p.ruta || p.k >= p.ruta.length)) || p.tAviso <= 0) agenteRegresa(sim, p);
+          if (!p.acude) p.tAviso -= dt;
+          const o = p.objetivo, repedir = () => pedirRuta(sim, p, celdaPeatonal(city, o.x, o.z, 4), 1, r => { if (p.estado === 'alerta' && p.aviso) ponerRuta(sim, p, r); });
+          if (atascado(p, dt)) repedir();
+          const finRuta = !p.pend && (!p.ruta || p.k >= p.ruta.length);
+          if (p.acude) {                                              // no suelta el llamado hasta llegar al lugar
+            if (finRuta) {
+              if (Math.hypot(o.x - p.x, o.z - p.z) > POLI_ACUDE_LLEGA && p.reintentos++ < POLI_ACUDE_REINTENTOS) repedir();
+              else if (p.ve && G.ciegoT <= 0) p.acude = false;        // llegó y lo ve: en el próximo paso actúa
+              else agenteRegresa(sim, p);
+            }
+          } else if (finRuta || p.tAviso <= 0) agenteRegresa(sim, p);
         } else {
           const u = sim.ultima ?? { x: pl.px, z: pl.py };
           giraAgente(p, Math.atan2(u.x - p.x, u.z - p.z), dt, 14);

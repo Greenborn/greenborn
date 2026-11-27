@@ -3,7 +3,7 @@
 // inyectado, captura sin coima (termina la partida), coima rechazada, coima aceptada (el agente vuelve a su esquina) y cooldown.
 import { N, generarCiudad } from '../js/ciudad.js';
 import {
-  crearSimulacion, stepAgentes, ventaVista, corridaVista, alertarAgentes, POLI_PAUSA_CAPT,
+  crearSimulacion, stepAgentes, ventaVista, ofertaVista, corridaVista, alertarAgentes, POLI_PAUSA_CAPT,
 } from '../js/agentes.js';
 import {
   propuestaCoima, pagarCoima, ofrecerCoima, valorMercaderia, cooldownInicial, bajarCooldown, puedeOfrecer,
@@ -146,7 +146,7 @@ console.log('7. Coima aceptada: sin captura, el agente vuelve a su esquina, cool
   pl.corre = true; corridaVista(sim, pl); pl.corre = false;
   alertarAgentes(sim, pl.px, pl.py);
   stepAgentes(sim, pl, 0.05);
-  check('ciego: 0 estrellas, no lo ve y no atiende llamados', sim.busq.nivel === 0 && !p.ve && p.estado === 'patrulla', sim.busq.nivel + ' ' + p.estado);
+  check('ciego: 0 estrellas y no lo ve, pero acude al llamado', sim.busq.nivel === 0 && !p.ve && p.acude, sim.busq.nivel + ' ' + p.estado);
   pasarTiempo(sim, pl, COIMA_CIEGO - 0.5);
   ventaVista(sim, pl);
   check('ciego: sigue sin verlo cerca de los 10 s', sim.busq.nivel === 0);
@@ -191,6 +191,16 @@ console.log('7b. Correr dentro del cono: persecución inmediata');
   const s4 = nuevo(true), ciego = pl0(30.5, 34.5);
   s4.G.ciegoT = 5; ciego.corre = true; stepAgentes(s4, ciego, 0.05);
   check('tras una coima (ciegos) no persiguen', s4.agentes.every(p => p.estado !== 'persecucion'));
+}
+
+console.log('7c. Ofrecer dentro del cono alerta, sin venta');
+{
+  const sim = crearSimulacion(ciudadVacia(), { esquinas: [{ x: 30.5, z: 30.5, yaw: 0 }, { x: 31.5, z: 30.5, yaw: 0 }], rand: () => 0.5, patrulla: 1 });
+  for (const p of sim.agentes) p.atento = true;
+  ofertaVista(sim, pl0(30.5, 26.5));
+  check('ofrecer fuera del cono no alerta', sim.busq.nivel === 0);
+  ofertaVista(sim, pl0(30.5, 34.5));
+  check('ofrecer en el cono: 1 estrella y todos los que lo ven persiguen', sim.busq.nivel === 1 && sim.agentes.every(p => p.estado === 'persecucion'), String(sim.busq.nivel));
 }
 
 console.log('8. Ciudad generada: la coima no rompe la simulación');
