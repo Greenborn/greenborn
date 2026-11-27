@@ -68,7 +68,7 @@ console.log('3. Línea de visión (edificio entre medio)');
   check('edificio en la línea bloquea la visión', sim.agentes[0].estado === 'patrulla', sim.agentes[0].estado);
 }
 
-console.log('4. Correr dentro del cono: alerta y luego persecucion');
+console.log('4. corridaVista (llamada directa): alerta y luego persecucion');
 {
   const city = ciudadVacia();
   const sim = crearSimulacion(city, { esquinas: [ag(30.5, 30.5, 0)], rand: () => 0.5 });
@@ -122,6 +122,23 @@ console.log('6. Captura: distancia < POLI_CAPTURA y fin de partida');
   const pl = pl0(30.5 + 1.0, 30.5, { prevPx: 30.5 - 1.0, prevPy: 30.5 });   // cruza sobre el agente
   stepAgentes(sim, pl, 0.05);
   check('captura por tramo recorrido (sin tunneling)', eventos(sim, 'atrapado') === 1);
+}
+
+console.log('7b. Llamado: siempre acude al menos un agente');
+{
+  const city = ciudadVacia();
+  const sim = crearSimulacion(city, { esquinas: [ag(30.5, 30.5, 0), ag(90.5, 90.5, 0)], rand: () => 0.5, patrulla: 1 });
+  alertarAgentes(sim, 60.5, 30.5);
+  const [a, b] = sim.agentes;
+  check('sin nadie cerca, va el más cercano', a.estado === 'alerta' && a.aviso && b.estado === 'patrulla', a.estado + ' ' + b.estado);
+  const lejos = { px: 5.5, py: 110.5, heading: 0, corre: false, prevPx: 5.5, prevPy: 110.5 };
+  let min = Infinity;
+  for (let t = 0; t < 14; t += 0.05) { stepAgentes(sim, lejos, 0.05); min = Math.min(min, Math.hypot(a.x - 60.5, a.z - 30.5)); }
+  check('llega hasta el lugar del transeúnte', min < 1.5, min.toFixed(2));
+  const s2 = crearSimulacion(city, { esquinas: [ag(30.5, 30.5, 0), ag(90.5, 90.5, 0)], rand: () => 0.5, patrulla: 1 });
+  s2.busq.nivel = 1; s2.agentes[1].estado = 'persecucion';
+  alertarAgentes(s2, 40.5, 30.5);
+  check('con estrellas también va un agente libre', s2.agentes[0].estado === 'alerta' && s2.agentes[0].acude);
 }
 
 console.log('7. Llamado de un peaton (alertarAgentes)');
@@ -198,9 +215,9 @@ console.log('10. Patrulla 1 (esquina): quietos en su esquina con barrido de cabe
   const s3 = crearSimulacion(ciudadVacia(), { esquinas: [{ x: 30.5, z: 30.5, yaw: 0 }], rand: () => 0.5, patrulla: 1 });
   const pl3 = pl0(30.5, 33.5, { corre: true });
   stepAgentes(s3, pl3, 0.05);
-  check('patrulla 1: correr visto dispara alerta', s3.agentes[0].estado === 'alerta', s3.agentes[0].estado);
+  check('patrulla 1: correr visto dispara persecución en el acto', s3.agentes[0].estado === 'persecucion', s3.agentes[0].estado);
   for (let t = 0; t < POLI_T_ALERTA + 0.3; t += 0.05) stepAgentes(s3, pl3, 0.05);
-  check('patrulla 1: tras la alerta pasa a persecución', s3.agentes[0].estado === 'persecucion', s3.agentes[0].estado);
+  check('patrulla 1: sigue persiguiendo', s3.agentes[0].estado === 'persecucion', s3.agentes[0].estado);
   check('patrulla 1: la persecución deja el evento', s3.perseguido === true);
 }
 

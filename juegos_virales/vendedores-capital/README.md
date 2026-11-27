@@ -289,7 +289,11 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 **Atentos y distraídos.** Todos están en su esquina, pero solo una fracción ve ventas y carreras: 60 % en la ronda 1, +5 % por ronda, tope 100 %. Los distraídos son grises y sin cono; acuden a un llamado y se suman a una persecución.
 
-**Estrellas (0 a 5).** +1 por vender (o recibir un insulto) a la vista de un agente y +1 por empezar a correr (flanco) a la vista de un agente, incluidos los que ya persiguen; cooldown de 2 s por motivo.
+**Estrellas (0 a 5).** +1 por vender (o recibir un insulto) a la vista de un agente y +1 por empezar a correr (flanco) a la vista de un agente que todavía no estaba alertado (correr ante uno ya alertado no suma); cooldown de 2 s por motivo.
+
+**Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), haya o no estrellas, salvo durante la ceguera por coima.
+
+**Correr en un cono.** Si un agente atento (o en alerta) ve al jugador corriendo, pasa a persecución en el acto (`vioCorrer`), aunque la respuesta del nivel ya esté cubierta (tope `POLI_MAX_PERS`). Correr solo suma estrella si alerta a un agente que todavía no estaba alertado (ni en `alerta` ni en `persecucion`).
 
 | Estrellas | A pie | Patrullas | Helicóptero | Zafar: tiempo / distancia | Puntos |
 |---|---|---|---|---|---|
@@ -300,7 +304,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 | 5 | 4 | 2 | sí | 8 s / 15.8 | 900 |
 
 - **Cantidad exacta:** "a pie" cuenta persiguiendo y en alerta visual ("!"). No hay propagación entre agentes: un director completa el número con los testigos y luego los más cercanos a la última posición vista (activando esquinas lejanas si faltan).
-- **Llamado de un peatón:** sin estrellas, los agentes a 15 celdas van a investigar (no cuentan como perseguidores); el primero que ve al jugador suma una estrella (motivo venta) y los demás vuelven. Con estrellas, el llamado solo actualiza la última posición vista.
+- **Llamado de un peatón:** siempre va al menos el agente libre más cercano. Sin estrellas, además van todos los que estén a 15 celdas (no cuentan como perseguidores); el primero que ve al jugador suma una estrella (motivo venta) y los demás vuelven, salvo el más cercano. Con estrellas va uno solo, que persigue si ve al jugador, y se actualiza la última posición vista.
 - **Última posición vista:** mientras un perseguidor, una patrulla o el helicóptero lo ve, todos conocen su posición. Si no, los agentes van al último punto y buscan a 8 celdas; las patrullas van a la calle más cercana a ese punto; el helicóptero vuela hacia allí.
 - **Patrullas (`vehiculos.js`):** solo por la red principal de calles, con el A* de `rutas.js` (mismo presupuesto de nodos por frame que los agentes). 8.5 celdas/s en recta, 2.5 al girar; capturan si el jugador está en la calle a menos de 0.7. La segunda corta más adelante. Ven a 10 celdas con línea de visión.
 - **Helicóptero:** 6.2 celdas/s, círculo de visión de 7, no captura; a los 30 s se retira y no vuelve hasta la próxima búsqueda.

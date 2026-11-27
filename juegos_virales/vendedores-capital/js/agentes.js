@@ -325,26 +325,39 @@ function atascado(p, dt) {
 
 const verUltima = (sim, x, z, heading = 0) => { sim.ultima = { x, z, heading }; };
 
-// Llamado de un peatón. Sin búsqueda activa, los agentes en POLI_R_AVISO de (x, z) pasan a alerta yendo hacia allí (no cuentan
-// como perseguidores); el primero que ve al jugador suma una estrella (motivo venta) y los demás vuelven.
-// Con estrellas activas no se suma gente: el llamado solo actualiza la última posición vista.
+// Llamado de un peatón: siempre va al menos un agente libre hasta (x, z), el más cercano (acude = true: no se cancela por
+// otros avistamientos). Sin búsqueda activa, además acuden todos los que estén a menos de POLI_R_AVISO; pasan a alerta yendo
+// hacia allí (no cuentan como perseguidores) y el primero que ve al jugador suma una estrella (motivo venta).
+// Con estrellas activas va solo ese agente, el llamado actualiza la última posición vista y, si ve al jugador, lo persigue.
 export function alertarAgentes(sim, x, z) {
   const city = sim.city;
   if (sim.G.ciegoT > 0) return;                                      // coima reciente: los llamados no tienen efecto
-  if (sim.busq.nivel > 0) { verUltima(sim, x, z, sim.ultima?.heading ?? 0); return; }
+  const hayBusqueda = sim.busq.nivel > 0;
+  if (hayBusqueda) verUltima(sim, x, z, sim.ultima?.heading ?? 0);
   const dest = celdaPeatonal(city, x, z, 4);
   if (!dest) return;
-  for (const p of sim.agentes) {
-    if (!(p.estado === 'patrulla' || p.estado === 'regreso' || (p.estado === 'alerta' && p.aviso))) continue;
-    if (Math.hypot(p.x - x, p.z - z) > POLI_R_AVISO) continue;
-    if (!celdaPeatonal(city, p.x, p.z, 3)) continue;
-    p.estado = 'alerta'; p.aviso = true; p.tAviso = POLI_T_AVISO; p.objetivo = { x, z }; p.ruta = null; p.k = 0;
-    pedirRuta(sim, p, dest, 1, r => {                                  // ruta encolada; sin camino, vuelve a su esquina
+  const dist = p => Math.hypot(p.x - x, p.z - z);
+  const libre = p => (p.estado === 'patrulla' || p.estado === 'regreso' || (p.estado === 'alerta' && p.aviso)) && !!celdaPeatonal(city, p.x, p.z, 3);
+  const libres = sim.agentes.filter(libre).sort((a, b) => dist(a) - dist(b));
+  if (!libres.length && sim.pool) {                                  // ninguno activo libre: se activa la esquina libre más cercana
+    const hay = new Set(sim.agentes.map(p => p.idx));
+    for (const i of esquinasCerca(sim.indice, x, z, RECLUTA_R, sim.agentes.length + 1)) {
+      if (hay.has(i)) continue;
+      const p = nuevoAgente(sim, i, sim.esquinas[i]);
+      if (!libre(p)) continue;
+      sim.agentes.push(p); libres.push(p); break;
+    }
+  }
+  libres.forEach((p, k) => {
+    if (k > 0 && (hayBusqueda || dist(p) > POLI_R_AVISO)) return;
+    p.estado = 'alerta'; p.aviso = true; p.acude = k === 0; p.objetivo = { x, z }; p.ruta = null; p.k = 0;
+    p.tAviso = Math.max(POLI_T_AVISO, 2 * dist(p) / POLI_VEL_ALERTA);   // tiempo suficiente para llegar aunque esté lejos
+    pedirRuta(sim, p, dest, 1, r => {                                // ruta encolada; sin camino, vuelve a su esquina
       if (!(p.estado === 'alerta' && p.aviso)) return;
       if (r) ponerRuta(sim, p, r); else agenteRegresa(sim, p);
     });
     sim.eventos.push({ t: 'alerta', idx: p.idx });
-  }
+  });
 }
 
 // Agentes que ven al jugador ahora: atentos, comprometidos o respondiendo un llamado. El más cercano primero.
@@ -387,13 +400,13 @@ function completarRespuesta(sim, preferidos = [], conAlerta = false) {
 
 // Un testigo vio un motivo ('venta' | 'corrida'): suma estrella (con cooldown por motivo), completa la respuesta del nivel y
 // cierra los llamados pendientes.
-function avistamiento(sim, pl, vistos, motivo) {
+function avistamiento(sim, pl, vistos, motivo, suma = true) {
   verUltima(sim, pl.px, pl.py, pl.heading);
-  if (sumarEstrella(sim.busq, motivo, sim.t)) sim.eventos.push({ t: 'estrella', nivel: sim.busq.nivel, motivo });
+  if (suma && sumarEstrella(sim.busq, motivo, sim.t)) sim.eventos.push({ t: 'estrella', nivel: sim.busq.nivel, motivo });
   if (sim.busq.nivel <= 0) return;
   completarRespuesta(sim, vistos, motivo === 'corrida');
   // Con la búsqueda en marcha los llamados quedan resueltos: nadie más suma estrellas por ellos.
-  for (const p of sim.agentes) if (p.estado === 'alerta' && p.aviso) agenteRegresa(sim, p);
+  for (const p of sim.agentes) if (p.estado === 'alerta' && p.aviso && !p.acude) agenteRegresa(sim, p);
 }
 
 // Venta (o insulto) a la vista: +1 estrella. Habilita ventaT en los testigos.
@@ -405,11 +418,23 @@ export function ventaVista(sim, pl) {
   avistamiento(sim, pl, vistos, 'venta');
 }
 
-// Empezar a correr a la vista de un agente: +1 estrella (stepAgentes lo llama en el flanco de subida de pl.corre).
+// Ya alertado: persiguiendo, en "!" o acudiendo a un llamado.
+const alertado = p => p.estado === 'persecucion' || p.estado === 'alerta';
+
+// Empezar a correr a la vista de un agente (stepAgentes lo llama en el flanco de subida de pl.corre): +1 estrella solo si
+// entre los que lo ven hay alguno todavía no alertado.
 export function corridaVista(sim, pl) {
   if (!sim.city || !pl || !pl.corre) return;
   const vistos = testigos(sim, pl);
-  if (vistos.length) avistamiento(sim, pl, vistos, 'corrida');
+  if (vistos.length) avistamiento(sim, pl, vistos, 'corrida', vistos.some(p => !alertado(p)));
+}
+
+// Correr dentro del cono de un agente lo pone a perseguir en el acto (sin "!" previo y aunque el nivel ya esté cubierto).
+function vioCorrer(sim, p, pl) {
+  if (sim.agentes.filter(q => q.estado === 'persecucion').length >= POLI_MAX_PERS) return;
+  verUltima(sim, pl.px, pl.py, pl.heading);
+  if (!alertado(p) && sumarEstrella(sim.busq, 'corrida', sim.t)) sim.eventos.push({ t: 'estrella', nivel: sim.busq.nivel, motivo: 'corrida' });
+  agentePersigue(sim, p);
 }
 
 // Todos vuelven a su esquina en patrulla (nueva partida o ronda). patrulla y ronda (opcionales) para lo que empieza.
@@ -534,6 +559,7 @@ export function stepAgentes(sim, pl, dt) {
     if (p.ventaT > 0) p.ventaT -= dt;
     p.tVis -= dt;
     if (p.tVis <= 0) { p.tVis = POLI_VIS_DT; p.ve = G.ciegoT <= 0 && agenteVe(city, p, pl, d, dx, dz, radio); }
+    if (pl.corre && p.ve && p.estado !== 'persecucion' && G.ciegoT <= 0 && (p.atento || p.estado === 'alerta')) vioCorrer(sim, p, pl);
     let moved = 0;
     switch (p.estado) {
       case 'patrulla':                                                // patrulla 2: camina por la vereda entre paradas; patrulla 1: quieto en la esquina
@@ -552,6 +578,7 @@ export function stepAgentes(sim, pl, dt) {
         break;
       case 'alerta':
         if (p.aviso) {                                                // yendo a un llamado: todavía no persigue
+          if (p.ve && p.acude && sim.busq.nivel > 0) { verUltima(sim, pl.px, pl.py, pl.heading); agentePersigue(sim, p); break; }
           if (p.ve) { avistamiento(sim, pl, [p], 'venta'); if (!p.aviso) break; }
           moved = agenteSigueRuta(city, p, POLI_VEL_ALERTA, dt);
           p.tAviso -= dt;

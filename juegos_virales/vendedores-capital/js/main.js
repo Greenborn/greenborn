@@ -274,7 +274,7 @@ function procesarEventos() {
       partida = marcarPerseguido(partida);
       toast('★'.repeat(e.nivel) + (e.motivo === 'corrida' ? ' Te vieron correr' : ' Te vieron vendiendo'), 'mal');
       audio.sfx('alerta');
-      pista('estrellas', 'Más estrellas, más te buscan. Perdelos de vista y alejate para volver a cero. Correr frente a un agente suma otra.');
+      pista('estrellas', 'Más estrellas, más te buscan. Perdelos de vista y alejate para volver a cero. Correr frente a un agente que no estaba alertado suma otra.');
     } else if (e.t === 'persecucion') {
       partida = marcarPerseguido(partida);
     } else if (e.t === 'patrulla') {
@@ -509,7 +509,7 @@ function actualizar(dt, inp) {
   stepAgentes(sim, pl, dt);
   sonarVehiculos(dt);
   if (!pl.corre && sim.agentes.some(a => a.ve && a.atento && (a.estado === 'patrulla' || a.estado === 'regreso' || a.estado === 'alerta'))) {
-    pista('corre', 'Empezar a correr frente a un agente suma una estrella. Arrancá cuando no te esté mirando.');
+    pista('corre', 'Correr frente a un agente que no estaba alertado suma una estrella. Arrancá cuando no te esté mirando.');
   }
   procesarEventos();
   if (estado !== 'jugando') return;

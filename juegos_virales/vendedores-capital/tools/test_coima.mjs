@@ -166,6 +166,33 @@ console.log('7. Coima aceptada: sin captura, el agente vuelve a su esquina, cool
   check('sin cooldown: vuelve a ofrecer', llamadas === 2);
 }
 
+console.log('7b. Correr dentro del cono: persecución inmediata');
+{
+  const nuevo = atento => {
+    const sim = crearSimulacion(ciudadVacia(), { esquinas: [{ x: 30.5, z: 30.5, yaw: 0 }, { x: 31.5, z: 30.5, yaw: 0 }], rand: () => 0.5, patrulla: 1 });
+    for (const p of sim.agentes) { p.atento = atento; p.tVis = 0; }
+    return sim;
+  };
+  const sim = nuevo(true), pl = pl0(30.5, 34.5);
+  pl.corre = true; stepAgentes(sim, pl, 0.05);
+  check('los dos agentes que lo ven correr persiguen, aunque haya 1 estrella', sim.busq.nivel === 1 && sim.agentes.every(p => p.estado === 'persecucion'), sim.agentes.map(p => p.estado).join());
+  sim.t += 10; pl.corre = false; stepAgentes(sim, pl, 0.05); pl.corre = true; stepAgentes(sim, pl, 0.05);
+  check('correr otra vez ante agentes ya alertados no suma estrellas', sim.busq.nivel === 1, String(sim.busq.nivel));
+  const s5 = nuevo(true), pl5 = pl0(30.5, 34.5);
+  for (const p of s5.agentes) Object.assign(p, { estado: 'alerta', aviso: false, tAlerta: 1 });
+  s5.busq.nivel = 2; pl5.corre = true; stepAgentes(s5, pl5, 0.05);
+  check('entrar corriendo en el cono de un agente ya en alerta no suma', s5.busq.nivel === 2, String(s5.busq.nivel));
+  const s2 = nuevo(true), atras = pl0(30.5, 26.5);
+  atras.corre = true; stepAgentes(s2, atras, 0.05);
+  check('fuera del cono no persiguen', s2.busq.nivel === 0 && s2.agentes.every(p => p.estado !== 'persecucion'));
+  const s3 = nuevo(true), camina = pl0(30.5, 34.5);
+  stepAgentes(s3, camina, 0.05);
+  check('caminando en el cono no persiguen', s3.agentes.every(p => p.estado !== 'persecucion'));
+  const s4 = nuevo(true), ciego = pl0(30.5, 34.5);
+  s4.G.ciegoT = 5; ciego.corre = true; stepAgentes(s4, ciego, 0.05);
+  check('tras una coima (ciegos) no persiguen', s4.agentes.every(p => p.estado !== 'persecucion'));
+}
+
 console.log('8. Ciudad generada: la coima no rompe la simulación');
 {
   const city = generarCiudad();

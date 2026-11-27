@@ -48,7 +48,7 @@ console.log('1. Estrellas por venta y cantidad exacta de perseguidores y vehícu
   for (let k = 0; k < 20; k++) { pl.px = 20.5 + k; pl.prevPx = pl.px; stepAgentes(sim, pl, 0.02); if (sim.G.capT > 0) break; max = Math.max(max, nComp(sim)); min = Math.min(min, nComp(sim)); }
   check('durante la persecución nunca hay más ni menos de 4 a pie', max === 4 && min === 4, min + '..' + max);
   alertarAgentes(sim, pl.px, pl.py);
-  check('un llamado con estrellas activas no suma perseguidores', nComp(sim) === 4 && !sim.agentes.some(a => a.aviso));
+  check('un llamado con estrellas activas no suma perseguidores y envía un solo agente', nComp(sim) === 4 && sim.agentes.filter(a => a.aviso).length === 1);
 }
 
 console.log('2. Correr a la vista');
@@ -59,7 +59,11 @@ console.log('2. Correr a la vista');
   paso(sim, pl, 0.5);
   check('seguir corriendo no suma', sim.busq.nivel === 1);
   pl.corre = false; stepAgentes(sim, pl, 0.01); sim.t += BUSQ_CD; pl.corre = true; stepAgentes(sim, pl, 0.01);
-  check('volver a arrancar a la vista (pasado el cooldown) suma 1', sim.busq.nivel === 2, String(sim.busq.nivel));
+  check('volver a arrancar ante agentes ya alertados no suma', sim.busq.nivel === 1, String(sim.busq.nivel));
+  pl.corre = false; stepAgentes(sim, pl, 0.01); sim.t += BUSQ_CD;
+  for (const a of sim.agentes) Object.assign(a, { estado: 'patrulla', ...a.esquinaBase, ruta: null, pend: 0, tVis: 0 });
+  pl.corre = true; stepAgentes(sim, pl, 0.01);
+  check('arrancar ante un agente no alertado (pasado el cooldown) suma 1', sim.busq.nivel === 2, String(sim.busq.nivel));
   const s2 = crearSimulacion(vacia(), { esquinas: fila(), rand: rnd });
   stepAgentes(s2, jug(20.5, 20.5, { corre: true }), 0.05);
   check('correr sin que lo vean no suma', s2.busq.nivel === 0);
