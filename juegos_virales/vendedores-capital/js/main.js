@@ -165,7 +165,7 @@ function nuevaPartida() {
 let dialogoCoima = false;   // diálogo abierto: la partida no avanza
 function cobrarCoima() {
   if (!hayOpcionDePago(rd)) return false;
-  if (!tirarAceptacion(Math.random, partida.coimas)) { toast('No aceptaron la coima', 'mal'); return false; }
+  if (!tirarAceptacion(Math.random, partida.coimas)) return false;   // rechazo: sin aviso, sigue la captura
   dialogoCoima = true;
   soltarControles();
   pintarDialogoCoima();
