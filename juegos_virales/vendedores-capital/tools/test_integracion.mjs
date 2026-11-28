@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { N, generarCiudad } from '../js/ciudad.js';
 import { cargarCiudadReal, esquinasReales, celdaCaminableMasCerca, obstaculoEn } from '../js/ciudad_real.js';
 import {
-  crearSimulacion, stepAgentes, ventaVista, alertarAgentes, resetAgentes, activarAgentes, comprometido,
+  crearSimulacion, stepAgentes, ventaVista, alertarAgentes, resetAgentes, sentirVenta, POLI_VEL_ALERTA, activarAgentes, comprometido,
   fraccionAtentos, radioVista, velPersecucion, manzanasConVereda,
 } from '../js/agentes.js';
 import { respuesta, BUSQ_CD, BUSQ_MAX_ACTIVOS, BUSQ_R_ACTIVA } from '../js/busqueda.js';
@@ -87,6 +87,16 @@ console.log('3. Llamado de peatón');
   const a = sim.agentes[0], pl = jug(55.5, 40.5);   // en el camino, antes de que llegue al lugar
   paso(sim, pl, 0.4);
   check('quien acude persigue al jugador apenas lo ve', a.estado === 'persecucion' && !a.acude && sim.busq.nivel === 1, a.estado + ' ' + sim.busq.nivel);
+}
+
+{
+  const sim = crearSimulacion(vacia(), { esquinas: [{ x: 40.5, z: 40.5, yaw: 0 }, { x: 90.5, z: 40.5, yaw: 0 }], rand: () => 0.5 });
+  sentirVenta(sim, 20.5, 40.5);
+  const [a, b] = sim.agentes;
+  check('una venta atrae a los cercanos, sin estrellas', a.estado === 'alerta' && a.aviso && !a.acude && b.estado === 'patrulla' && sim.busq.nivel === 0);
+  const pl = jug(-500, -500);
+  paso(sim, pl, 0.2); const x0 = a.x; paso(sim, pl, 1);
+  check('van caminando hacia el lugar', Math.abs((x0 - a.x) - POLI_VEL_ALERTA) < 0.3, (x0 - a.x).toFixed(2));
 }
 
 console.log('4. Zafar y reinicios');

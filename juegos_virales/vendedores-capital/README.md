@@ -302,6 +302,8 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 **Sin atascos.** Los agentes no pisan celdas fuera de la grilla del A* (árboles incluidos), solo van en línea recta si el tramo es caminable y, si pasan `POLI_TRABA_T` (1.5 s) sin avanzar, recalculan en el acto y como último recurso saltan al punto siguiente (`destrabar`).
 
+**Venta percibida.** Con cada venta concretada (`sentirVenta`), los agentes libres a menos de `POLI_R_VENTA` (25 celdas) van caminando (`POLI_VEL_ALERTA`) hasta el lugar, aunque no la hayan visto. No suma estrellas por sí solo; si alguno ve al jugador, lo persigue y suma una.
+
 **Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), corriendo a la velocidad de persecución (`velPersecucion`), haya o no estrellas, incluso durante la ceguera por coima. Mientras va, no suelta el llamado (zafar o pagar coima no lo cancelan) hasta llegar al lugar y volver a su esquina. Apenas el jugador entra en su visión (salvo durante la ceguera por coima), fija la persecución en él, sin esperar a llegar; suma una estrella (motivo venta).
 
 **Correr en un cono.** Si un agente atento (o en alerta) ve al jugador corriendo, pasa a persecución en el acto (`vioCorrer`), aunque la respuesta del nivel ya esté cubierta (tope `POLI_MAX_PERS`). Correr solo suma estrella si alerta a un agente que todavía no estaba alertado (ni en `alerta` ni en `persecucion`).

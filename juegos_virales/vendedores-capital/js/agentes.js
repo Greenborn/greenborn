@@ -33,6 +33,7 @@ export const POLI_BFS_FRAME = 3;        // tope de pedidos de ruta de persecuci�
 export const POLI_MAX_PERS = 12;        // perseguidores simultáneos máximos (el resto espera en alerta)
 export const POLI_R_PROP = 12;          // sin uso en el juego (la propagación la reemplazan las estrellas); queda para el simulador
 export const POLI_R_AVISO = 15;         // radio del llamado de un peatón
+export const POLI_R_VENTA = 25;         // radio en el que los agentes perciben una venta y van al lugar
 export const POLI_ACUDE_LLEGA = 2, POLI_ACUDE_REINTENTOS = 5;   // quien acude: distancia que cuenta como llegar y pedidos de ruta extra
 export const POLI_T_AVISO = 15;         // tiempo máximo yendo a un aviso antes de volver
 export const POLI_T_PERDER = 5, POLI_DIST_SAFAR = 12;   // sin ser visto T s y a más de X celdas de todos: zafó
@@ -491,6 +492,24 @@ export function alertarAgentes(sim, x, z) {
     });
     sim.eventos.push({ t: 'alerta', idx: p.idx });
   });
+}
+
+// "Sentido arácnido": con cada venta concretada, los agentes libres a menos de POLI_R_VENTA van caminando hasta el lugar.
+// No suma estrellas por sí solo; como en cualquier aviso, el que ve al jugador lo persigue.
+export function sentirVenta(sim, x, z) {
+  const dest = celdaPeatonal(sim.city, x, z, 4);
+  if (!dest) return;
+  for (const p of sim.agentes) {
+    const d = Math.hypot(p.x - x, p.z - z);
+    const libre = !p.acude && (p.estado === 'patrulla' || p.estado === 'regreso' || (p.estado === 'alerta' && p.aviso));
+    if (!libre || d > POLI_R_VENTA || !celdaPeatonal(sim.city, p.x, p.z, 3)) continue;
+    p.estado = 'alerta'; p.aviso = true; p.reintentos = 0; p.objetivo = { x, z }; p.ruta = null; p.k = 0;
+    p.tAviso = Math.max(POLI_T_AVISO, 2 * d / POLI_VEL_ALERTA);
+    pedirRuta(sim, p, dest, 1, r => {
+      if (!(p.estado === 'alerta' && p.aviso)) return;
+      if (r) ponerRuta(sim, p, r); else agenteRegresa(sim, p);
+    });
+  }
 }
 
 // Agentes que ven al jugador ahora: atentos, comprometidos o respondiendo un llamado. El más cercano primero.

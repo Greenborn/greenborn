@@ -4,7 +4,7 @@ import { generarCiudad, obstaculoEn, celdaPeatonal, celdaCaminableMasCerca, zona
 import { cargarCiudadReal } from './ciudad_real.js';   // mapa real de CABA (OpenStreetMap)
 import { ZONA_CENTRO, centroideBarrio, perfilesDe } from './barrios.js';
 import { dibujarMinimapa, dibujarMapaSeleccion } from './minimapa.js';
-import { crearSimulacion, resolverCoima, stepAgentes, ofertaVista, alertarAgentes, resetAgentes, activarAgentes } from './agentes.js';
+import { crearSimulacion, resolverCoima, stepAgentes, ofertaVista, alertarAgentes, sentirVenta, resetAgentes, activarAgentes } from './agentes.js';
 import { hudEstrellas } from './busqueda.js';
 import { stepEnergia } from './energia.js';
 import { crearCamara, seguir, zoomPor, aMundo } from './camara.js';
@@ -259,6 +259,7 @@ function ofrecer() {
     case 'comprar2': {
       partida = registrarVenta(partida, p, unidades, ingreso);
       audio.sfx('venta');
+      sentirVenta(sim, pl.px, pl.py);          // los agentes cercanos van caminando al lugar
       pista('venta', 'Cada venta suma puntos y dinero. Lo que gastás en mercadería se recupera al cerrar la ronda.');
       bubble(best.x, best.z, pick(TEXTOS.compra), 'venta');
       bubble(pl.px, pl.py, '+' + pesos(ingreso), 'venta', 1.4);
