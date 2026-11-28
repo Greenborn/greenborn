@@ -62,12 +62,20 @@ export const hayEntradaManual = inp => Math.hypot(inp.dx, inp.dy) > UMBRAL_MOV;
 //  - manual: true si hubo entrada manual. El camino se cancela y el llamador usa dx, dy de inp (la entrada manual manda).
 //  - si no hay entrada manual y el camino está activo: dx, dy es la dirección unitaria hacia el próximo paso.
 //  - llego: true en el cuadro en que el camino termina (destino alcanzado o trabado).
-export function pasoCamino(camino, pos, inp, dt) {
+//  - espera: true si esperar(dx, dy) pidió frenar (mira antes de cruzar, transito.js): dx, dy = 0 y no cuenta como trabado.
+export function pasoCamino(camino, pos, inp, dt, esperar = null) {
   if (hayEntradaManual(inp)) {
     cancelarCamino(camino);
     return { dx: inp.dx, dy: inp.dy, manual: true, llego: false };
   }
   if (!camino.activo) return { dx: 0, dy: 0, manual: false, llego: false };
+  if (esperar && camino.pasos.length) {
+    const q = camino.pasos[0], ex = q.x - pos.x, ey = q.y - pos.y, ed = Math.hypot(ex, ey);
+    if (ed >= LLEGADA && esperar(ex / ed, ey / ed)) {
+      camino.quieto = 0; camino.ref = null;
+      return { dx: 0, dy: 0, manual: false, llego: false, espera: true };
+    }
+  }
   // Trabado: si no se avanza AVANCE_MIN en TRABADO_S, se cancela (no se queda empujando una pared).
   if (!camino.ref) camino.ref = { x: pos.x, y: pos.y };
   if (Math.hypot(pos.x - camino.ref.x, pos.y - camino.ref.y) >= AVANCE_MIN) {

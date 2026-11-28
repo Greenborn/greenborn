@@ -38,6 +38,7 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
 │   ├── agentes.js      agentes (pool por cercanía, atentos y distraídos), FOV, director de la búsqueda, última posición vista, safar, captura (sin DOM)
 │   ├── busqueda.js     estrellas, respuesta por nivel, zafar y activación por cercanía (sin DOM)
 │   ├── vehiculos.js    patrullas por la red de calles y helicóptero (sin DOM)
+│   ├── transito.js     autos por las calzadas, frenada, bocina y atropello (sin DOM)
 │   ├── energia.js      energía al correr: costo de arranque y demora de recuperación (sin DOM)
 │   ├── coima.js        coima al capturar: propuesta, aceptación, pago y cooldown (funciones puras, sin DOM)
 │   ├── puntaje.js      puntos de venta, escape, bonus de sigilo y de tiempo, desglose, medallas, récord y texto/enlaces de compartir (sin DOM)
@@ -61,6 +62,7 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
     ├── test_ofrecer.mjs   pruebas headless del cono de ofrecer: alcance por nivel, semiángulo, línea de visión, objetivo más cercano y pistas (node 2d/tools/test_ofrecer.mjs)
     ├── test_personaje.mjs pruebas headless de personaje.js: valores por defecto, Al azar, validación, frames de tamaño fijo y persistencia con storage simulado (node 2d/tools/test_personaje.mjs)
     ├── test_peatones.mjs  pruebas headless de peatones.js y jornada.js (node 2d/tools/test_peatones.mjs)
+    ├── test_transito.mjs  pruebas headless de transito.js: recorrido, frenada, atropello, peatones, camino por clic, balance y rendimiento
     ├── test_puntaje.mjs   pruebas headless de puntaje.js: puntos, bonus, medallas, récord y texto de compartir (node 2d/tools/test_puntaje.mjs)
     ├── test_ciudad_real.mjs pruebas headless de la ciudad real: datos, agua, conectividad, aparición por barrio, caminar, peatones y agentes
     ├── procesar_osm.mjs   convierte la descarga de OpenStreetMap en datos/ (ver "Datos del mapa")
@@ -87,6 +89,7 @@ Desde la raíz del proyecto, con el servidor que ya usa el humano (`serve.py`), 
 - Si el clic cae en un edificio, el agua o un árbol, el destino es la celda caminable más cercana (radio 6 celdas). Nunca se camina a una celda no caminable. Si no hay camino, aparece el aviso "No hay camino hasta ahí".
 - La entrada manual cancela el camino: teclado, joystick o pad de flechas. También se cancela al llegar, al ser capturado, al pausar, al cambiar de pantalla y al empezar o cerrar una ronda. Si el jugador queda trabado (no avanza 0,3 celdas en 0,6 s, por ejemplo contra la esquina de un árbol) el camino se cancela solo.
 - Un toque sobre el HUD (paneles, botones, joystick, minimapa) no dispara el camino.
+- Antes de pisar delante de un auto que llega, el personaje espera y después sigue (`miraAlCruzar`, ver "Tránsito y atropello").
 - La lógica está en `caminar.js` (sin DOM): `planearCamino`, `iniciarCamino`, `pasoCamino` y `cancelarCamino`. `controles.js` avisa el toque con `onToque`, y `main.js` lo convierte a celdas.
 
 ## Menú y pantallas
@@ -104,7 +107,7 @@ Pantallas de `index.html`, todas con id `pantalla*` y nombre en el router (`pant
 | `seleccion` | `pantallaSeleccion` | Selección de zona (F7, M8): minimapa de la ciudad completa y un botón por barrio. Aparece cada vez que se sale de Mercadería (en cada ronda). Sin elección en 10 s, la primera vez empieza en Microcentro y después sigue donde estaba |
 | `ayuda` | `pantallaAyuda` | Cómo se juega: objetivo, ofrecer, visión y tabla de teclas (incluye Q y R para girar) |
 | `pausa` | `pantallaPausa` | Seguir, Reiniciar, Opciones, Cómo se juega, Cambiar personaje y Salir al menú |
-| `fin` | `pantallaFin` | Motivo ("¡Te atraparon!" o "Sin fondos para reponer"), desglose del puntaje, total, medalla, récord (global y del producto), compartir (botón y menú de redes oculto al inicio), Jugar de nuevo (partida nueva, economía inicial) y Menú (vuelve al título) |
+| `fin` | `pantallaFin` | Motivo ("¡Te atraparon!", "¡Te atropellaron!" o "Sin fondos para reponer"), desglose del puntaje, total, medalla, récord (global y del producto), compartir (botón y menú de redes oculto al inicio), Jugar de nuevo (partida nueva, economía inicial) y Menú (vuelve al título) |
 
 - Esc o P abren la pausa durante una partida y la cierran. Esc cierra Opciones y Cómo se juega, y vuelve desde Personaje. Mientras la pausa está abierta, el juego no avanza.
 - Jugar, Reiniciar y los cambios entre títulos, personaje y pausa usan un fundido corto (`#fundido`). Si el sistema pide reducir movimiento, el cambio es directo.
@@ -133,6 +136,9 @@ Eventos y sonidos (`main.js`):
 | Escape (zafar) | `escape` | `procesarEventos()`, evento `zafe` |
 | Captura (te quitan la mercadería) | `captura` | `procesarEventos()`, evento `atrapado` |
 | Fin de partida (captura o sin fondos) | `rechazo` | `finPartida()` |
+| Atropello | `atropello` | `finPartida()` |
+| Auto que te ve (bocina, o frenada si no le alcanza) | `bocina` / `frenada` | `moverTransito()` |
+| Auto que viene a menos de 10 celdas (cada 0.8 s) | `motor` | `moverTransito()` |
 | Coima aceptada | `venta` | `cobrarCoima()` |
 | Bonus de sigilo o de tiempo | `medalla` | `cerrarRondaJuego()` |
 | Ronda cerrada | `victoria` | `cerrarRondaJuego()` |
@@ -153,7 +159,7 @@ Pasos para probar el audio en navegador (los hace el humano):
 ## Diferencias con la 3D
 
 - **Ciudad:** el recorte real de CABA de 3 x 3 km desde OpenStreetMap, en una grilla de 600 x 600 celdas de 5 m (ver "Datos del mapa"). El agua no es caminable. Si los datos no cargan, se juega la ciudad procedural de `ciudad.js` (132 x 132, manzanas de 20 celdas, barrios ficticios en una grilla de 3 x 3, misma semilla de siempre).
-- **Peatones y calles:** los peatones y los agentes caminan por cualquier celda no edificio (veredas, calles, parques). En la 3D los peatones usan cruces; acá no hay tránsito de autos, así que no se modela el cruce.
+- **Peatones y calles:** los peatones y los agentes caminan por cualquier celda no edificio (veredas, calles, parques). En la 3D los peatones usan cruces; hay tránsito de autos (ver "Tránsito y atropello"), pero no se modelan sendas ni semáforos y los autos frenan por ellos.
 - **Cámara:** ortogonal cenital, siempre centrada en el jugador (con suavizado), con zoom por rueda o botones y rotación de la vista en pasos de 45 grados (Q y R, o los botones ⟲ ⟳). El zoom inicial se elige en Opciones. A diferencia de la 3D, la vista no sigue el rumbo del jugador: la entrada de movimiento es en pantalla (W avanza hacia arriba de la vista, sea cual sea el giro).
 - **Campo de visión:** se dibuja como sector (90°) en el suelo. Quien persigue ve a 360° hasta `POLI_RADIO_PERS` (dibujado como círculo).
 - **Coima:** portada de la 3D con balance propio (ver "Coima y patrulla (F5)" abajo). Si no hay coima posible o el agente la rechaza, la captura termina la partida (`capturado`) y se pierde toda la mercadería, como antes.
@@ -161,7 +167,7 @@ Pasos para probar el audio en navegador (los hace el humano):
 - **Economía:** rondas, reposición, mejoras y precios por producto como en la 3D (ver "Economía por rondas" abajo). Las reacciones de los peatones usan la memoria por ronda y la `DEMANDA` del producto (ver "Peatones, memoria y jornadas" abajo).
 - **Jornadas:** mañana, mediodía y tarde, con la noche deshabilitada como en la 3D. El tramo de cada momento es la duración de la ronda (`DURACION_RONDA` = 120 s) dividida en tres; la 3D usa un ciclo de partida distinto.
 - **Alcance de ofrecer:** base 2.25 celdas y semiángulo de 90° (180° en total); la mejora suma 0.75 por nivel (3.0 y 3.75). La línea de visión (G8) aplica al cono: un edificio entre el jugador y el peatón lo bloquea (ver "Indicadores, pistas, modelos y cono (F8)").
-- **Fin de partida:** por captura o por "Sin fondos" (caja que no alcanza para el gasto fijo y una unidad de algún producto desbloqueado). Puntaje, medallas, récord y compartir como en la 3D (ver "Puntaje, medallas, récord y compartir (F6)" abajo).
+- **Fin de partida:** por captura, por atropello (ver "Tránsito y atropello") o por "Sin fondos" (caja que no alcanza para el gasto fijo y una unidad de algún producto desbloqueado). Puntaje, medallas, récord y compartir como en la 3D (ver "Puntaje, medallas, récord y compartir (F6)" abajo).
 - **Puntos por unidad:** 100 (`PTS_VENTA`), como la 3D. En F0 la 2D usaba 50 (`PTS_UNIDAD`), que se reemplazó.
 - **Bonus de sigilo:** se da al cerrar cada ronda sin estrellas en esa ronda (en la 3D el flag es de la partida).
 - **Nombres:** la reacción de la 3D que llama a la fuerza se llama `llamado` (no usa la palabra prohibida). El resto de constantes `POLI_*` conserva el nombre de la 3D para compararlas.
@@ -260,7 +266,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 - **Bonus de tiempo:** hasta `PTS_BONUS_TIEMPO` = 500 x (1 + 0.25 x (ronda - 1)) al cerrar la ronda. El tiempo de referencia `T_BONUS` = `T_BONUS_BASE` (120 s) + `T_BONUS_POR_U` (6 s) por unidad comprada en esa ronda. El bonus baja linealmente a 0 en `T_BONUS` y no baja de 0. Usa el tiempo de la ronda (no la duración de las jornadas, `DURACION_RONDA`).
 - **Puntaje en el HUD:** suma venta + escapes + bonus de sigilo + bonus de tiempo. El desglose de la pantalla de fin usa las mismas cuentas, así que su total coincide con el HUD.
 - **Medallas (G19):** bronce desde 8000, plata desde 20000 y oro desde 40000 (`MEDALLA_MIN`). Debajo de 8000 no hay medalla.
-- **Récord (G20):** dos récords en `localStorage`, con claves propias de la 2D: `2d_record` (global) y `2d_record_<producto>` (por producto, con el último producto vendido en la partida). Se actualizan solo al terminar la partida (captura o sin fondos), y solo si el puntaje es mayor que 0 y supera el récord guardado.
+- **Récord (G20):** dos récords en `localStorage`, con claves propias de la 2D: `2d_record` (global) y `2d_record_<producto>` (por producto, con el último producto vendido en la partida). Se actualizan solo al terminar la partida (captura, atropello o sin fondos), y solo si el puntaje es mayor que 0 y supera el récord guardado.
 - **Compartir (G21, decisión D5):** la pantalla de fin muestra WhatsApp, X, Facebook y Telegram, cada uno con su icono, y un botón "Compartir resultado" que abre el menú nativo (`navigator.share`) o, si no existe, copia el texto con el enlace. El texto tiene el motivo, el producto, el puntaje y la medalla, sin nombre ni otros datos personales. Los enlaces se arman solo en el cliente; el único envío es el enlace que el jugador abre. "Copiar" usa `navigator.clipboard` y, si no está disponible, un campo temporal con `execCommand`.
 - **Diferencias con la 3D:** no hay animación de conteo ni de filas en la pantalla de fin; el récord no se muestra todavía en el título.
 
@@ -281,12 +287,12 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 - **Flecha amarilla al objetivo (G23):** el peatón elegible más cercano dentro del cono de ofrecer (alcance, semiángulo y línea de visión) lleva una flecha amarilla sobre la cabeza. Solo aparece cuando hay un objetivo. La selección vive en `buscarObjetivoOfrecer` (peatones.js), la usan `ofrecer()` y el render, así que lo que se marca es lo que se vende.
 - **Luces de alerta (G24):** en el HUD, tres luces verde, amarilla y roja con el texto "Tranquilo", "¡Te vieron!" o "¡Persecución!". Es el mismo criterio que la 3D: rojo si hay perseguidores o vehículos, amarillo si algún agente está en alerta visual (no yendo a un aviso), verde si no. Cuando un perseguidor queda fuera de la pantalla, una flecha roja en el borde la señala (el perseguidor más cercano).
 - **Pistas (G25):** cuatro pistas de tutorial, cada una una sola vez, en un cartel bajo el HUD: `ofrecer` (aparece el primer objetivo), `venta` (primera venta), `agente` (la primera vez que un agente pasa a amarillo o rojo) y `corre` (correr dentro del cono de un agente). Se guardan en localStorage con la clave `2d_pistas` (objeto `{ id: true }`); con almacenamiento que falla, se muestran una vez por sesión. No comparten clave con las pistas de la 3D.
-- **Modelos diferenciados (G35):** los agentes se ven como una silueta con chaleco del color de su estado (amarillo en patrulla o regreso, naranja en alerta, rojo en persecución), cabeza y gorra oscura en el frente hacia donde miran, y su cono de visión. Los transeúntes son un cuerpo con la ropa (uno de `COLORES_PEAT`), cabeza clara y una pastilla con la letra de su memoria (N, I, C, M, P, A) a un costado. Los colores están en `config.js` (`AG_COL`, `AG_GORRA`, `PIEL`, `MEM_COL`, `OBJ_OFR_COL`).
+- **Modelos diferenciados (G35):** los agentes se ven como una silueta con chaleco del color de su estado (amarillo en patrulla o regreso, naranja en alerta, rojo en persecución), cabeza (piel y pelo variados, `aspectoAgente`) y gorra oscura con banda del color del estado, en el frente hacia donde miran, y su cono de visión. Los transeúntes son un cuerpo con la ropa (uno de `COLORES_PEAT`), cabeza clara y una pastilla con la letra de su memoria (N, I, C, M, P, A) a un costado. Los colores están en `config.js` (`AG_COL`, `AG_GORRA`, `PIEL`, `MEM_COL`, `OBJ_OFR_COL`).
 - **Cono de venta (G34, D8):** el cono se dibuja con `radioOfrecer(econ)` y `OFR_MED_ANG`, los mismos valores que usa `ofrecer()`, así que su borde coincide con el alcance real. Se dibuja tenue. La línea de visión no se dibuja (el cono no se recorta por los edificios): un peatón detrás de un edificio cae dentro del dibujo pero no se puede ofrecer.
 
 ## Búsqueda (estrellas), agentes en cada esquina y balance
 
-**Agentes en cada esquina.** Mapa real: uno por cada esquina (`esquinasReales`, unas 695). Ciudad procedural de respaldo: uno por cruce (25). Sobre esa base, `conRefuerzos` suma un 40 % de agentes (`AG_REFUERZO`) en veredas cercanas a algunas esquinas. Además, `conFijos` suma un 25 % (`AG_FIJOS`) de policías fijos, parados en esquinas o en lugares al azar de la vereda (semilla fija); persiguen y acuden como el resto y vuelven a su lugar. `activarAgentes` solo crea los de las esquinas a menos de `BUSQ_R_ACTIVA` (40 celdas) del jugador, con tope `BUSQ_MAX_ACTIVOS` (24), más los que estén persiguiendo; los lejanos no existen en `sim.agentes`. La procedural los tiene todos activos.
+**Reparto uniforme de policías.** `distribuirAgentes` pone tantos policías como esquinas (`esquinasAgentes`) más un 40 % (`AG_REFUERZO`) y un 25 % (`AG_FIJOS`): unos 1230 en el mapa real y 49 en la ciudad procedural. `repartirUniforme` divide el mapa en una grilla y coloca uno por cuadro con vereda, lo más cerca posible de su centro. Además, toda manzana (`manzanasConVereda`, desde `MANZANA_MIN` celdas) tiene al menos uno: se agrega donde la grilla no puso ninguno. Los fijos (1 de cada 5) se intercalan en la grilla; persiguen y acuden como el resto y vuelven a su lugar. `activarAgentes` solo crea los de las esquinas a menos de `BUSQ_R_ACTIVA` (40 celdas) del jugador, con tope `BUSQ_MAX_ACTIVOS` (24), más los que estén persiguiendo; los lejanos no existen en `sim.agentes`. La procedural los tiene todos activos.
 
 **Atentos y distraídos.** Todos están en su esquina, pero solo una fracción ve ventas y carreras: 60 % en la ronda 1, +5 % por ronda, tope 100 %. Los distraídos son grises y sin cono; acuden a un llamado y se suman a una persecución.
 
@@ -296,7 +302,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 
 **Sin atascos.** Los agentes no pisan celdas fuera de la grilla del A* (árboles incluidos), solo van en línea recta si el tramo es caminable y, si pasan `POLI_TRABA_T` (1.5 s) sin avanzar, recalculan en el acto y como último recurso saltan al punto siguiente (`destrabar`).
 
-**Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), haya o no estrellas, incluso durante la ceguera por coima. Ese agente no se desvía ni se cancela (correr u ofrecer frente a él, zafar o pagar coima) hasta llegar al lugar; recién ahí actúa si ve al jugador, o vuelve a su esquina.
+**Llamado de un peatón.** Siempre va hasta el lugar al menos un agente libre (el más cercano), corriendo a la velocidad de persecución (`velPersecucion`), haya o no estrellas, incluso durante la ceguera por coima. Mientras va, no suelta el llamado (zafar o pagar coima no lo cancelan) hasta llegar al lugar y volver a su esquina. Apenas el jugador entra en su visión (salvo durante la ceguera por coima), fija la persecución en él, sin esperar a llegar; suma una estrella (motivo venta).
 
 **Correr en un cono.** Si un agente atento (o en alerta) ve al jugador corriendo, pasa a persecución en el acto (`vioCorrer`), aunque la respuesta del nivel ya esté cubierta (tope `POLI_MAX_PERS`). Correr solo suma estrella si alerta a un agente que todavía no estaba alertado (ni en `alerta` ni en `persecucion`).
 
@@ -326,7 +332,7 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 | `BUSQ_CD` / `BUSQ_T_PASO` / `BUSQ_D_PASO` / `BUSQ_PTS_PASO` | 2 s / 0.15 / 0.08 / 0.5 | `busqueda.js` |
 | `BUSQ_R_ACTIVA` / `BUSQ_MAX_ACTIVOS` / `BUSQ_CUBETA` | 40 / 43 / 16 | `busqueda.js` |
 | `AG_FIJOS` | 0.25 (25 % más policías, fijos) | `agentes.js` |
-| `AG_REFUERZO` | 0.4 (40 % más policías que esquinas) | `agentes.js` |
+| `AG_REFUERZO` | 0.4 (40 % más policías que esquinas; `distribuirAgentes`) | `agentes.js` |
 | `VEH_VEL_RECTA` / `VEH_VEL_GIRO` / `VEH_CAPTURA` | 8.5 / 2.5 / 0.7 | `vehiculos.js` |
 | `HELI_VEL` / `HELI_R` / `HELI_T_ESCENA` | 6.2 / 7 / 30 s | `vehiculos.js` |
 | `GASTO_RONDA` / `GASTO_PASO` / `MEJ_INFLA` | 600 / 300 / 0.15 | `config.js` |
@@ -336,6 +342,31 @@ Constantes que no se copiaron: `POLI_SEP` (separación en la vereda, solo para l
 | Factores de mejoras (x `BASE_MEJ`) | carrito 1.5, 3; alcance 1, 2; velocidad 1.2, 2.2; resistencia 0.8, 1.4, 2; proveedores 0.6, 1.4 | `economia.js` |
 
 `node 2d/tools/simular_balance.mjs` compara los valores anteriores, la propuesta y lo aplicado (modelo probabilístico: sirve para comparar, no predice partidas reales).
+
+## Tránsito y atropello
+
+Lógica en `transito.js` (sin DOM); dibujo en `render.js` (`dibujarAuto`); sonidos y fin de partida en `main.js` (`moverTransito`).
+
+- **Autos:** circulan por la red principal de calzadas (`ciudadCalles` de `vehiculos.js`), por la mano derecha y en los dos sentidos (no se usa el sentido real de las calles). Cada uno tiene decididas por delante las próximas celdas: sigue las calles torcidas, a veces dobla en un cruce y solo sin otra salida vuelve para atrás.
+- **Pool:** hasta `TR_AUTOS` (24; 14 con calidad baja) cerca del jugador. Aparecen fuera de la vista, a 18 celdas o más (el anillo crece con el zoom alejado, hasta 34), y se quitan al quedar lejos. Con el zoom muy alejado en pantallas grandes la vista supera ese tope y un auto puede aparecer en pantalla, siempre a 34 celdas o más.
+- **Mirar antes de cruzar:** el conductor mira `TR_MIRA` (12) celdas de su recorrido. Si el jugador está en la calzada sobre ese recorrido, toca bocina, tarda `TR_REACCION` (0.4 s) en reaccionar y frena. Con margen se detiene antes; si el jugador se mete muy cerca, no llega. No importa hacia dónde mira el personaje: "sin mirar" es meterse delante sin fijarse en los autos.
+- **Atropello:** solo con el frente del auto, a más de `TR_V_ATROPELLO` y con el jugador en una celda `road`. La vereda es siempre segura; chocar caminando contra el costado o contra un auto detenido no hace nada. Termina la partida con el motivo "¡Te atropellaron!" y reinicia la economía, igual que la captura; puntaje, récord y compartir son los de siempre.
+- **Avisos:** autos visibles con faros y luces de freno; flecha blanca con borde rojo en el borde de la pantalla para el que viene hacia el jugador desde fuera de la vista; sonidos de motor, bocina y frenada; pista de tutorial la primera vez que tocan bocina.
+- **Sin peligro inmediato:** al empezar la ronda no hay autos, hay `TR_GRACIA` (3 s) sin atropello y el jugador aparece fuera de la calzada si hay lugar a 12 celdas. Durante la captura, el diálogo de coima, la pausa y la espera de cierre de una ronda ya vendida no hay atropello.
+- **Camino por clic o toque:** el personaje "mira": espera si más adelante pisaría el paso de un auto que llega en menos de `TR_PASO_T` (0.8 s). Si ya está en ese paso, sigue para salir. Con teclado, joystick o flechas no hay ayuda.
+- **Peatones y agentes:** los autos frenan en seco por ellos y nunca los atropellan; si uno queda trabado `TR_ESPERA_MAX` (4 s) por un peatón, un agente u otro auto, pasa a través durante 2 s. Su movimiento no cambia. Las patrullas y el tránsito se ignoran entre sí (pueden superponerse), igual que dos autos que vienen cruzados en algunas esquinas.
+
+| Constante (`config.js`) | Valor |
+|---|---|
+| `TR_AUTOS` / `TR_AUTOS_BAJA` | 24 / 14 |
+| `TR_VEL_MIN` a `TR_VEL_MAX` / `TR_VEL_GIRO` | 4.2 a 5.4 / 2.8 celdas/s |
+| `TR_ACEL` / `TR_FRENO` | 3 / 9 celdas/s² |
+| `TR_REACCION` / `TR_MIRA` / `TR_MARGEN` | 0.4 s / 12 / 0.5 celdas |
+| `TR_V_ATROPELLO` / `TR_LARGO` x `TR_ANCHO` / `TR_CORREDOR` | 1.8 / 1.6 x 0.75 / 0.6 |
+| `TR_SPAWN_MIN` / `TR_SPAWN_MAX` / `TR_SPAWN_ANCHO` / `TR_LEJOS_EXTRA` | 18 / 34 / 14 / 8 celdas |
+| `TR_GRACIA` / `TR_ESPERA_MAX` / `TR_PASO_T` | 3 / 4 / 0.8 s |
+
+`test_transito.mjs` imprime una referencia de balance: en 400 cruces simulados a pie, la proporción de atropellos sin mirar (del orden del 4 al 11 %) y mirando.
 
 ## Pruebas
 
@@ -359,6 +390,7 @@ node 2d/tools/test_integracion.mjs   # estrellas, pool de esquinas, patrullas, �
 node 2d/tools/test_ofrecer.mjs
 node 2d/tools/test_peatones.mjs
 node 2d/tools/test_puntaje.mjs
+node 2d/tools/test_transito.mjs
 ```
 
 `correr_todo.mjs` se eligió en lugar de un script de npm para no agregar dependencias ni comandos a `package.json`; funciona igual con Node sin instalar nada.
@@ -464,7 +496,7 @@ Solo presentación: no cambia ningún valor de juego (velocidades, precios, prob
 
 **Mapa (`render.js`, `crearMapa`).** Se hornea a `CELDA_MAPA_PX` = 8 px por celda en mosaicos de 64 x 64 celdas (más 1 de solape), solo cuando entran en pantalla (hasta 4 nuevos por cuadro; mientras faltan se ve una vista general de 1 px por celda). Caché LRU de 40 mosaicos. Cada mosaico pinta también las celdas vecinas, así sombras y copas no se cortan. En cada cuadro es un `drawImage` por mosaico visible. Capas: veredas con juntas de baldosa y cordón oscuro contra la calle; asfalto con grano, línea de carril discontinua entre las dos manos y sendas peatonales en las celdas que tocan un cruce; adoquines en los barrios con `adoq` (perfiles Centro y San Telmo); agua con ondas y borde de muelle; césped con matas y alguna flor en las plazas; sombras de edificios hacia abajo a la derecha (un solo path, sin doble oscurecido) con largo según los pisos del barrio; techos por lote de 3 x 3 celdas con la paleta del estilo del barrio (`pal` / `estilo` de `barrios.js`), borde claro arriba e izquierda, oscuro abajo y derecha, fachada sur y detalles (equipos, tanques); árboles con sombra y copa de dos tonos. El ruido es determinista por celda (la ciudad se ve igual siempre).
 
-**Personajes (`sprites.js`).** Los peatones son sprites pixelart de 12 x 16 (los de `personaje.js`) con una de 24 variantes fijas; cada peatón recibe la suya la primera vez que se dibuja (WeakMap) y no cambia. Los agentes tienen sprite propio: uniforme oscuro, chaleco y gorra del color de su estado (`AG_COL`: amarillo patrulla o regreso, naranja alerta, rojo persecución), así se distinguen de los transeúntes (G35). Todos usan la escala de `escalaSprite`, animación de caminata de 2 cuadros (se detecta el movimiento entre cuadros), vista de frente o espalda según la dirección en pantalla (con el giro de la cámara), contorno oscuro de 1 px y sombra elíptica bajo los pies. La pastilla de memoria (N, I, C, M, P, A) queda chica al costado de la cabeza.
+**Personajes (`sprites.js`).** Los peatones son sprites pixelart de 12 x 16 (los de `personaje.js`) con una de 24 variantes fijas; cada peatón recibe la suya la primera vez que se dibuja (WeakMap) y no cambia. Los agentes tienen sprite propio: uniforme oscuro, chaleco y banda de la gorra del color de su estado, y 25 combinaciones de piel y pelo según su índice (`AG_COL`: amarillo patrulla o regreso, naranja alerta, rojo persecución), así se distinguen de los transeúntes (G35). Todos usan la escala de `escalaSprite`, animación de caminata de 2 cuadros (se detecta el movimiento entre cuadros), vista de frente o espalda según la dirección en pantalla (con el giro de la cámara), contorno oscuro de 1 px y sombra elíptica bajo los pies. La pastilla de memoria (N, I, C, M, P, A) queda chica al costado de la cabeza.
 
 **Efectos.** Conos de visión con degradé radial, halo y borde fino (en persecución el círculo late); cono de ofrecer con degradé; globos de diálogo con cola y sombra; "+$" de venta dorado con contorno y chispas que salen del jugador; "!" de alerta en un círculo naranja que rebota; camino del clic punteado con anillo que late; viñeta roja suave en persecución; luz de la jornada como tinte `soft-light` con degradé vertical más una niebla leve. Con `prefers-reduced-motion` no hay pulsos ni rebotes.
 

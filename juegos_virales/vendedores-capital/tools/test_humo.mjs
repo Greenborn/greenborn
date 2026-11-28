@@ -17,7 +17,7 @@ registerHooks({
   load(url, ctx, next) {
     const r = next(url, ctx);
     if (!url.endsWith('/js/main.js')) return r;
-    return { ...r, source: String(r.source) + '\nglobalThis.__juego = { get sim() { return sim; }, get pl() { return pl; }, get estado() { return estado; } };\n' };
+    return { ...r, source: String(r.source) + '\nglobalThis.__juego = { get sim() { return sim; }, get pl() { return pl; }, get estado() { return estado; }, get transito() { return transito; } };\n' };
   },
 });
 
@@ -135,6 +135,25 @@ if (J.estado === 'fin') {
   clic('btnFinJugar');
   check('jugar de nuevo', J.estado === 'venta');
 }
+
+console.log('Atropello');
+const { crearAuto } = await import('../js/transito.js');
+if (J.estado !== 'venta') { clic('btnFinJugar'); }
+if (J.estado !== 'venta') clic('btnJugar');
+for (let k = 0; k < 20; k++) card.querySelector('[data-mas]').emitir('click');
+clic('btnReponer'); $('selBotones').children[J.sim.city.zonaCentro].emitir('click');
+const tr = J.transito, p = J.pl;
+check('ronda nueva: con gracia, sin autos y fuera de la calzada', J.estado === 'jugando' && !tr.autos.length && tr.gracia > 0 && J.sim.city.C[Math.floor(p.py) * J.sim.city.N + Math.floor(p.px)].t !== 'road');
+correr(2);
+const k = tr.calles.C.findIndex((c, q) => c.t === 'road' && tr.calles.C[q + 1]?.t === 'road' && tr.calles.C[q + 2]?.t === 'road');
+const ci = k % tr.calles.N, cj = (k - ci) / tr.calles.N;
+tr.gracia = 0; tr.autos.length = 0;
+const auto = crearAuto(tr, ci, cj, [1, 0], 5);
+p.px = auto.x + 0.9; p.py = auto.z; p.prevPx = p.px; p.prevPy = p.py; tr.autos.push(auto);
+correr(3);
+check('un auto encima termina la partida', J.estado === 'fin' && $('finTitulo').textContent === '¡Te atropellaron!', J.estado + ' ' + $('finTitulo').textContent);
+clic('btnFinJugar');
+check('jugar de nuevo tras el atropello', J.estado === 'venta' && !tr.autos.length);
 
 console.log('');
 console.log(fallos === 0 ? `TODAS LAS PRUEBAS OK (${pasos})` : `FALLARON ${fallos} de ${pasos}`);

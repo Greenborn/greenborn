@@ -47,5 +47,6 @@ export const MEJORAS_TEXTO = {
 // Título y texto de motivo de la pantalla de fin, por motivo de finPartida (main.js).
 export const MOTIVOS_FIN = {
   capturado: ['¡Te atraparon!', 'Te quitaron la mercadería.'],
+  atropello: ['¡Te atropellaron!', 'Cruzaste sin mirar y el auto no llegó a frenar. Se acabó la partida.'],
   sin_fondos: ['Sin fondos para reponer', 'No te alcanza para el gasto fijo y una unidad de mercadería. Se acabó la partida.'],
 };

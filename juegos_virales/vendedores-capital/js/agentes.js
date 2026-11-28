@@ -76,40 +76,83 @@ export function distSegPunto(cx, cz, ax, az, bx, bz) {
 }
 
 export const AG_REFUERZO = 0.4;        // policías extra sobre el uno por esquina (40 % más)
+export const AG_FIJOS = 0.25;          // policías fijos extra, sobre los que patrullan (25 % más)
 
-// Agrega los refuerzos repartidos de forma pareja: cada uno en una vereda a unas celdas de su esquina. Determinista.
-export function conRefuerzos(city, base, frac = AG_REFUERZO) {
-  const out = base.slice(), total = Math.round(base.length * frac);
-  for (let k = 0; k < total; k++) {
-    const e = base[Math.floor(k * base.length / total)];
-    let c = null;
-    for (const [dx, dz] of [[4, 0], [0, 4], [-4, 0], [0, -4]]) {
-      const q = celdaPeatonal(city, e.x + dx, e.z + dz, 2);
-      if (q && Math.hypot(q.i + .5 - e.x, q.j + .5 - e.z) >= 2) { c = q; break; }
+// Reparte `total` policías de forma uniforme sobre la vereda: divide el mapa en una grilla y pone uno por cuadro con vereda,
+// en la celda más cercana a su centro. El lado del cuadro es el que deja una cantidad lo más parecida posible a `total`.
+// Determinista.
+export function repartirUniforme(city, total) {
+  const n = ladoDe(city), veredas = [];   // se recorre el mapa una sola vez; cada intento mira solo las veredas
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const c = city.C[j * n + i];
+    if (c.t === 'side' && !c.deco) veredas.push({ i, j });
+  }
+  const repartir = lado => {
+    const cant = Math.ceil(n / lado), paso = n / cant, mejor = new Array(cant * cant).fill(null);
+    for (const { i, j } of veredas) {
+      const a = Math.floor(i / paso), b = Math.floor(j / paso), k = b * cant + a;
+      const d = Math.hypot(i + .5 - (a + .5) * paso, j + .5 - (b + .5) * paso);
+      if (!mejor[k] || d < mejor[k].d) mejor[k] = { i, j, a, b, d };
     }
-    out.push(c ? { ...e, x: c.i + .5, z: c.j + .5 } : { ...e });
+    return mejor.filter(Boolean);
+  };
+  let min = 1, max = n, elegidos = [];
+  for (let t = 0; t < 20; t++) {
+    const lado = (min + max) / 2, r = repartir(lado);
+    if (!elegidos.length || Math.abs(r.length - total) < Math.abs(elegidos.length - total)) elegidos = r;
+    if (r.length > total) min = lado; else max = lado;
+  }
+  return elegidos;
+}
+
+export const MANZANA_MIN = 50;        // celdas: los recortes más chicos (canteros, isletas) no cuentan como manzana
+
+// Manzanas: grupos conectados de celdas que no son calle ni agua, de al menos MANZANA_MIN celdas y con vereda.
+// Devuelve, por cada una, sus celdas de vereda libres y el centro.
+export function manzanasConVereda(city) {
+  const n = ladoDe(city), visto = new Uint8Array(n * n), out = [];
+  const libre = k => city.C[k].t !== 'road' && city.C[k].t !== 'water';
+  for (let q = 0; q < n * n; q++) {
+    if (visto[q] || !libre(q)) continue;
+    const pila = [q], veredas = [];
+    let area = 0, si = 0, sj = 0;
+    visto[q] = 1;
+    while (pila.length) {
+      const k = pila.pop(), i = k % n, j = (k - i) / n;
+      area++; si += i + .5; sj += j + .5;
+      if (city.C[k].t === 'side' && !city.C[k].deco) veredas.push({ i, j });
+      for (const m of [i > 0 ? k - 1 : -1, i < n - 1 ? k + 1 : -1, k - n, k + n]) {
+        if (m >= 0 && m < n * n && !visto[m] && libre(m)) { visto[m] = 1; pila.push(m); }
+      }
+    }
+    if (area >= MANZANA_MIN && veredas.length) out.push({ veredas, x: si / area, z: sj / area });
   }
   return out;
 }
 
-export const AG_FIJOS = 0.25;          // policías fijos extra, sobre los que patrullan (25 % más)
-
-// Agrega los policías fijos (fijo: true, nunca patrullan): alternan entre una esquina y un lugar al azar de la vereda.
-// El azar usa una semilla fija: el mapa queda igual en cada partida.
-export function conFijos(city, lista, esquinas, frac = AG_FIJOS) {
-  let s = 987654321;
-  const azar = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  const n = ladoDe(city), out = lista.slice(), total = Math.round(lista.length * frac);
-  for (let k = 0; k < total; k++) {
-    let e = null;
-    for (let t = 0; k % 2 && t < 200 && !e; t++) {
-      const i = Math.floor(azar() * n), j = Math.floor(azar() * n), c = city.C[j * n + i];
-      if (c.t === 'side' && !c.deco) e = { x: i + .5, z: j + .5, yaw: azar() * TAU - Math.PI };
-    }
-    e ??= esquinas[Math.floor(azar() * esquinas.length)];
-    out.push({ ...e, fijo: true });
+// Policías de la ciudad: tantos como esquinas más AG_REFUERZO y AG_FIJOS, repartidos de forma uniforme, más uno
+// en cada manzana que la grilla haya dejado sin ninguno. Los fijos
+// (fijo: true, nunca patrullan) se intercalan en la misma grilla. yaw: hacia la calle vecina, si la hay.
+export function distribuirAgentes(city) {
+  const n = ladoDe(city), base = esquinasAgentes(city).length, moviles = base + Math.round(base * AG_REFUERZO);
+  const celdas = repartirUniforme(city, moviles + Math.round(moviles * AG_FIJOS));
+  const calle = (i, j) => i >= 0 && j >= 0 && i < n && j < n && city.C[j * n + i].t === 'road';
+  const ocupadas = new Set(celdas.map(c => c.j * n + c.i));
+  for (const m of manzanasConVereda(city)) {
+    if (m.veredas.some(v => ocupadas.has(v.j * n + v.i))) continue;
+    const d = v => Math.hypot(v.i + .5 - m.x, v.j + .5 - m.z);
+    const { i, j } = m.veredas.reduce((p, v) => d(v) < d(p) ? v : p);
+    celdas.push({ i, j, a: Math.floor(i / 17), b: Math.floor(j / 17) });
   }
-  return out;
+  const cuantos = Math.round(celdas.length * AG_FIJOS / (1 + AG_FIJOS));
+  // Se ordenan en diagonal para que los fijos (uno cada tantos) no queden agrupados.
+  const orden = celdas.map((c, k) => k).sort((p, q) => ((celdas[p].a + 2 * celdas[p].b) % 5) - ((celdas[q].a + 2 * celdas[q].b) % 5) || p - q);
+  const fijos = new Set(orden.slice(0, cuantos));
+  return celdas.map(({ i, j }, k) => {
+    const d = [[1, 0], [0, 1], [-1, 0], [0, -1]].find(([dx, dz]) => calle(i + dx, j + dz));
+    const e = { x: i + .5, z: j + .5, yaw: d ? Math.atan2(d[0], d[1]) : 0 };
+    return fijos.has(k) ? { ...e, fijo: true } : e;
+  });
 }
 
 // Crea la simulación de los agentes. opts.rand: generador aleatorio (inyectable para pruebas); opts.esquinas: puntos de patrulla;
@@ -119,7 +162,7 @@ export function conFijos(city, lista, esquinas, frac = AG_FIJOS) {
 // si se acepta la coima (main.js ya descontó lo pagado); false si se rechaza o no hay nada que pagar; o 'pendiente' si abrió un
 // diálogo: la simulación espera hasta resolverCoima(sim, aceptada, pl).
 export function crearSimulacion(city, opts = {}) {
-  const esquinas = opts.esquinas ?? conFijos(city, conRefuerzos(city, esquinasAgentes(city)), esquinasAgentes(city));
+  const esquinas = opts.esquinas ?? distribuirAgentes(city);
   const sim = {
     city, rand: opts.rand ?? Math.random,
     patrulla: opts.patrulla ?? POLI_FASE,
@@ -415,8 +458,9 @@ function destrabar(sim, p, pl, dt) {
 
 const verUltima = (sim, x, z, heading = 0) => { sim.ultima = { x, z, heading }; };
 
-// Llamado de un peatón: siempre va al menos un agente libre hasta (x, z), el más cercano. Ese agente (acude = true) llega sí o
-// sí: no se desvía ni se cancela (avistamientos, zafar, coima) hasta estar en el lugar. Sin búsqueda activa, además acuden todos los que estén a menos de POLI_R_AVISO; pasan a alerta yendo
+// Llamado de un peatón: siempre va al menos un agente libre hasta (x, z), el más cercano. Ese agente (acude = true) va corriendo (a la
+// velocidad de persecución) y no suelta el llamado (zafar, coima, correr lejos de su vista) hasta llegar. Todo agente que va
+// a un llamado y ve al jugador lo persigue en el acto. Sin búsqueda activa, además acuden todos los que estén a menos de POLI_R_AVISO; pasan a alerta yendo
 // hacia allí (no cuentan como perseguidores) y el primero que ve al jugador suma una estrella (motivo venta).
 // Con estrellas activas va solo ese agente y el llamado actualiza la última posición vista.
 export function alertarAgentes(sim, x, z) {
@@ -690,8 +734,11 @@ export function stepAgentes(sim, pl, dt) {
         break;
       case 'alerta':
         if (p.aviso) {                                                // yendo a un llamado: todavía no persigue
-          if (p.ve && !p.acude) { avistamiento(sim, pl, [p], 'venta'); if (!p.aviso) break; }
-          moved = agenteSigueRuta(city, p, POLI_VEL_ALERTA, dt);
+          if (p.ve && G.ciegoT <= 0) {                               // lo ve: lo persigue en el acto, también quien acude
+            agentePersigue(sim, p); avistamiento(sim, pl, [p], 'venta');
+            break;
+          }
+          moved = agenteSigueRuta(city, p, p.acude ? velPersecucion(sim.ronda) : POLI_VEL_ALERTA, dt);   // quien acude va corriendo
           if (!p.acude) p.tAviso -= dt;
           const o = p.objetivo, repedir = () => pedirRuta(sim, p, celdaPeatonal(city, o.x, o.z, 4), 1, r => { if (p.estado === 'alerta' && p.aviso) ponerRuta(sim, p, r); });
           if (atascado(p, dt)) repedir();
@@ -699,7 +746,6 @@ export function stepAgentes(sim, pl, dt) {
           if (p.acude) {                                              // no suelta el llamado hasta llegar al lugar
             if (finRuta) {
               if (Math.hypot(o.x - p.x, o.z - p.z) > POLI_ACUDE_LLEGA && p.reintentos++ < POLI_ACUDE_REINTENTOS) repedir();
-              else if (p.ve && G.ciegoT <= 0) p.acude = false;        // llegó y lo ve: en el próximo paso actúa
               else agenteRegresa(sim, p);
             }
           } else if (finRuta || p.tAviso <= 0) agenteRegresa(sim, p);

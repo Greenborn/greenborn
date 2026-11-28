@@ -137,6 +137,7 @@ export function actualizarRecord(puntos, producto, storage = storageDefecto()) {
 // Texto del resultado: motivo, producto, puntaje y medalla. No incluye nombre ni otros datos personales.
 const RESULTADO = {
   capturado: 'Me atraparon',
+  atropello: 'Me atropellaron por cruzar sin mirar',
   sin_fondos: 'Me quedé sin fondos para reponer',
 };
 

@@ -3,13 +3,14 @@
 // por profundidad, marcas, burbujas, partículas de venta, luz de la jornada y viñeta de persecución.
 // Rendimiento: el mapa se hornea por mosaicos perezosos con caché LRU (crearMapa) y se dibuja con un drawImage por mosaico visible; los sprites se rasterizan una vez por variante (sprites.js) y se dibujan
 // con drawImage; los degradados de pantalla completa se cachean por tamaño y color. Sin librerías ni imágenes externas.
+import { TR_LARGO, TR_ANCHO, TR_MIRA } from './config.js';
 import { aPantalla, visible, dirPantalla } from './camara.js';
 import { POLI_RADIO_PERS, POLI_FOV, radioVista } from './agentes.js';
 import { HELI_R } from './vehiculos.js';
 import { BARRIOS, perfilesDe } from './barrios.js';
 import { AG_COL, MEM_COL, OBJ_OFR_COL, VEH_COL, VEH_LUZ, HELI_COL } from './config.js';
 import { spriteJugador, completarPersonaje, ANCHO_SPRITE, ALTO_SPRITE } from './personaje.js';
-import { crearCacheSprites, spriteAgente, personajePeaton, varianteDe, claveJugador, fabricaCanvas } from './sprites.js';
+import { crearCacheSprites, spriteAgente, varianteAgente, personajePeaton, varianteDe, claveJugador, fabricaCanvas } from './sprites.js';
 
 export const CELDA_MAPA_PX = 8;                       // resolución del mapa rasterizado (px por celda)
 // Colores de agentes (config.js, AG_COL): amarillo / naranja / rojo, igual que la 3D. Las claves son los estados de agentes.js.
@@ -445,6 +446,9 @@ export function dibujar(ctx, cam, escena) {
     ctx.restore();
   }
 
+  // Autos del tránsito (transito.js), en el suelo: las personas se dibujan encima.
+  if (escena.autos) for (const a of escena.autos) if (visible(cam, a.x, a.z, 2)) dibujarAuto(ctx, cam, a);
+
   // Entidades con sprite, ordenadas por y de pantalla (las de abajo tapan a las de arriba).
   const p = escalaSprite(cam), sw = (ANCHO_SPRITE + 2) * p, sh = (ALTO_SPRITE + 2) * p;
   ordenados.length = 0;
@@ -461,7 +465,8 @@ export function dibujar(ctx, cam, escena) {
     const [sx, sy] = aPantalla(cam, ag.x, ag.z);
     const a = animar(ag, ag.x, ag.z, cam, ag.yaw);
     const col = !ag.atento && (ag.estado === 'patrulla' || ag.estado === 'regreso') ? COL_AG.distraido : COL_AG[ag.estado] ?? COL_AG.patrulla, vista = a.frente ? 'frente' : 'espalda', cuadro = cuadroDe(a.mov, tiempo, a.fase);
-    const img = sprites.obtener('A|' + col + '|' + vista + '|' + cuadro, () => spriteAgente(col, vista, cuadro));
+    const va = varianteAgente(ag.idx);
+    const img = sprites.obtener('A|' + va + '|' + col + '|' + vista + '|' + cuadro, () => spriteAgente(col, vista, cuadro, va));
     ordenados.push({ sy, sx, img, tipo: 'ag', ent: ag });
   }
   if (pl) {
@@ -561,6 +566,17 @@ export function dibujar(ctx, cam, escena) {
     ctx.globalAlpha = 1;
   }
 
+  // Aviso de auto fuera de la pantalla que viene hacia el jugador: marca blanca con borde rojo en el borde.
+  if (pl && escena.autos) for (const a of escena.autos) {
+    if (!a.avisa || Math.hypot(a.x - pl.px, a.z - pl.py) > TR_MIRA) continue;
+    const [sx, sy] = aPantalla(cam, a.x, a.z), f = flechaBorde(cam, sx, sy, 18);
+    if (!f) continue;
+    ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.ang);
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#d02020'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(-6, -8); ctx.lineTo(-2, 0); ctx.lineTo(-6, 8); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+
   // Flechas en el borde hacia cada perseguidor fuera de la pantalla (G24): agentes, patrullas y helicóptero.
   if (sim && pl && hayPers) {
     const flecha = (x, z, col) => {
@@ -576,6 +592,22 @@ export function dibujar(ctx, cam, escena) {
     for (const v of sim.patrullas) flecha(v.x, v.z, VEH_COL);
     if (sim.heli) flecha(sim.heli.x, sim.heli.z, HELI_COL);
   }
+}
+
+// Auto particular visto desde arriba: carrocería, vidrios, faros y luces de freno.
+function dibujarAuto(ctx, cam, a) {
+  const [x, y] = aPantalla(cam, a.x, a.z), k = cam.zoom, L = TR_LARGO * k, A = TR_ANCHO * k;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(anguloPantalla(a.yaw, cam));
+  ctx.fillStyle = 'rgba(0, 0, 0, .3)'; ctx.fillRect(-L / 2 + 0.07 * k, -A / 2 + 0.1 * k, L, A);
+  ctx.fillStyle = a.color; ctx.strokeStyle = '#111'; ctx.lineWidth = 1;
+  ctx.fillRect(-L / 2, -A / 2, L, A); ctx.strokeRect(-L / 2, -A / 2, L, A);
+  ctx.fillStyle = '#243746';
+  ctx.fillRect(0.08 * L, -A * 0.38, 0.18 * L, A * 0.76); ctx.fillRect(-0.32 * L, -A * 0.36, 0.1 * L, A * 0.72);
+  ctx.fillStyle = '#fff4b8';
+  ctx.fillRect(L / 2 - 0.1 * k, -A * 0.44, 0.1 * k, A * 0.22); ctx.fillRect(L / 2 - 0.1 * k, A * 0.22, 0.1 * k, A * 0.22);
+  ctx.fillStyle = a.frena ? '#ff2a2a' : '#7a1c1c';
+  ctx.fillRect(-L / 2, -A * 0.44, 0.1 * k, A * 0.22); ctx.fillRect(-L / 2, A * 0.22, 0.1 * k, A * 0.22);
+  ctx.restore();
 }
 
 // Patrulla genérica vista desde arriba (1.7 x 0.9 celdas): carrocería, vidrio delantero y baliza naranja que titila.

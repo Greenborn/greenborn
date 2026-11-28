@@ -102,3 +102,23 @@ export const RUTA_UMBRAL_OBJ = 2;       // celdas que tiene que moverse el objet
 export const RUTA_ATASCO_T = 0.6, RUTA_ATASCO_D = 0.25;   // s sin avanzar RUTA_ATASCO_D celdas siguiendo ruta: atascado, recalcula
 export const SEP_RADIO = 0.7, SEP_FUERZA = 6;   // separación entre agentes activos: distancia mínima (celdas) y rigidez del empuje (1/s)
 export const INTERCEPT_T_MAX = 1.2;     // s máximos de anticipación al predecir la posición futura del jugador
+
+// Tránsito y atropello (transito.js). Distancias en celdas (5 m), velocidades en celdas/s.
+export const TR_AUTOS = 24, TR_AUTOS_BAJA = 14;             // autos simultáneos cerca del jugador (calidad normal / baja)
+export const TR_VEL_MIN = 4.2, TR_VEL_MAX = 5.4;            // velocidad de crucero (el jugador camina a 4.5 y corre a 7.5)
+export const TR_VEL_GIRO = 2.8, TR_ACEL = 3, TR_FRENO = 9;  // al doblar; aceleración y frenada (celdas/s^2)
+export const TR_REACCION = 0.4;        // s que tarda el conductor en empezar a frenar por el jugador
+export const TR_MIRA = 12;             // celdas de recorrido que mira el conductor
+export const TR_V_ATROPELLO = 1.8;     // a esta velocidad o menos el auto no atropella
+export const TR_LARGO = 1.6, TR_ANCHO = 0.75;
+export const TR_CORREDOR = 0.6;        // el jugador está "delante" si queda a esta distancia lateral del recorrido
+export const TR_MARGEN = 0.5;          // celdas que el auto intenta dejar libres al frenar
+export const TR_SPAWN_MIN = 18, TR_SPAWN_MAX = 34, TR_SPAWN_ANCHO = 14;   // aparecen fuera de la vista, a 18 celdas o más
+export const TR_LEJOS_EXTRA = 8;       // se quitan al pasar el anillo de aparición por estas celdas
+export const TR_P_GIRO = 0.12;         // probabilidad de doblar en cada celda con calle lateral
+export const TR_GRACIA = 3;            // s al empezar la ronda en los que no hay atropello (los autos frenan siempre)
+export const TR_ESPERA_MAX = 4;        // s trabado por otro auto o un peatón antes de pasar igual
+export const TR_BOCINA_D = 8, TR_BOCINA_CD = 2;   // toca bocina si el jugador está a menos de esto; una cada 2 s por auto
+export const TR_PASO_T = 0.8;          // camino por clic: espera si un auto llega en menos de estos segundos
+export const TR_AVISO_LATERAL = 1.6;   // flecha de aviso y motor: autos cuyo recorrido pasa a esta distancia o menos
+export const TR_COLORES = ['#d9d9de', '#2f6fb5', '#c8452f', '#e7b53c', '#3c4048', '#7fa06a'];

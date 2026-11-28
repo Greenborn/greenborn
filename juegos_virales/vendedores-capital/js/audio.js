@@ -172,6 +172,11 @@ const SFX = {
   medalla: t => { nota(1046, t, 0.12, 'square', 0.4, gFx); nota(1568, t + 0.1, 0.3, 'square', 0.4, gFx, { eco: 0.6 }); },
   fila: t => nota(520, t, 0.05, 'square', 0.2, gFx, { adsr: CORTO }),
   patrulla: t => [0, 1, 2, 3].forEach(i => nota(i % 2 ? 520 : 690, t + i * 0.18, 0.16, 'triangle', 0.45, gFx, { eco: 0.3 })),   // bocina de dos tonos
+  // Tránsito: bocina, frenada (chirrido y bocina), motor que se acerca y atropello.
+  bocina: t => [0, 0.16].forEach(d => { nota(415, t + d, 0.12, 'square', 0.3, gFx, { adsr: CORTO }); nota(330, t + d, 0.12, 'square', 0.3, gFx, { adsr: CORTO }); }),
+  frenada: t => { ruido(t, 0.35, 0.45, 2600, 'bandpass', gFx, 6); nota(415, t, 0.35, 'square', 0.4, gFx); nota(330, t, 0.35, 'square', 0.4, gFx); },
+  motor: t => { ruido(t, 0.4, 0.14, 320, 'lowpass', gFx); nota(variar(70), t, 0.35, 'sawtooth', 0.12, gFx, { glide: 95 }); },
+  atropello: t => { ruido(t, 0.3, 0.8, 500, 'lowpass', gFx); nota(150, t, 0.3, 'sawtooth', 0.6, gFx, { glide: 40 }); [330, 262, 196].forEach((f, i) => nota(f, t + 0.35 + i * 0.18, 0.28, 'triangle', 0.4, gFx)); },
   heli: t => [0, 1, 2, 3, 4].forEach(i => { ruido(t + i * 0.09, 0.06, 0.35, 260, 'lowpass', gFx); nota(72, t + i * 0.09, 0.05, 'sine', 0.3, gFx, { adsr: CORTO }); }),   // aspas
 };
 

@@ -6,7 +6,7 @@ import { N, generarCiudad } from '../js/ciudad.js';
 import { cargarCiudadReal, esquinasReales, celdaCaminableMasCerca, obstaculoEn } from '../js/ciudad_real.js';
 import {
   crearSimulacion, stepAgentes, ventaVista, alertarAgentes, resetAgentes, activarAgentes, comprometido,
-  fraccionAtentos, radioVista, velPersecucion,
+  fraccionAtentos, radioVista, velPersecucion, manzanasConVereda,
 } from '../js/agentes.js';
 import { respuesta, BUSQ_CD, BUSQ_MAX_ACTIVOS, BUSQ_R_ACTIVA } from '../js/busqueda.js';
 import { HELI_T_ESCENA } from '../js/vehiculos.js';
@@ -81,6 +81,14 @@ console.log('3. Llamado de peatón');
   check('los demás vuelven a su esquina, salvo el enviado al lugar', sim.agentes.filter(a => a.aviso).every(a => a.acude) && sim.agentes.filter(a => a.aviso).length <= 1);
 }
 
+{
+  const sim = crearSimulacion(vacia(), { esquinas: [{ x: 60.5, z: 40.5, yaw: 0 }], rand: () => 0.5 });
+  alertarAgentes(sim, 20.5, 40.5);
+  const a = sim.agentes[0], pl = jug(55.5, 40.5);   // en el camino, antes de que llegue al lugar
+  paso(sim, pl, 0.4);
+  check('quien acude persigue al jugador apenas lo ve', a.estado === 'persecucion' && !a.acude && sim.busq.nivel === 1, a.estado + ' ' + sim.busq.nivel);
+}
+
 console.log('4. Zafar y reinicios');
 {
   const sim = crearSimulacion(vacia(), { esquinas: fila(), rand: rnd }), pl = jug(20.5, 45.5);
@@ -130,6 +138,17 @@ console.log('6. Dificultad por ronda y energía');
   check('después recupera 8/s caminando', pl.energia === 98, String(pl.energia));
 }
 
+console.log('6b. El más cercano acude corriendo a un llamado');
+{
+  const sim = crearSimulacion(vacia(), { esquinas: [{ x: 60.5, z: 40.5, yaw: 0 }, { x: 30.5, z: 40.5, yaw: 0 }], rand: rnd }), pl = jug(-500, -500);
+  alertarAgentes(sim, 20.5, 40.5);
+  const a = sim.agentes.find(p => p.acude);
+  check('acude el más cercano', a?.idx === 1);
+  paso(sim, pl, 0.2);
+  const x0 = a.x; paso(sim, pl, 1);
+  check('va corriendo', Math.abs((x0 - a.x) - velPersecucion(sim.ronda)) < 0.3, (x0 - a.x).toFixed(2));
+}
+
 console.log('7. Mapa real: un agente por esquina con pool');
 const real = await cargarCiudadReal({ leerJson: async u => JSON.parse(await readFile(u, 'utf8')), leerBin: async u => await readFile(u) });
 {
@@ -142,7 +161,7 @@ const real = await cargarCiudadReal({ leerJson: async u => JSON.parse(await read
   const lejos = a => Math.hypot(a.esquinaBase.x - pl.px, a.esquinaBase.z - pl.py);
   check('solo los cercanos, con tope', sim.agentes.length > 0 && sim.agentes.length <= BUSQ_MAX_ACTIVOS && sim.agentes.every(a => lejos(a) <= BUSQ_R_ACTIVA), String(sim.agentes.length));
   const esperadas = sim.esquinas.filter(e => Math.hypot(e.x - pl.px, e.z - pl.py) <= BUSQ_R_ACTIVA).length;
-  check('todos los puntos cercanos (esquinas y refuerzos) tienen su agente', sim.agentes.length === Math.min(esperadas, BUSQ_MAX_ACTIVOS), sim.agentes.length + ' de ' + esperadas);
+  check('todos los puntos cercanos tienen su agente', sim.agentes.length === Math.min(esperadas, BUSQ_MAX_ACTIVOS), sim.agentes.length + ' de ' + esperadas);
   const d = celdaCaminableMasCerca(real, 100, 100, 30); Object.assign(pl, { px: d.i + .5, py: d.j + .5, prevPx: d.i + .5, prevPy: d.j + .5 });
   paso(sim, pl, 1);
   check('al moverse lejos se sueltan los de antes y aparecen los nuevos', sim.agentes.length > 0 && sim.agentes.every(a => lejos(a) <= BUSQ_R_ACTIVA + 5), String(sim.agentes.length));
@@ -190,17 +209,27 @@ console.log('8b. Policías fijos');
 {
   const sim = crearSimulacion(real, { rand: rnd });
   const fijos = sim.esquinas.filter(e => e.fijo), resto = sim.esquinas.length - fijos.length;
-  check('25 % más de policías, fijos', fijos.length === Math.round(resto * 0.25), fijos.length + ' / ' + resto);
+  check('25 % más de policías, fijos', Math.abs(fijos.length - resto * 0.25) <= 1, fijos.length + ' / ' + resto);
+  const zonas = new Array(36).fill(0);
+  for (const e of sim.esquinas) zonas[Math.floor(e.z / real.N * 6) * 6 + Math.floor(e.x / real.N * 6)]++;
+  check('reparto uniforme: cada sector de 500 m tiene una cantidad pareja', Math.min(...zonas) >= Math.max(...zonas) * 0.65, Math.min(...zonas) + '..' + Math.max(...zonas));
   check('los fijos están en vereda', fijos.every(e => real.C[Math.floor(e.z) * real.N + Math.floor(e.x)].t === 'side'));
   const s2 = crearSimulacion(generarCiudad(), { rand: rnd }), pl = jug(-500, -500);
   paso(s2, pl, 30);
   check('los fijos no se mueven de su lugar', s2.agentes.filter(a => a.fijo).every(a => a.x === a.esquinaBase.x && a.z === a.esquinaBase.z));
 }
 
+console.log('8c. Un policía por manzana como mínimo');
+{
+  const sim = crearSimulacion(real, { rand: rnd }), hay = new Set(sim.esquinas.map(e => Math.floor(e.z) * real.N + Math.floor(e.x)));
+  const sin = manzanasConVereda(real).filter(m => !m.veredas.some(v => hay.has(v.j * real.N + v.i))).length;
+  check('ninguna manzana queda sin policía', sin === 0, String(sin));
+}
+
 console.log('9. Ciudad procedural de respaldo');
 {
   const sim = crearSimulacion(generarCiudad(), { rand: rnd });
-  check('25 cruces + 40 % de refuerzos + 25 % de fijos, todos activos', sim.agentes.length === 44 && sim.agentes.filter(a => a.fijo).length === 9 && !sim.pool, String(sim.agentes.length));
+  check('procedural: grilla uniforme de 49 policías, 10 fijos, todos activos', sim.agentes.length === 49 && sim.agentes.filter(a => a.fijo).length === 10 && !sim.pool, String(sim.agentes.length));
   const a = sim.agentes[0], pl = jug(a.x, a.z + 0.9);
   sim.busq.nivel = 5; sim.ultima = { x: pl.px, z: pl.py, heading: 0 };
   paso(sim, pl, 0.05);

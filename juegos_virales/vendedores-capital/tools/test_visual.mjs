@@ -2,7 +2,7 @@
 // sprites.js: variantes de peatón estables y válidas, sprite de agente con el color del estado, rasterizado y caché con tope.
 // audio.js: envolvente ADSR y variación de tono (funciones puras), y efectos nuevos con un AudioContext simulado.
 import {
-  VARIANTES_PEATON, personajePeaton, varianteDe, spriteAgente, crearCacheSprites, rasterizarSprite, rngSemilla, claveJugador,
+  VARIANTES_PEATON, personajePeaton, varianteDe, spriteAgente, aspectoAgente, VARIANTES_AGENTE, crearCacheSprites, rasterizarSprite, rngSemilla, claveJugador,
 } from '../js/sprites.js';
 import { personajeValido, ANCHO_SPRITE, ALTO_SPRITE, PERSONAJE_DEFECTO } from '../js/personaje.js';
 import { envolvente, variar, audio } from '../js/audio.js';
@@ -49,10 +49,13 @@ console.log('2. Sprite del agente');
 {
   const s = spriteAgente('#e03030', 'frente', 'paso1');
   check('tamaño fijo 12 x 16', s.ancho === ANCHO_SPRITE && s.alto === ALTO_SPRITE && s.pixeles.length === ALTO_SPRITE && s.pixeles.every(f => f.length === ANCHO_SPRITE));
-  check('la gorra lleva el color del estado', s.pixeles[0][5] === '#e03030');
+  check('la banda de la gorra lleva el color del estado', s.pixeles[2][5] === '#e03030');
   check('el chaleco lleva el color del estado', s.pixeles[8][3] === '#e03030');
   const otro = spriteAgente('#ffd33b');
-  check('otro estado cambia la gorra', otro.pixeles[0][5] === '#ffd33b');
+  check('otro estado cambia la banda', otro.pixeles[2][5] === '#ffd33b');
+  const aspectos = Array.from({ length: VARIANTES_AGENTE }, (_, k) => aspectoAgente(k));
+  check('hay agentes con todos los tonos de piel y colores de pelo', new Set(aspectos.map(a => a.piel)).size === 5 && new Set(aspectos.map(a => a.pelo)).size === 5);
+  check('el sprite usa la piel de su variante', spriteAgente('#fff', 'frente', 'quieto', 3).pixeles[5][5] === aspectoAgente(3).piel);
   check('cuadros de caminata distintos', JSON.stringify(spriteAgente('#fff', 'frente', 'paso1').pixeles) !== JSON.stringify(spriteAgente('#fff', 'frente', 'paso2').pixeles));
   check('frente y espalda distintos', JSON.stringify(spriteAgente('#fff', 'frente').pixeles) !== JSON.stringify(spriteAgente('#fff', 'espalda').pixeles));
   check('cuadro desconocido cuenta como quieto', JSON.stringify(spriteAgente('#fff', 'frente', 'x').pixeles) === JSON.stringify(spriteAgente('#fff', 'frente', 'quieto').pixeles));

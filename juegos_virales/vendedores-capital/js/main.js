@@ -18,6 +18,8 @@ import {
   SPEED, OFR_MED_ANG, OFR_CD, OFR_PAUSA,
   ZOOM_OPCIONES, ENERGIA_MAX, PEAT_RECICLO_T,
 } from './config.js';
+import { crearTransito, resetTransito, stepTransito, miraAlCruzar, celdaSegura } from './transito.js';   // autos y atropello
+import { TR_AUTOS, TR_AUTOS_BAJA } from './config.js';
 import {
   crearPartida, registrarVenta, registrarEscape, marcarPerseguido, cerrarRondaPuntos, puntosTotal, desgloseFin,
   unidadesCompradas, medalla, actualizarRecord, textoCompartir, enlacesCompartir, puntosEscape, registrarCoima,
@@ -72,6 +74,8 @@ let selTimer = 0;
 let zonaHud = -2;                           // barrio mostrado en el HUD (solo se reescribe al cambiar)
 
 let sim = null;                              // simulación de agentes (agentes.js)
+const transito = crearTransito(city);        // autos cercanos al jugador (transito.js)
+let tMotor = 0, tBocinaAuto = 0;             // esperas entre sonidos de motor y de bocina
 let pl = null;                               // jugador: posición, energía ({ energia, agotado }) y movimiento
 let personajeGuardado = cargarPersonaje();   // personaje del vendedor (personaje.js, clave 2d_personaje)
 let borrador = { ...personajeGuardado };     // lo que se edita en la pantalla Personaje hasta Guardar
@@ -141,6 +145,7 @@ function nuevaPartida() {
   else resetAgentes(sim, undefined, econ.ronda);
   sim.ronda = econ.ronda;
   activarAgentes(sim, pl);
+  resetTransito(transito);
   peds = [];
   for (let k = 0; k < cantidadPeatones(jornadaPorId(MOMENTO_INICIAL)); k++) peds.push(crearPeaton(city, city.real ? { cerca: jugadorXZ() } : {}));   // mapa real: cerca del jugador
   burbujas = [];
@@ -346,6 +351,7 @@ function cerrarRondaJuego() {
   cancelarCamino(camino);
   resetAgentes(sim, undefined, econ.ronda);   // fin de ronda: sin estrellas ni vehículos
   activarAgentes(sim, pl);
+  resetTransito(transito);
   if (r.estado === 'sin_fondos') { finPartida('sin_fondos'); return; }
   const g = r.ganancia;
   toast('Ronda cerrada: ganancia ' + (g < 0 ? '-' : '') + pesos(Math.abs(g)), g >= 0 ? 'bien' : 'mal');
@@ -357,19 +363,19 @@ function cerrarRondaJuego() {
   irA('mercaderia', () => { pintarMercaderia(); }, 'venta');
 }
 
-// Termina la partida. 'capturado' y 'sin_fondos' son game over: la mercadería de la ronda se pierde y la economía vuelve al inicio.
+// Termina la partida. 'capturado', 'atropello' y 'sin_fondos' son game over: la mercadería de la ronda se pierde y la economía vuelve al inicio.
 // Calcula el desglose, la medalla y el récord (puntaje.js) y muestra la pantalla de fin (M12).
 function finPartida(motivo) {
   if (estado === 'fin') return;
   dialogoCoima = false;
   cancelarCamino(camino);
   ocultarTodas();   // también cierra Mercadería o Mejoras si la partida termina desde ahí
-  if (motivo === 'capturado' || motivo === 'sin_fondos') econ = reiniciarEconomia();
+  if (motivo === 'capturado' || motivo === 'atropello' || motivo === 'sin_fondos') econ = reiniciarEconomia();
   const pa = partida, producto = pa.producto, total = puntosTotal(pa);
   rd = rondaNueva();
   estado = 'fin';
   pausaJuego = false;
-  audio.sfx('rechazo');
+  audio.sfx(motivo === 'atropello' ? 'atropello' : 'rechazo');
   audioMenu();
   const rec = actualizarRecord(total, producto);
   const m = medalla(total);
@@ -404,6 +410,7 @@ function finPartida(motivo) {
   $('hudAlerta').hidden = true;
   resetAgentes(sim);   // limpia estrellas, patrullas y helicóptero
   activarAgentes(sim, pl);
+  if (motivo !== 'atropello') resetTransito(transito);   // atropello: los autos quedan quietos detrás de la pantalla de fin
 }
 
 const fmtPuntos = n => Math.round(n).toLocaleString('es-AR');
@@ -445,8 +452,9 @@ function pintarStock() {
   const p = productoActivo(rd);
   const { comprado, queda } = p ? loteDe(rd, p) : { comprado: 0, queda: 0 };
   if (hud.icono.dataset.producto !== (p ?? '')) pintarIcono(p);
-  hud.icono.title = p ? NOMBRE_PRODUCTO[p] + ' (tecla F o clic para cambiar)' : 'Sin mercadería';
-  hud.stockN.textContent = 'x' + queda;
+  const titulo = p ? NOMBRE_PRODUCTO[p] + ' (tecla F o clic para cambiar)' : 'Sin mercadería';
+  if (hud.icono.title !== titulo) hud.icono.title = titulo;
+  escribir(hud.stockN, 'x' + queda);
   const n = Math.min(comprado, SEG_MAX), key = p + ':' + n;
   if (key !== barraKey) {
     barraKey = key;
@@ -513,11 +521,14 @@ function pintarEstrellas() {
   hud.estrellas.setAttribute('aria-label', 'Búsqueda: ' + h.encendidas + ' de ' + h.total + ' estrellas');
 }
 
+// El HUD se actualiza en cada cuadro: el DOM solo se toca si el texto cambió.
+function escribir(el, txt) { if (el.textContent !== txt) el.textContent = txt; }
+
 function actualizarHud() {
-  hud.ronda.textContent = String(econ.ronda);
+  escribir(hud.ronda, String(econ.ronda));
   pintarStock();
-  hud.dinero.textContent = pesos(rd.dinero);
-  hud.energia.textContent = pl ? (pl.agotado ? 'sin correr' : Math.round(pl.energia) + '%') : '-';
+  escribir(hud.dinero, pesos(rd.dinero));
+  escribir(hud.energia, pl ? (pl.agotado ? 'sin correr' : Math.round(pl.energia) + '%') : '-');
   if (hud.energiaBar) {                       // barra de energía con degradé (solo presentación)
     const e = pl ? Math.round(pl.energia) : 0;
     if (hud.energiaBar.dataset.v !== String(e) + pl?.agotado) {
@@ -526,7 +537,7 @@ function actualizarHud() {
       hud.energiaBar.classList.toggle('agotado', !!pl?.agotado);
     }
   }
-  hud.puntos.textContent = partida ? fmtPuntos(puntosTotal(partida)) : '';
+  escribir(hud.puntos, partida ? fmtPuntos(puntosTotal(partida)) : '');
   pintarAlerta();
 }
 
@@ -537,7 +548,7 @@ function actualizar(dt, inp) {
   if (inp.ofrecer) ofrecer();
   if (sim.G.capT > 0) cancelarCamino(camino);
   // Clic para caminar (G22): si hay camino y no hay entrada manual, la dirección sale del camino (caminar.js).
-  const paso = pasoCamino(camino, { x: pl.px, y: pl.py }, inp, dt);
+  const paso = pasoCamino(camino, { x: pl.px, y: pl.py }, inp, dt, (dx, dy) => miraAlCruzar(transito, pl, dx, dy));
   moverJugador(dt, camino.activo ? { ...inp, dx: paso.dx, dy: paso.dy, corre: false } : inp);
   objetivoOfr = buscarObjetivoOfrecer(peds, city, pl, radioOfrecer(econ), OFR_MED_ANG);   // flecha amarilla (G23)
   if (objetivoOfr) pista('ofrecer', 'Acercate a alguien (aparece una flecha amarilla) y apretá E u OFRECER.');
@@ -556,12 +567,33 @@ function actualizar(dt, inp) {
   }
   procesarEventos();
   if (estado !== 'jugando') return;
+  if (!dialogoCoima && moverTransito(dt)) { finPartida('atropello'); return; }
   if (finPend > 0) {
     finPend -= dt;
     if (finPend <= 0 && stockTotal(rd) === 0) { cerrarRondaJuego(); return; }
   }
   burbujas = burbujas.filter(b => tiempo - b.t0 < b.dur);
   actualizarHud();
+}
+
+// Un paso del tránsito y sus sonidos. Devuelve true si atropellaron al jugador.
+function moverTransito(dt) {
+  const r = stepTransito(transito, pl, dt, {
+    npcs: [peds, sim.agentes],
+    protegido: sim.G.capT > 0 || (finPend > 0 && stockTotal(rd) === 0),   // capturado o ronda ya vendida: frenan siempre
+    vista: Math.hypot(cam.w, cam.h) / 2 / cam.zoom,
+    max: prefsMovil().calidad === 'baja' ? TR_AUTOS_BAJA : TR_AUTOS,
+  });
+  tBocinaAuto -= dt; tMotor -= dt;
+  for (const e of transito.eventos) {
+    if (e.t === 'atropello' || tBocinaAuto > 0) continue;
+    tBocinaAuto = 0.6;
+    audio.sfx(e.t);
+    pista('transito', 'Mirá antes de cruzar: si te metés muy cerca de un auto, no llega a frenar y se termina la partida.');
+  }
+  transito.eventos.length = 0;
+  if (tMotor <= 0 && transito.autos.some(a => a.avisa && Math.hypot(a.x - pl.px, a.z - pl.py) < 10)) { tMotor = 0.8; audio.sfx('motor'); }
+  return r.atropello;
 }
 
 // Sonido repetido de los vehículos mientras están en escena: aspas del helicóptero y bocina de las patrullas cercanas.
@@ -642,7 +674,8 @@ function elegirZona(z, quedarse = false) {
   zonaSel = z;
   pintarSeleccion();
   const cen = centroZona(z);
-  const c = quedarse ? null : celdaCaminableMasCerca(city, cen.i, cen.j, 60);
+  // Fuera de la calzada si hay lugar cerca: la ronda no empieza en medio de la calle.
+  const c = quedarse ? null : celdaSegura(city, cen.i, cen.j, 12) ?? celdaCaminableMasCerca(city, cen.i, cen.j, 60);
   if (c) {
     pl.px = c.i + .5; pl.py = c.j + .5; pl.prevPx = pl.px; pl.prevPy = pl.py;
     pl.path = []; pl.target = null;
@@ -666,8 +699,9 @@ function empezarRonda() {
   audio.escena('partida');
   resetAgentes(sim, undefined, econ.ronda);
   activarAgentes(sim, pl);
+  resetTransito(transito);
   burbujas = [];
-  cdOfr = 0; finPend = 0; tHeli = 0; tBocina = 0;
+  cdOfr = 0; finPend = 0; tHeli = 0; tBocina = 0; tMotor = 0; tBocinaAuto = 0;
   // Ronda nueva: la memoria de los peatones se reinicia y la jornada vuelve al momento inicial.
   tRonda = 0; cdReciclo = PEAT_RECICLO_T; jornadaId = MOMENTO_INICIAL;
   reiniciarMemoria(peds);
@@ -886,7 +920,7 @@ $('btnPausaPers').addEventListener('click', abrirPersonaje);
 function irAlTitulo() {
   irA('titulo', () => {
     estado = 'titulo'; pausaJuego = false; dialogoCoima = false; $('hudAlerta').hidden = true; soltarControles();
-    resetAgentes(sim); activarAgentes(sim, pl);
+    resetAgentes(sim); activarAgentes(sim, pl); resetTransito(transito);
     audioMenu();
   }, null);
 }
@@ -934,7 +968,8 @@ audioMenu();
 // Clic en cualquier botón de menú suena "clic" (como la 3D). El pad de flechas y los botones táctiles quedan callados.
 addEventListener('click', e => { if (e.target.closest && e.target.closest('button:not(.dp):not(.touch-btn)')) audio.sfx('clic'); });
 
-let last = performance.now(), ultimo = -Infinity;
+const MINI_MS = 1000 / 15;   // el minimapa se redibuja a 15 cuadros por segundo (recorre todos sus píxeles)
+let last = performance.now(), ultimo = -Infinity, ultimoMini = -Infinity;
 function frame(now) {
   requestAnimationFrame(frame);
   // Límite de FPS (ajustes.fps): se saltan los cuadros que llegan antes del intervalo (1 ms de tolerancia).
@@ -944,12 +979,16 @@ function frame(now) {
   last = now;
   const inp = controles.leer();
   if (estado === 'jugando' && !pausado && !pausaJuego && !dialogoCoima) { actualizar(dt, inp); sonarPasos(); }
+  if (snap) ultimoMini = -Infinity;   // la cámara salta: el minimapa se redibuja en este cuadro
   seguir(cam, pl.px, pl.py, dt, snap);
   snap = false;
   luz = acercarLuz(luz, luzDe(jornadaPorId(jornadaId)), dt);   // transición suave del cielo y la niebla
-  dibujar(ctx, cam, { personaje: personajeGuardado, mapa, sim, pl, peds, burbujas, tiempo, luz, dpr, reducido: !!mqReducido?.matches, ofr: { radio: radioOfrecer(econ), medAng: OFR_MED_ANG }, objetivo: estado === 'jugando' ? objetivoOfr : null, camino: camino.activo ? camino.pasos : null });
+  dibujar(ctx, cam, { personaje: personajeGuardado, mapa, sim, autos: transito.autos, pl, peds, burbujas, tiempo, luz, dpr, reducido: !!mqReducido?.matches, ofr: { radio: radioOfrecer(econ), medAng: OFR_MED_ANG }, objetivo: estado === 'jugando' ? objetivoOfr : null, camino: camino.activo ? camino.pasos : null });
   pintarZona();
-  dibujarMinimapa(cvMini, city, pl, cam, sim ? sim.agentes : [], sim);
+  if (now - ultimoMini >= MINI_MS - 1) {
+    ultimoMini = now;
+    dibujarMinimapa(cvMini, city, pl, cam, sim ? sim.agentes : [], sim);
+  }
 }
 pintarControles();
 requestAnimationFrame(frame);

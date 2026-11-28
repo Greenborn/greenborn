@@ -6,7 +6,7 @@
 // - Agentes: sprite propio de 12 x 16 con uniforme oscuro, chaleco y gorra del color de su estado (G35).
 // - Caché: cada sprite (clave = tipo, variante, vista y cuadro) se rasteriza una sola vez a 1 px por píxel del sprite;
 //   el render lo dibuja escalado con drawImage (sin suavizado). Tope de entradas: al pasarlo se vacía (no crece sin límite).
-import { personajeAlAzar, ANCHO_SPRITE, ALTO_SPRITE, CUADROS } from './personaje.js';
+import { personajeAlAzar, OPCIONES_PERSONAJE, ANCHO_SPRITE, ALTO_SPRITE, CUADROS } from './personaje.js';
 
 export const VARIANTES_PEATON = 24;     // variantes distintas de transeúntes (todas válidas, generadas con semilla fija)
 export const TOPE_CACHE = 400;          // entradas máximas de la caché de sprites
@@ -40,11 +40,22 @@ export function varianteDe(p) {
 }
 
 // Colores fijos del agente.
-const UNIFORME = '#1f2a44', UNIFORME_OSC = '#151c30', BOTA = '#111111', PIEL_AG = '#d9a877', OJO = '#1a1a1a', VISERA = '#0d0d10';
+const UNIFORME = '#1f2a44', UNIFORME_OSC = '#151c30', BOTA = '#111111', OJO = '#1a1a1a', VISERA = '#0d0d10';
 
-// Grilla del agente: { ancho, alto, pixeles } como spriteJugador. col = color del estado (chaleco y gorra).
+// Aspectos del agente: todas las combinaciones de piel y color de pelo (los del personaje), con el peinado alternado.
+const { piel: PIELES, peloColor: PELOS, peloEstilo: PEINADOS } = OPCIONES_PERSONAJE;
+export const VARIANTES_AGENTE = PIELES.length * PELOS.length;
+export function aspectoAgente(k) {
+  const v = ((k % VARIANTES_AGENTE) + VARIANTES_AGENTE) % VARIANTES_AGENTE, p = v % PIELES.length, c = Math.floor(v / PIELES.length);
+  return { piel: PIELES[p], pelo: PELOS[(c + p) % PELOS.length], peinado: PEINADOS[(p + 2 * c) % PEINADOS.length] };
+}
+// Variante estable de un agente según su índice (puede ser negativo); vecinos en la lista salen distintos.
+export const varianteAgente = idx => (((idx * 7) % VARIANTES_AGENTE) + VARIANTES_AGENTE) % VARIANTES_AGENTE;
+
+// Grilla del agente: { ancho, alto, pixeles } como spriteJugador. col = color del estado (chaleco y banda de la gorra).
 // vista: 'frente' | 'espalda'. cuadro: 'quieto' | 'paso1' | 'paso2'.
-export function spriteAgente(col, vista = 'frente', cuadro = 'quieto') {
+export function spriteAgente(col, vista = 'frente', cuadro = 'quieto', variante = 0) {
+  const { piel, pelo, peinado } = aspectoAgente(variante);
   const frente = vista !== 'espalda';
   const paso = CUADROS.includes(cuadro) ? cuadro : 'quieto';
   const g = Array.from({ length: ALTO_SPRITE }, () => Array(ANCHO_SPRITE).fill(null));
@@ -52,16 +63,21 @@ export function spriteAgente(col, vista = 'frente', cuadro = 'quieto') {
     for (let y = Math.max(0, y0); y <= Math.min(ALTO_SPRITE - 1, y1); y++)
       for (let x = Math.max(0, x0); x <= Math.min(ANCHO_SPRITE - 1, x1); x++) g[y][x] = c;
   };
-  rect(3, 2, 8, 6, PIEL_AG);                         // cabeza
-  rect(2, 0, 9, 2, col);                             // gorra del color del estado
+  rect(3, 2, 8, 6, piel);                            // cabeza
+  rect(2, 0, 9, 1, UNIFORME);                        // gorra oscura (no se confunde con el pelo)
+  rect(2, 2, 9, 2, col);                             // banda de la gorra del color del estado
   if (frente) { rect(2, 3, 9, 3, VISERA); g[4][4] = OJO; g[4][7] = OJO; }
-  else rect(3, 3, 8, 4, '#3a2a1e');                  // nuca con pelo corto
+  else if (peinado !== 'rapado') rect(3, 3, 8, 4, pelo);   // nuca con pelo
   rect(1, 7, 10, 11, UNIFORME);                      // torso y brazos
   rect(3, 7, 8, 10, col);                            // chaleco del estado
   if (frente) { rect(5, 7, 6, 10, UNIFORME_OSC); rect(3, 9, 8, 9, '#f2f2f2'); }   // cierre y banda reflectiva
   else rect(3, 8, 8, 8, '#f2f2f2');
   rect(0, 8, 0, 11, UNIFORME); rect(11, 8, 11, 11, UNIFORME);
-  rect(0, 12, 0, 12, PIEL_AG); rect(11, 12, 11, 12, PIEL_AG);
+  rect(0, 12, 0, 12, piel); rect(11, 12, 11, 12, piel);
+  if (peinado !== 'rapado') {                        // pelo a los costados de la cabeza (largo: llega a los hombros)
+    const fin = peinado === 'largo' ? 7 : 4;
+    rect(2, 4, 2, fin, pelo); rect(9, 4, 9, fin, pelo);
+  }
   if (paso === 'paso1') { rect(3, 12, 5, 14, UNIFORME_OSC); rect(3, 15, 5, 15, BOTA); rect(6, 12, 8, 13, UNIFORME_OSC); rect(6, 14, 8, 14, BOTA); }
   else if (paso === 'paso2') { rect(3, 12, 5, 13, UNIFORME_OSC); rect(3, 14, 5, 14, BOTA); rect(6, 12, 8, 14, UNIFORME_OSC); rect(6, 15, 8, 15, BOTA); }
   else { rect(3, 12, 5, 14, UNIFORME_OSC); rect(3, 15, 5, 15, BOTA); rect(6, 12, 8, 14, UNIFORME_OSC); rect(6, 15, 8, 15, BOTA); }
