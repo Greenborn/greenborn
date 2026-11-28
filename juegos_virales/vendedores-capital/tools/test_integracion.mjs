@@ -93,10 +93,13 @@ console.log('3. Llamado de peatón');
   const sim = crearSimulacion(vacia(), { esquinas: [{ x: 40.5, z: 40.5, yaw: 0 }, { x: 90.5, z: 40.5, yaw: 0 }], rand: () => 0.5 });
   sentirVenta(sim, 20.5, 40.5);
   const [a, b] = sim.agentes;
-  check('una venta atrae a los cercanos, sin estrellas', a.estado === 'alerta' && a.aviso && !a.acude && b.estado === 'patrulla' && sim.busq.nivel === 0);
+  check('una venta atrae a los cercanos, sin alerta ni estrellas', a.estado === 'patrulla' && a.curiosea && !a.aviso && !b.curiosea && sim.busq.nivel === 0);
   const pl = jug(-500, -500);
   paso(sim, pl, 0.2); const x0 = a.x; paso(sim, pl, 1);
   check('van caminando hacia el lugar', Math.abs((x0 - a.x) - POLI_VEL_ALERTA) < 0.3, (x0 - a.x).toFixed(2));
+  let min = Infinity;
+  for (let t = 0; t < 10; t += 0.05) { stepAgentes(sim, pl, 0.05); min = Math.min(min, Math.hypot(a.x - 20.5, a.z - 40.5)); }
+  check('llegan y después vuelven, sin ponerse en alerta', min < 1.5 && !a.curiosea && a.estado !== 'alerta', min.toFixed(2) + ' ' + a.estado);
 }
 
 console.log('4. Zafar y reinicios');

@@ -222,7 +222,7 @@ function nuevoAgente(sim, idx, e) {
     esquinaBase: { x: e.x, z: e.z, yaw: e.yaw },
     fijo: !!e.fijo,        // policía fijo: no patrulla, queda parado en su lugar
     estado: 'patrulla',    // 'patrulla' | 'alerta' | 'persecucion' | 'regreso'
-    aviso: false, acude: false, tAlerta: 0, tAviso: 0, objetivo: null, reintentos: 0,
+    aviso: false, acude: false, curiosea: false, tAlerta: 0, tAviso: 0, objetivo: null, reintentos: 0,
     ruta: null, k: 0, tRuta: 0, pend: 0, obj: null,   // pend: pedido de ruta en curso (0 = ninguno); obj: destino de la última ruta
     refX: e.x, refZ: e.z, tAtasco: 0, atascado: false, wx: e.x, wz: e.z, wt: 0, trabas: 0,
     tVis: sim.rand() * POLI_VIS_DT, ve: false, ventaT: 0,
@@ -314,7 +314,7 @@ function agentePersigue(sim, p) {
 
 // Vuelve a su esquina por A* peatonal (encolado; si no hay camino, camina directo en el último tramo).
 export function agenteRegresa(sim, p) {
-  p.estado = 'regreso'; p.aviso = false; p.acude = false; p.ruta = null; p.k = 0;
+  p.estado = 'regreso'; p.aviso = false; p.acude = false; p.curiosea = false; p.ruta = null; p.k = 0;
   const b = p.esquinaBase;
   pedirRuta(sim, p, { i: Math.floor(b.x), j: Math.floor(b.z) }, 2, r => { if (p.estado === 'regreso') ponerRuta(sim, p, r); });
 }
@@ -494,20 +494,18 @@ export function alertarAgentes(sim, x, z) {
   });
 }
 
-// "Sentido arácnido": con cada venta concretada, los agentes libres a menos de POLI_R_VENTA van caminando hasta el lugar.
-// No suma estrellas por sí solo; como en cualquier aviso, el que ve al jugador lo persigue.
+// "Sentido arácnido": con cada venta concretada, los agentes en patrulla o regreso a menos de POLI_R_VENTA van caminando
+// hasta el lugar. No se ponen en alerta: siguen en patrulla (curiosea = true) y al llegar vuelven a su esquina.
 export function sentirVenta(sim, x, z) {
   const dest = celdaPeatonal(sim.city, x, z, 4);
   if (!dest) return;
   for (const p of sim.agentes) {
-    const d = Math.hypot(p.x - x, p.z - z);
-    const libre = !p.acude && (p.estado === 'patrulla' || p.estado === 'regreso' || (p.estado === 'alerta' && p.aviso));
-    if (!libre || d > POLI_R_VENTA || !celdaPeatonal(sim.city, p.x, p.z, 3)) continue;
-    p.estado = 'alerta'; p.aviso = true; p.reintentos = 0; p.objetivo = { x, z }; p.ruta = null; p.k = 0;
-    p.tAviso = Math.max(POLI_T_AVISO, 2 * d / POLI_VEL_ALERTA);
+    if ((p.estado !== 'patrulla' && p.estado !== 'regreso') || Math.hypot(p.x - x, p.z - z) > POLI_R_VENTA) continue;
+    if (!celdaPeatonal(sim.city, p.x, p.z, 3)) continue;
+    p.estado = 'patrulla'; p.curiosea = true; p.ruta = null; p.k = 0;
     pedirRuta(sim, p, dest, 1, r => {
-      if (!(p.estado === 'alerta' && p.aviso)) return;
-      if (r) ponerRuta(sim, p, r); else agenteRegresa(sim, p);
+      if (!(p.estado === 'patrulla' && p.curiosea)) return;
+      if (r && r.length) ponerRuta(sim, p, r); else agenteRegresa(sim, p);
     });
   }
 }
@@ -622,7 +620,7 @@ export function resetAgentes(sim, patrulla, ronda) {
   if (sim.pool) sim.agentes.length = 0;
   for (const p of sim.agentes) {
     const b = p.esquinaBase;
-    Object.assign(p, { x: b.x, z: b.z, yaw: b.yaw, estado: 'patrulla', ruta: null, k: 0, aviso: false, acude: false, ve: false, ventaT: 0, fuerza: 0, tAlerta: 0, tPat: 0.5,
+    Object.assign(p, { x: b.x, z: b.z, yaw: b.yaw, estado: 'patrulla', ruta: null, k: 0, aviso: false, acude: false, curiosea: false, ve: false, ventaT: 0, fuerza: 0, tAlerta: 0, tPat: 0.5,
       pend: 0, obj: null, refX: b.x, refZ: b.z, wx: b.x, wz: b.z, wt: 0, trabas: 0, tAtasco: 0, atascado: false, buscando: false, atento: esAtento(sim, p.idx) });
   }
   sim.rutas.vaciar(); sim.vel.x = sim.vel.z = 0;
@@ -729,7 +727,7 @@ export function stepAgentes(sim, pl, dt) {
   let rango = 0;
   for (const p of agentes) {
     const dx = pl.px - p.x, dz = pl.py - p.z, d2 = dx * dx + dz * dz;
-    if (p.estado === 'patrulla' && d2 > POLI_SIM * POLI_SIM) continue;   // lejos y tranquilo: no se simula
+    if (p.estado === 'patrulla' && !p.curiosea && d2 > POLI_SIM * POLI_SIM) continue;   // lejos y tranquilo: no se simula
     const d = Math.sqrt(d2);
     if (p.ventaT > 0) p.ventaT -= dt;
     p.tVis -= dt;
@@ -738,7 +736,10 @@ export function stepAgentes(sim, pl, dt) {
     let moved = 0;
     switch (p.estado) {
       case 'patrulla':                                                // patrulla 2: camina por la vereda entre paradas; patrulla 1: quieto en la esquina
-        if (sim.patrulla !== 1 && !p.fijo && p.ruta && p.k < p.ruta.length) {
+        if (p.curiosea) {                                          // va hacia una venta (también los fijos)
+          moved = agenteSigueRuta(city, p, POLI_VEL_ALERTA, dt);
+          if (atascado(p, dt) || (!p.pend && (!p.ruta || p.k >= p.ruta.length))) agenteRegresa(sim, p);
+        } else if (sim.patrulla !== 1 && !p.fijo && p.ruta && p.k < p.ruta.length) {
           moved = agenteSigueRuta(city, p, POLI_VEL_PAT, dt);
           if (atascado(p, dt)) { p.ruta = null; p.tPat = 0; }        // trabado: elige otra parada
         }
